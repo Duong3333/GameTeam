@@ -2,7 +2,7 @@
 
 ## Chạy game
 1. Mở Godot 4.7, bấm Import, chọn file `project.godot` trong thư mục này.
-2. Bấm nút Play (hoặc F5). Dùng **W A S D** để đi, **E** để câu cá (đứng gần hồ), **B** để mở sổ cá.
+2. Bấm nút Play (hoặc F5). Dùng **W A S D** để đi, **E** để câu cá (đứng gần hồ), **B** để mở sổ cá, **Ctrl+J** để nhảy tại chỗ (bấm lại để dừng).
 3. Khi Godot lần đầu mở có thể mất vài giây để nhập (import) file font.
 4. Nếu có lỗi đỏ ở ô Output, chép nguyên dòng lỗi gửi lại để sửa.
 
