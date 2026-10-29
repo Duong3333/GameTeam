@@ -4,6 +4,7 @@
 1. Mở Godot 4.7, bấm Import, chọn file `project.godot` trong thư mục này.
 2. Bấm nút Play (hoặc F5). Dùng **W A S D** để đi.
 3. Khi Godot lần đầu mở có thể mất vài giây để nhập (import) file font.
+4. Nếu có lỗi đỏ ở ô Output, chép nguyên dòng lỗi gửi lại để sửa.
 
 ## Có gì trong game
 - Bản đồ theo sơ đồ cơ sở: Tòa A, B, C, D, E (dãy phía tây), đài phun nước và vườn, Tòa F, G (phía đông), Nhà Thể Dục, Nhà Điều hành ở phía nam, bãi giữ xe, cổng trường ở Đường T1.
@@ -12,9 +13,60 @@
 - Sinh viên đi lại và nói chuyện, xe máy chạy trên đường nội bộ, đồng hồ 7:00 - 17:00.
 - Đi gần tòa nhà hoặc quầy nào thì góc trên bên trái hiện tên và mô tả.
 
+## Cấu trúc thư mục
+```
+main.gd                    điều phối chính (_ready, _process, _draw)
+main.tscn, project.godot   scene và cấu hình
+font.ttf
+scripts/
+  data/game_data.gd        BẢN ĐỒ: BUILDINGS, KIOSKS, ZONES, PALMS, câu NPC (LINES)  <- sửa bản đồ ở đây
+  core/game_state.gd       các biến dùng chung (vị trí người chơi, NPC, giờ...)
+  core/world_update.gd     mỗi khung hình: va chạm, di chuyển, NPC, xe máy, ánh sáng, HUD
+  core/world_setup.gd      dựng thế giới lúc bắt đầu (cây, NPC, đèn, camera, HUD)
+  draw/pen.gd              bút vẽ cơ bản (hình chữ nhật pixel, bóng, chữ)
+  draw/scenery.gd          cỏ, đường, bãi xe, đài phun nước, cổng, cây, đèn, ghế
+  draw/structures.gd       tòa nhà, Nhà Điều hành, quầy nhỏ
+  draw/characters.gd       người, bóng thoại, xe máy
+  draw/overlay.gd          sắp xếp chiều sâu, mây, cánh phượng, bản đồ nhỏ
+  systems/audio_manager.gd phát âm thanh (thiếu file thì im lặng, không lỗi)
+  features/feature.gd      lớp nền cho chức năng mới (câu cá, đánh nhau, ...)
+assets/
+  audio/                   bỏ file âm thanh vào đây
+  hcmus_logo.png           (tùy chọn) logo thật, xem mục bên dưới
+```
+Các file trong `scripts/data`, `core`, `draw` nối với nhau theo thứ tự từ trên xuống: mỗi file kế thừa file đứng trước (xem dòng `extends` đầu file). Vì vậy một hàm chỉ gọi được hàm nằm ở file **cùng tầng hoặc phía trên**. Thêm hàm vẽ mới thì đặt vào đúng file theo nhóm.
+
 ## Chỉnh bản đồ
-Mở `main.gd`, bảng `BUILDINGS` ở đầu file: mỗi dòng là một tòa (tên, x, y, rộng, cao, màu tường, màu mái, mô tả).
-`KIOSKS` là các quầy nhỏ (nhà ăn, quầy giáo trình...), `ZONES` là các khu vực hiện tên.
+Mở `scripts/data/game_data.gd`: mỗi dòng trong `BUILDINGS` là một tòa (tên, x, y, rộng, cao, màu tường, màu mái, mô tả).
+`KIOSKS` là các quầy nhỏ (nhà ăn, quầy giáo trình...), `ZONES` là các khu vực hiện tên, `LINES` là các câu NPC hay nói.
+
+## Thêm âm thanh
+Bỏ file `.ogg` / `.wav` / `.mp3` vào `assets/audio/`, rồi gọi bằng tên file (không cần đuôi):
+```gdscript
+audio.play_sfx("click")   # hiệu ứng, phát assets/audio/click.ogg
+audio.play_music("nen")   # nhạc nền, phát assets/audio/nen.ogg
+audio.stop_music()
+```
+Muốn nhạc lặp lại: chọn file trong Godot, tab Import, bật Loop, bấm Reimport.
+
+## Thêm chức năng mới (câu cá, đánh nhau, điểm danh, học thư viện, tập thể dục, nói chuyện NPC...)
+1. Tạo file mới trong `scripts/features/`, ví dụ `fishing.gd`:
+```gdscript
+extends "res://scripts/features/feature.gd"
+
+func begin() -> void:
+	super()                       # bật chế độ bận: người chơi đứng yên
+	game.audio.play_sfx("splash")
+
+func finish() -> void:
+	super()
+```
+2. Đăng ký trong `main.gd`, hàm `setup_features()`:
+```gdscript
+add_feature(preload("res://scripts/features/fishing.gd").new())
+```
+3. Gọi `begin()` khi người chơi bấm phím hoặc đứng đúng chỗ, gọi `finish()` khi xong.
+Chức năng là một Node nên tự có `_process(delta)` và `_unhandled_input(event)`. Trong `game` có `game.player`, `game.audio`, `game.npcs`, `game.game_min`...
 
 ## Thay logo bằng ảnh thật
 Chép ảnh logo trường (vuông, 32x32 hoặc 64x64) vào thư mục `assets`, đặt tên `hcmus_logo.png`.
