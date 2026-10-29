@@ -1,9 +1,0 @@
-#include <iostream>
-
-using namespace std;
-
-int main(){
-  cout<<"Day la code dau tien";
-
-  return 0;
-}
