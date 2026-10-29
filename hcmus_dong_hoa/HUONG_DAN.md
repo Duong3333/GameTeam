@@ -30,6 +30,8 @@ scripts/
   draw/characters.gd       người, bóng thoại, xe máy
   draw/overlay.gd          sắp xếp chiều sâu, mây, cánh phượng, bản đồ nhỏ
   systems/audio_manager.gd phát âm thanh (thiếu file thì im lặng, không lỗi)
+  features/registry.gd     DANH SÁCH feature, thêm feature mới = thêm 1 dòng ở đây
+  features/_mau_feature.gd file mẫu để copy khi làm feature mới (không chạy trong game)
   features/feature.gd      lớp nền cho chức năng mới (câu cá, đánh nhau, ...)
   features/fishing.gd      CHỨC NĂNG CÂU CÁ (quăng cần, chờ cá, kéo cá, sổ cá, điểm)
 assets/
@@ -78,9 +80,9 @@ func begin() -> void:
 func finish() -> void:
 	super()
 ```
-2. Đăng ký trong `main.gd`, hàm `setup_features()`:
+2. Đăng ký bằng 1 dòng trong `scripts/features/registry.gd` (KHÔNG sửa main.gd):
 ```gdscript
-add_feature(preload("res://scripts/features/fishing.gd").new())
+	"res://scripts/features/fishing.gd",
 ```
 3. Gọi `begin()` khi người chơi bấm phím hoặc đứng đúng chỗ, gọi `finish()` khi xong.
 4. Muốn vẽ thêm lên thế giới thì ghi đè `draw_front_layer()` (main.gd tự gọi); muốn vẽ giao diện cố định trên màn hình thì làm giống `fishing.gd` (CanvasLayer + Control).
@@ -90,3 +92,6 @@ Chức năng là một Node nên tự có `_process(delta)` và `_unhandled_inpu
 
 ## Thay logo bằng ảnh thật
 Chép ảnh logo trường (vuông, 32x32 hoặc 64x64) vào thư mục `assets`, đặt tên `hcmus_logo.png`.
+
+## Làm việc nhóm bằng Git
+Xem `HUONG_DAN_GIT.md`.

@@ -6,6 +6,7 @@ extends "res://scripts/draw/overlay.gd"
 
 const Feature := preload("res://scripts/features/feature.gd")
 const AudioManager := preload("res://scripts/systems/audio_manager.gd")
+const Registry := preload("res://scripts/features/registry.gd")
 const StudentStats := preload("res://scripts/features/student_stats.gd")
 
 func _ready() -> void:
@@ -58,10 +59,12 @@ func skip_days(n: int) -> void:
 
 # ---------- Chức năng mở rộng (câu cá, đánh nhau, điểm danh, ...) ----------
 func setup_features() -> void:
-	# Mỗi chức năng mới là 1 file trong scripts/features/, đăng ký ở đây:
-	add_feature(preload("res://scripts/features/fishing.gd").new())   # câu cá ở Hồ sinh viên
-	add_feature(preload("res://scripts/features/student_hud.gd").new())    # 2 thanh GPA/rèn luyện, đồng hồ
-	add_feature(preload("res://scripts/features/student_panel.gd").new())  # sổ tay (Tab)
+	# Danh sách feature nằm ở scripts/features/registry.gd (thêm feature mới chỉ cần sửa file đó)
+	for path in Registry.LIST:
+		if ResourceLoader.exists(path):
+			add_feature(load(path).new())
+		else:
+			push_warning("registry.gd: không tìm thấy " + path)
 
 func add_feature(f: Feature) -> void:
 	f.game = self
