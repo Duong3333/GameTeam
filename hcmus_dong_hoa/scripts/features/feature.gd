@@ -14,6 +14,9 @@ extends Node
 #   2. Đăng ký trong main.gd, hàm setup_features():
 #        add_feature(preload("res://scripts/features/fishing.gd").new())
 #   3. Gọi begin() khi người chơi bấm phím / đứng đúng chỗ, gọi finish() khi xong.
+#   4. (Tùy chọn) Muốn vẽ thêm thứ gì lên thế giới (cần câu, hiệu ứng...) thì ghi đè draw_front_layer().
+#      Hàm này được main.gd gọi trong _draw(), sau khi vẽ người và cây; dùng game.draw_line(...), game.rc(...), game.ctext(...).
+#      Muốn vẽ giao diện cố định trên màn hình (thanh sức mạnh, bảng điểm) thì tạo CanvasLayer + Control như features/fishing.gd.
 
 var game: Node2D     # tham chiếu tới Main, main.gd gán khi đăng ký (dùng game.player, game.audio, ...)
 var active := false  # true = đang chạy; khi đó người chơi không di chuyển được
@@ -23,3 +26,7 @@ func begin() -> void:
 
 func finish() -> void:
 	active = false
+
+# Vẽ lên thế giới, sau người/cây (ghi đè nếu cần). Được gọi mỗi khung hình trong main.gd -> _draw().
+func draw_front_layer() -> void:
+	pass

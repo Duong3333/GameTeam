@@ -105,5 +105,4 @@ func update_daylight() -> void:
 		tint.color = Color(1, 1, 1, 0)
 
 func update_hud() -> void:
-	var h := game_min / 60.0
-	hud.text = "%02d:%02d   %s" % [int(h), int(game_min) % 60, place()]
+	hud.text = place()   # giờ đã hiện ở student_hud.gd

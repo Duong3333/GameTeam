@@ -29,6 +29,20 @@ func setup_collision() -> void:
 	solids.append(Rect2(0, GATE_Y, GATE_X, 14))
 	solids.append(Rect2(GATE_X + GATE_W, GATE_Y, WORLD.x - GATE_X - GATE_W, 14))
 	solids.append(Rect2(800, 920, 28, 34)) # chòi bảo vệ
+	add_lake_collision()
+
+# Mặt hồ hình elip: chặn người đi xuống nước bằng các lát ngang cao 8 px
+func add_lake_collision() -> void:
+	var c := LAKE.get_center()
+	var rx := LAKE.size.x * 0.5 + 4.0
+	var ry := LAKE.size.y * 0.5 + 4.0
+	var y := c.y - ry
+	while y < c.y + ry:
+		var k := 1.0 - pow((y + 4.0 - c.y) / ry, 2.0)
+		if k > 0.0:
+			var hw := rx * sqrt(k)
+			solids.append(Rect2(c.x - hw, y, hw * 2.0, 8.0))
+		y += 8.0
 
 func setup_trees() -> void:
 	for x in range(120, 1500, 80):
@@ -89,7 +103,9 @@ func setup_decor() -> void:
 		lamps.append(Vector2(x, 480))
 	for q in [Vector2(838, 322), Vector2(1018, 322), Vector2(838, 524), Vector2(1018, 524)]:
 		lamps.append(q)
-	benches = [Vector2(868, 534), Vector2(960, 534), Vector2(300, 470), Vector2(620, 470), Vector2(1200, 570), Vector2(400, 570)]
+	benches = [Vector2(868, 534), Vector2(960, 534), Vector2(300, 470), Vector2(620, 470), Vector2(1200, 570), Vector2(400, 570), Vector2(1300, 708), Vector2(1400, 900)]
+	lamps.append(Vector2(1204, 770)) # đèn quanh hồ
+	lamps.append(Vector2(1496, 830))
 	for l in lamps:
 		solids.append(Rect2(l.x - 2, l.y - 3, 4, 3))
 	for b in benches:
@@ -138,21 +154,12 @@ func setup_hud() -> void:
 	var hl := CanvasLayer.new()
 	hl.layer = 6
 	add_child(hl)
-	var panel := ColorRect.new()
-	panel.color = Color(0.05, 0.1, 0.2, 0.62)
-	panel.size = Vector2(480, 32)
-	hl.add_child(panel)
-	var line := ColorRect.new()
-	line.color = Color("ffd23f")
-	line.position = Vector2(0, 32)
-	line.size = Vector2(480, 1)
-	hl.add_child(line)
-	hud = make_label(hl, Vector2(6, 3), 10)
+	# Thanh vàng cũ ở đỉnh màn hình đã bỏ (nó che 2 thanh GPA/rèn luyện). Chỉ còn dòng tên khu vực.
+	hud = make_label(hl, Vector2(6, 60), 9)
 	hud.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	hud.custom_minimum_size = Vector2(468, 0)
-	hud.size = Vector2(468, 20)
+	hud.custom_minimum_size = Vector2(300, 0)
 	var hint := make_label(hl, Vector2(6, 254), 9)
-	hint.text = "W A S D: di chuyển"
+	hint.text = "W A S D: di chuyển   Tab: sổ tay   E: câu cá (gần hồ)   B: sổ cá"
 
 func make_label(parent: Node, pos: Vector2, sz: int) -> Label:
 	var l := Label.new()

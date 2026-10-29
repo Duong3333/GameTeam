@@ -53,6 +53,9 @@ func draw_minimap() -> void:
 		rc(o.x + b[1] * sc, o.y + b[2] * sc, b[3] * sc, b[4] * sc, Color("e0b84a"))
 	rc(o.x + DIEUHANH.position.x * sc, o.y + DIEUHANH.position.y * sc, DIEUHANH.size.x * sc, DIEUHANH.size.y * sc, Color("e8e2d0"))
 	draw_circle(o + FOUNT * sc, 2.5, Color("6fb7e0"))
+	draw_set_transform(o + LAKE.get_center() * sc, 0.0, Vector2(LAKE.size.x / LAKE.size.y, 1.0))
+	draw_circle(Vector2.ZERO, LAKE.size.y * 0.5 * sc, Color("4f9bd0"))
+	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 	if int(clock * 3.0) % 2 == 0:
 		rc(o.x + player.x * sc - 1.5, o.y + player.y * sc - 1.5, 3, 3, Color.WHITE)
 	rc(o.x + player.x * sc - 0.5, o.y + player.y * sc - 0.5, 1, 1, Color("e5322d"))
