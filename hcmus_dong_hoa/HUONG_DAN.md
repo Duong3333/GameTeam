@@ -93,5 +93,13 @@ Chức năng là một Node nên tự có `_process(delta)` và `_unhandled_inpu
 ## Thay logo bằng ảnh thật
 Chép ảnh logo trường (vuông, 32x32 hoặc 64x64) vào thư mục `assets`, đặt tên `hcmus_logo.png`.
 
+## Quy ước để dễ nâng cấp map / NPC / âm thanh / skin sau này
+1. **Không gắn cứng tọa độ trong feature.** Vị trí, khu vực nào cũng khai báo trong `data/game_data.gd` (như `LAKE` cho câu cá) rồi feature đọc lại. Đổi map thì feature tự đi theo.
+2. **Dữ liệu riêng của feature để trong file feature** (bảng cá, danh sách nhiệm vụ...), không đưa vào file lõi.
+3. **Âm thanh gọi theo tên ngay từ bây giờ** (`game.audio.play_sfx("tên")`). Chưa có file thì game vẫn chạy; sau này chỉ cần thả file vào `assets/audio/`.
+4. **Tên cố định thì giữ nguyên**: tên âm thanh, tên khu vực. Đừng đổi giữa chừng.
+5. **Đồ họa (`scripts/draw/`) giao cho 1 người phụ trách.** Chỉ sửa bên trong hàm, không đổi tên hàm hay tham số vì các file kế thừa nhau theo chuỗi và feature có gọi `rc(...)`, `ctext(...)`.
+6. **Giai đoạn cải tiến lớn (map, NPC, skin)** làm sau khi các feature đã gộp vào `main`, giao cho 1-2 người; các bạn khác tạm không sửa file lõi trong thời gian đó.
+
 ## Làm việc nhóm bằng Git
 Xem `HUONG_DAN_GIT.md`.

@@ -6,7 +6,7 @@ extends RefCounted
 # Thứ tự = thứ tự khởi tạo. Nếu feature B dùng dữ liệu của feature A thì đặt A đứng trước B.
 
 const LIST := [
-	"res://scripts/features/fishing.gd",         # câu cá ở Hồ sinh viên
+	#"res://scripts/features/fishing.gd",         # câu cá ở Hồ sinh viên
 	"res://scripts/features/student_hud.gd",     # 2 thanh GPA/rèn luyện, đồng hồ
 	"res://scripts/features/student_panel.gd",   # sổ tay (Tab)
 	# <<< thêm dòng mới ngay phía trên dòng này

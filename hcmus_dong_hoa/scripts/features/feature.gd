@@ -11,8 +11,8 @@ extends Node
 #            super()
 #      Chức năng là một Node nên tự có _process(delta) và _unhandled_input(event);
 #      nhớ kiểm tra "if not active: return" ở đầu các hàm đó.
-#   2. Đăng ký trong main.gd, hàm setup_features():
-#        add_feature(preload("res://scripts/features/fishing.gd").new())
+#   2. Đăng ký bằng 1 dòng trong scripts/features/registry.gd (KHÔNG sửa main.gd):
+#        "res://scripts/features/fishing.gd",
 #   3. Gọi begin() khi người chơi bấm phím / đứng đúng chỗ, gọi finish() khi xong.
 #   4. (Tùy chọn) Muốn vẽ thêm thứ gì lên thế giới (cần câu, hiệu ứng...) thì ghi đè draw_front_layer().
 #      Hàm này được main.gd gọi trong _draw(), sau khi vẽ người và cây; dùng game.draw_line(...), game.rc(...), game.ctext(...).
