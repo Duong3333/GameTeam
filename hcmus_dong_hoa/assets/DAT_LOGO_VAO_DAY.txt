@@ -1,0 +1,1 @@
+Tùy chọn: chép logo trường vào đây với tên hcmus_logo.png (vuông, 32x32 hoặc 64x64) để thay logo vẽ tay trên áo.
