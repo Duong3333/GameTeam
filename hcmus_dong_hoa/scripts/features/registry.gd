@@ -9,5 +9,6 @@ const LIST := [
 	"res://scripts/features/fishing.gd",         # câu cá ở Hồ sinh viên
 	"res://scripts/features/student_hud.gd",     # 2 thanh GPA/rèn luyện, đồng hồ
 	"res://scripts/features/student_panel.gd",   # sổ tay (Tab)
+	"res://scripts/features/building_doors.gd",  # vào / ra các tòa nhà và căn tin
 	# <<< thêm dòng mới ngay phía trên dòng này
 ]

@@ -2,7 +2,7 @@
 
 ## Chạy game
 1. Mở Godot 4.7, bấm Import, chọn file `project.godot` trong thư mục này.
-2. Bấm nút Play (hoặc F5). Dùng **W A S D** để đi, **E** để câu cá (đứng gần hồ), **B** để mở sổ cá.
+2. Bấm nút Play (hoặc F5). Dùng **W A S D** để đi, **E** để vào/ra cửa khi đứng gần công trình hoặc câu cá khi đứng gần hồ, **B** để mở sổ cá.
 3. Khi Godot lần đầu mở có thể mất vài giây để nhập (import) file font.
 4. Nếu có lỗi đỏ ở ô Output, chép nguyên dòng lỗi gửi lại để sửa.
 
@@ -12,6 +12,7 @@
 - Nhân vật mặc áo polo trường: cổ xanh sọc trắng, vai trắng, thân và tay xanh navy, có logo ở ngực.
 - Sinh viên đi lại và nói chuyện, xe máy chạy trên đường nội bộ, đồng hồ 7:00 - 17:00.
 - **Hồ sinh viên** (góc đông nam, bên phải Nhà Điều hành) có súng, lau sậy, cá bơi, ghế và đèn. Đứng sát bờ rồi bấm **E** để câu cá (xem mục "Câu cá").
+- Có thể đi vào **Tòa A-F, Nhà Thể Dục, Nhà Điều hành và Căn tin** bằng cách đến gần cửa rồi bấm **E**. Đi đến cửa phía dưới bên trong và bấm **E** để quay ra.
 - Đi gần tòa nhà hoặc quầy nào thì góc trên bên trái hiện tên và mô tả.
 
 ## Cấu trúc thư mục
@@ -34,6 +35,7 @@ scripts/
   features/_mau_feature.gd file mẫu để copy khi làm feature mới (không chạy trong game)
   features/feature.gd      lớp nền cho chức năng mới (câu cá, đánh nhau, ...)
   features/fishing.gd      CHỨC NĂNG CÂU CÁ (quăng cần, chờ cá, kéo cá, sổ cá, điểm)
+  features/building_doors.gd đi vào / ra tòa nhà, nhà thể dục, nhà điều hành, căn tin
 assets/
   audio/                   bỏ file âm thanh vào đây
   hcmus_logo.png           (tùy chọn) logo thật, xem mục bên dưới
@@ -48,6 +50,9 @@ Các file trong `scripts/data`, `core`, `draw` nối với nhau theo thứ tự 
 4. **Q** hoặc **Esc** để thu cần giữa chừng. **B** mở Sổ cá: số lượng từng loại, cỡ lớn nhất, tổng điểm.
 
 Vớt được cá thì có điểm (cá to hơn điểm cao hơn); đôi khi vớt trúng đồ linh tinh như dép tổ ong, lon nước, thẻ sinh viên cũ.
+
+## Đi vào / ra công trình
+Đến gần cửa phía trước của Tòa A-F, Nhà Thể Dục, Nhà Điều hành hoặc một trong các quầy Nhà ăn rồi bấm **E**. Bên trong dùng **W A S D** để đi; đến gần cửa ở cạnh dưới phòng và bấm **E** để trở lại đúng vị trí bên ngoài. Tọa độ cửa được tạo từ kích thước trong `BUILDINGS`, `DIEUHANH` và các quầy Nhà ăn ở `scripts/data/game_data.gd`, nên cửa đi theo khi công trình được dời.
 
 Muốn chỉnh:
 - Thêm/sửa loại cá: bảng `ITEMS` ở đầu `scripts/features/fishing.gd` (tên, độ hiếm, cỡ, độ khó, điểm, màu).

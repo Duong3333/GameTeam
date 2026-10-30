@@ -47,3 +47,31 @@ var ZONES := [
 	["Đường nội bộ", Rect2(0, 585, 1600, 50)],
 ]
 const PALMS := [[850, 332], [900, 332], [956, 332], [1006, 332], [850, 380], [1006, 380], [850, 462], [1006, 462], [850, 508], [900, 508], [956, 508], [1006, 508]]
+
+# Cửa được tính từ kích thước công trình để tự đi theo khi bản đồ thay đổi.
+func get_doorways() -> Array:
+	var doors: Array = []
+	for b in BUILDINGS:
+		var building_name := str(b[0])
+		if building_name in ["A", "B", "C", "D", "E", "F", "NHÀ THỂ DỤC"]:
+			var kind := "gym" if building_name == "NHÀ THỂ DỤC" else "classroom"
+			var title := "Nhà Thể Dục" if kind == "gym" else "Tòa " + building_name
+			doors.append({
+				"title": title,
+				"kind": kind,
+				"position": Vector2(b[1] + b[3] * 0.5, b[2] + b[4] + 7.0),
+			})
+
+	doors.append({
+		"title": "Nhà Điều hành",
+		"kind": "office",
+		"position": Vector2(DIEUHANH.position.x + DIEUHANH.size.x * 0.5, DIEUHANH.end.y + 7.0),
+	})
+	for kiosk in KIOSKS:
+		if kiosk[0] == "Nhà ăn":
+			doors.append({
+				"title": "Căn tin",
+				"kind": "canteen",
+				"position": Vector2(kiosk[1] + 13.0, kiosk[2] + 27.0),
+			})
+	return doors
