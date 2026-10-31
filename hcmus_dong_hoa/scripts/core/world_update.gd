@@ -22,6 +22,8 @@ func update_player(delta: float) -> void:
 
 func update_npcs(delta: float) -> void:
 	for n in npcs:
+		if n.get("quiz", false):
+			continue
 		n.timer -= delta
 		if n.timer <= 0.0:
 			n.timer = randf_range(1.0, 3.0)

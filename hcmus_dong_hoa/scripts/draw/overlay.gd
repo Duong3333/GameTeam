@@ -1,4 +1,4 @@
-extends "res://scripts/draw/characters.gd"
+extends "res://scripts/draw/newcharacters.gd"
 # GHÉP LỚP VẼ: sắp xếp cây/người/đèn/ghế theo chiều sâu, bóng mây, cánh phượng, bản đồ nhỏ.
 
 func draw_sorted_items() -> void:
@@ -26,9 +26,16 @@ func draw_sorted_items() -> void:
 			var n: Dictionary = it[2]
 			if not view.has_point(n.pos):
 				continue
-			draw_person(n.pos, n.shirt, n.hair, n.face, n.anim, n.uni, n.long, n.pack)
-			if n.say_t > 0.0:
-				draw_speech(n)
+			if n.has("role"):
+				draw_role_npc(n)
+				if n.say_t > 0.0:
+					draw_role_speech(n)
+			else:
+				draw_person(n.pos, n.shirt, n.hair, n.face, n.anim, n.uni, n.long, n.pack)
+				if n.get("quiz", false):
+					draw_quiz_marker(n)
+				if n.say_t > 0.0:
+					draw_speech(n)
 		else:
 			draw_person(player, Color.WHITE, Color("1b1b1b"), facing, anim, true, false, true)
 			ctext("Bạn", player.x - 15, player.y - 28, 30, 8, Color("ffd23f"))
@@ -53,9 +60,6 @@ func draw_minimap() -> void:
 		rc(o.x + b[1] * sc, o.y + b[2] * sc, b[3] * sc, b[4] * sc, Color("e0b84a"))
 	rc(o.x + DIEUHANH.position.x * sc, o.y + DIEUHANH.position.y * sc, DIEUHANH.size.x * sc, DIEUHANH.size.y * sc, Color("e8e2d0"))
 	draw_circle(o + FOUNT * sc, 2.5, Color("6fb7e0"))
-	draw_set_transform(o + LAKE.get_center() * sc, 0.0, Vector2(LAKE.size.x / LAKE.size.y, 1.0))
-	draw_circle(Vector2.ZERO, LAKE.size.y * 0.5 * sc, Color("4f9bd0"))
-	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 	if int(clock * 3.0) % 2 == 0:
 		rc(o.x + player.x * sc - 1.5, o.y + player.y * sc - 1.5, 3, 3, Color.WHITE)
 	rc(o.x + player.x * sc - 0.5, o.y + player.y * sc - 0.5, 1, 1, Color("e5322d"))

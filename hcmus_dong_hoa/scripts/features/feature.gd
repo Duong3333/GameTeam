@@ -1,5 +1,5 @@
 extends Node
-# LỚP NỀN CHO MỌI CHỨC NĂNG (câu cá, đánh nhau, điểm danh, học thư viện, tập thể dục, nói chuyện với NPC...).
+# LỚP NỀN CHO MỌI CHỨC NĂNG (câu cá, điểm danh, học thư viện, tập thể dục, nói chuyện với NPC...).
 #
 # Cách thêm 1 chức năng mới, ví dụ câu cá:
 #   1. Tạo scripts/features/fishing.gd:

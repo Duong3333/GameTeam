@@ -1,8 +1,8 @@
 extends "res://scripts/features/feature.gd"
-# CHỨC NĂNG CÂU CÁ Ở HỒ SINH VIÊN
+# CHỨC NĂNG CÂU CÁ Ở HỒ ĐÀI PHUN NƯỚC (giữa các tòa nhà)
 #
 # Cách chơi:
-#   1. Đi tới sát bờ hồ (góc đông nam bản đồ, dưới Nhà Điều hành bên phải), bấm E hoặc Space.
+#   1. Đi tới sát bờ hồ đài phun nước (giữa dãy tòa A-E và tòa F-G), bấm E hoặc Space.
 #   2. Thanh "Sức quăng" chạy qua lại: bấm E để quăng cần. Quăng càng xa càng dễ ra cá to, cá hiếm.
 #   3. Chờ phao. Khi phao chìm và có dấu "!" thì bấm E ngay để móc cá (sớm hoặc trễ quá cá sẽ chạy mất).
 #   4. Giữ E / Space để nâng vùng xanh lên, thả ra thì vùng xanh rơi xuống. Giữ con cá trong vùng xanh
@@ -11,12 +11,12 @@ extends "res://scripts/features/feature.gd"
 #
 # Chỗ cần sửa:
 #   - ITEMS (bên dưới): danh sách cá và đồ vớt được (tên, độ hiếm, kích cỡ, độ khó, điểm).
-#   - Hồ (vị trí, hình dạng) là LAKE trong scripts/data/game_data.gd; phần vẽ hồ là draw_lake() trong draw/scenery.gd.
+#   - Hồ câu (vị trí, hình dạng) là FISH_POND trong scripts/data/game_data.gd; phần vẽ đài phun nước nằm trong draw_ground() của draw/scenery.gd.
 #   - Âm thanh (tùy chọn, bỏ file vào assets/audio/): rod, cast, splash, bite, reel, catch, fail.
 
 enum Phase { IDLE, AIM, FLY, WAIT, BITE, REEL, RESULT }
 
-const NEAR_MARGIN := 28.0   # cách bờ hồ tối đa bao nhiêu px thì được bấm E
+const NEAR_MARGIN := 36.0   # cách bờ hồ tối đa bao nhiêu px thì được bấm E
 const BAR_LEN := 130.0      # chiều dài thanh trong trò kéo cá
 const BITE_WINDOW := 1.15   # số giây để bấm E khi cá cắn câu
 const RESULT_TIME := 3.2    # bảng kết quả tự đóng sau bấy nhiêu giây
@@ -33,7 +33,7 @@ var ITEMS: Array = [
 	{"name": "Cá diêu hồng", "kind": 0, "icon": "fish", "w": 10.0, "far": 1.5, "min": 25.0, "max": 50.0, "spd": 1.0, "pts": 28, "col": Color("ee7f6a"), "note": ""},
 	{"name": "Cá lóc", "kind": 0, "icon": "fish", "w": 9.0, "far": 1.7, "min": 35.0, "max": 70.0, "spd": 1.2, "pts": 35, "col": Color("5d6b40"), "note": ""},
 	{"name": "Cá koi vàng", "kind": 0, "icon": "koi", "w": 2.5, "far": 5.0, "min": 40.0, "max": 80.0, "spd": 1.6, "pts": 100, "col": Color("ffb347"), "note": ""},
-	{"name": "Đôi dép tổ ong", "kind": 1, "icon": "sandal", "w": 7.0, "far": 0.3, "min": 0.0, "max": 0.0, "spd": 0.3, "pts": 1, "col": Color("6bbf59"), "note": "Ai bỏ quên đôi dép ở hồ vậy?"},
+	{"name": "Đôi dép tổ ong", "kind": 1, "icon": "sandal", "w": 7.0, "far": 0.3, "min": 0.0, "max": 0.0, "spd": 0.3, "pts": 1, "col": Color("6bbf59"), "note": "Ai bỏ quên đôi dép ở đài phun nước vậy?"},
 	{"name": "Lon nước ngọt", "kind": 1, "icon": "can", "w": 6.0, "far": 0.3, "min": 0.0, "max": 0.0, "spd": 0.3, "pts": 1, "col": Color("9fb3c8"), "note": "Nhớ bỏ rác đúng thùng nhé!"},
 	{"name": "Bài kiểm tra 4 điểm", "kind": 1, "icon": "paper", "w": 3.0, "far": 0.5, "min": 0.0, "max": 0.0, "spd": 0.3, "pts": 0, "col": Color("f4f4f4"), "note": "Ai vứt bài kiểm tra này vậy?"},
 	{"name": "Thẻ sinh viên cũ", "kind": 1, "icon": "card", "w": 3.0, "far": 0.5, "min": 0.0, "max": 0.0, "spd": 0.3, "pts": 2, "col": Color("3f6fd0"), "note": "Nhớ trả lại Phòng Công tác Sinh viên."},
@@ -109,7 +109,7 @@ func begin() -> void:
 	power = 0.0
 	power_t = 0.0
 	show_bag = false
-	_face_lake()
+	_face_pond()
 	game.audio.play_sfx("rod")
 
 func finish() -> void:
@@ -330,23 +330,23 @@ func _roll_item() -> void:
 
 # ======================= HÌNH HỌC CỦA HỒ =======================
 
-func _lake() -> Rect2:
-	return game.LAKE
+func _pond() -> Rect2:
+	return game.FISH_POND
 
 func _near_shore() -> bool:
-	var lake := _lake()
+	var pond := _pond()
 	var p: Vector2 = game.player
-	var o := p - lake.get_center()
-	var rx := lake.size.x * 0.5 + NEAR_MARGIN
-	var ry := lake.size.y * 0.5 + NEAR_MARGIN
+	var o := p - pond.get_center()
+	var rx := pond.size.x * 0.5 + NEAR_MARGIN
+	var ry := pond.size.y * 0.5 + NEAR_MARGIN
 	return (o.x / rx) * (o.x / rx) + (o.y / ry) * (o.y / ry) <= 1.0
 
 # giao của tia (xuất phát từ p, hướng u) với mặt hồ: trả về Vector2(t vào nước, t ra khỏi nước)
 func _chord(p: Vector2, u: Vector2) -> Vector2:
-	var lake := _lake()
-	var o := p - lake.get_center()
-	var rx := lake.size.x * 0.5
-	var ry := lake.size.y * 0.5
+	var pond := _pond()
+	var o := p - pond.get_center()
+	var rx := pond.size.x * 0.5
+	var ry := pond.size.y * 0.5
 	var a := (u.x / rx) * (u.x / rx) + (u.y / ry) * (u.y / ry)
 	var b := 2.0 * ((o.x * u.x) / (rx * rx) + (o.y * u.y) / (ry * ry))
 	var k := (o.x / rx) * (o.x / rx) + (o.y / ry) * (o.y / ry) - 1.0
@@ -358,7 +358,7 @@ func _chord(p: Vector2, u: Vector2) -> Vector2:
 
 func _to_center() -> Vector2:
 	var p: Vector2 = game.player
-	return (_lake().get_center() - p).normalized()
+	return (_pond().get_center() - p).normalized()
 
 # điểm phao rơi xuống nước theo sức quăng pw (0..1), luôn nằm trong hồ
 func _cast_point(pw: float) -> Vector2:
@@ -376,9 +376,9 @@ func _shore_point() -> Vector2:
 	var ch := _chord(p, u)
 	return p + u * maxf(ch.x, 6.0)
 
-func _face_lake() -> void:
+func _face_pond() -> void:
 	var p: Vector2 = game.player
-	var u := _lake().get_center() - p
+	var u := _pond().get_center() - p
 	if absf(u.x) > absf(u.y):
 		game.facing = 2 if u.x < 0.0 else 3
 	else:
@@ -525,7 +525,7 @@ func _draw_ui() -> void:
 	match state:
 		Phase.IDLE:
 			if near:
-				_prompt("[E] Câu cá ở hồ        [B] Sổ cá")
+				_prompt("[E] Câu cá ở đài phun nước        [B] Sổ cá")
 		Phase.AIM:
 			_prompt("Bấm [E] để quăng cần         [Q] hủy")
 			_power_meter()

@@ -9,10 +9,11 @@ const GATE_X := 690.0
 const GATE_W := 100.0
 const GATE_Y := 960.0
 const FOUNT := Vector2(928, 421)
+const QUIZ_NPC_POS := Vector2(1180, 580) # Vị trí NPC Cô Toán cạnh Tòa F
 const DIEUHANH := Rect2(860, 680, 260, 170)
 # Tốc độ thời gian: 1 giây thật = TIME_SCALE phút trong game (3.0 -> 1 ngày game dài khoảng 3 phút 20 giây)
 const TIME_SCALE := 3.0
-const LAKE := Rect2(1220, 720, 260, 160)   # Hồ sinh viên (hình elip nội tiếp trong khung này) - nơi câu cá
+const FISH_POND := Rect2(886, 379, 84, 84)   # Hồ nước của đài phun nước (tâm = FOUNT, hình elip nội tiếp khung này) - nơi câu cá
 const LINES := ["Thi chưa?", "Deadline!", "Đi ăn không?", "Đến giờ học rồi!", "Mượn tui cây bút", "Nhà ăn đông quá", "Sáng nay có kiểm tra!", "Ngủ quên mất...", "Lên thư viện không?"]
 
 var WALL := Color("f2d98c")
@@ -39,11 +40,10 @@ var KIOSKS := [
 	["ATM", 466, 462, Color("8e1f2c"), "Cây ATM."],
 ]
 var ZONES := [
-	["Đài phun nước và vườn điều", Rect2(832, 315, 192, 213)],
+	["Đài phun nước và vườn điều - đứng sát bờ hồ rồi bấm E để câu cá", Rect2(832, 315, 192, 213)],
 	["Sân trước Nhà Điều hành (bậc thềm có hoa cảnh)", Rect2(840, 850, 320, 110)],
 	["Bãi giữ xe", Rect2(150, 690, 520, 200)],
 	["Cổng trường - Đường T1", Rect2(640, 900, 200, 100)],
-	["Hồ sinh viên - đứng gần bờ rồi bấm E để câu cá", LAKE.grow(30.0)],
 	["Đường nội bộ", Rect2(0, 585, 1600, 50)],
 ]
 const PALMS := [[850, 332], [900, 332], [956, 332], [1006, 332], [850, 380], [1006, 380], [850, 462], [1006, 462], [850, 508], [900, 508], [956, 508], [1006, 508]]

@@ -81,7 +81,6 @@ func draw_tree(t: Array) -> void:
 
 func draw_ground() -> void:
 	draw_grass()
-	draw_lake()
 	var beige := Color("dccaa0")
 	paved(Rect2(150, 462, 680, 16), beige)
 	paved(Rect2(120, 562, 1380, 16), beige)
@@ -166,84 +165,3 @@ func draw_ground() -> void:
 	asphalt(Rect2(0, GATE_Y + 14, WORLD.x, 26))
 	for x in range(0, 1600, 40):
 		rc(x, GATE_Y + 26, 22, 2, Color("e8e8e8"))
-
-# ---------- HỒ SINH VIÊN (nơi câu cá, xem scripts/features/fishing.gd) ----------
-func lake_poly(c: Vector2, rx: float, ry: float, n: int = 40) -> PackedVector2Array:
-	var pts := PackedVector2Array()
-	for i in n:
-		var a := TAU * i / n
-		pts.append(c + Vector2(cos(a) * rx, sin(a) * ry))
-	return pts
-
-func draw_lake() -> void:
-	if not view.grow(30.0).intersects(LAKE.grow(12.0)):
-		return
-	var c := LAKE.get_center()
-	var rx := LAKE.size.x * 0.5
-	var ry := LAKE.size.y * 0.5
-	# bờ đá + mặt nước
-	draw_colored_polygon(lake_poly(c + Vector2(0, 3), rx + 7.0, ry + 7.0), Color(0, 0, 0, 0.22))
-	draw_colored_polygon(lake_poly(c, rx + 6.0, ry + 6.0), Color("8f8566"))
-	draw_colored_polygon(lake_poly(c, rx + 4.0, ry + 4.0), Color("d9c9a3"))
-	draw_colored_polygon(lake_poly(c, rx + 1.0, ry + 1.0), Color("b9a77c"))
-	draw_colored_polygon(lake_poly(c, rx, ry), Color("3d86bd"))
-	draw_colored_polygon(lake_poly(c + Vector2(-3, -2), rx * 0.88, ry * 0.86), Color("4f9bd0"))
-	draw_colored_polygon(lake_poly(c + Vector2(-8, -5), rx * 0.58, ry * 0.52), Color("5aa5d6"))
-	for i in 36:
-		var a := TAU * i / 36.0
-		var sp := c + Vector2(cos(a) * (rx + 4.5), sin(a) * (ry + 4.5))
-		var g := 0.55 + hs(i, 5) * 0.004
-		rc(sp.x - 2.0, sp.y - 1.5, 4.0, 3.0, Color(g, g * 0.95, g * 0.8))
-	# ánh nước lấp lánh
-	for i in 22:
-		var a := hs(i, 7) / 100.0 * TAU
-		var r := sqrt(hs(i, 13) / 100.0) * 0.88
-		var sp := c + Vector2(cos(a) * rx * r, sin(a) * ry * r)
-		if sin(clock * 2.0 + i * 1.7) > 0.55:
-			rc(sp.x, sp.y, 3, 1, Color(1, 1, 1, 0.7))
-	# cá bơi dưới nước (chỉ thấy bóng)
-	for i in 4:
-		var dir := 1.0 if i % 2 == 0 else -1.0
-		var ang := clock * (0.25 + 0.07 * i) * dir + i * 1.7
-		var rr := 0.35 + 0.12 * i
-		var fp := c + Vector2(cos(ang) * rx * rr, sin(ang) * ry * rr)
-		var tv := Vector2(-sin(ang) * rx, cos(ang) * ry) * dir
-		var xf := Transform2D(tv.angle(), fp)
-		var wag := sin(clock * 6.0 + i) * 1.5
-		var col := Color(0.05, 0.2, 0.4, 0.3)
-		if i == 3:
-			col = Color(0.95, 0.55, 0.2, 0.3)
-		var body := PackedVector2Array()
-		for k in 10:
-			var b := TAU * k / 10.0
-			body.append(Vector2(cos(b) * 6.0, sin(b) * 2.6))
-		var tail := PackedVector2Array([Vector2(-5, 0), Vector2(-10, -3.0 + wag), Vector2(-10, 3.0 + wag)])
-		draw_colored_polygon(xf * body, col)
-		draw_colored_polygon(xf * tail, col)
-	# lá súng và hoa súng
-	var pads := [Vector2(-0.55, -0.25), Vector2(0.5, 0.35), Vector2(-0.2, 0.55), Vector2(0.62, -0.38), Vector2(0.05, -0.6), Vector2(-0.72, 0.3)]
-	for i in pads.size():
-		var q: Vector2 = pads[i]
-		var pp := c + Vector2(q.x * rx, q.y * ry) + Vector2(0, sin(clock * 1.2 + i) * 0.8)
-		draw_circle(pp, 4.5, Color("2c7d33"))
-		draw_circle(pp + Vector2(-1, -1), 3.2, Color("3f9c45"))
-		draw_colored_polygon(PackedVector2Array([pp, pp + Vector2(5, -1), pp + Vector2(5, 1.5)]), Color("4f9bd0"))
-		if i % 2 == 0:
-			draw_circle(pp + Vector2(-1.5, -1.5), 1.7, Color("ff9ecb"))
-			draw_circle(pp + Vector2(-1.5, -1.5), 0.7, Color("ffe066"))
-	# lau sậy ven bờ
-	for a in [2.5, 2.8, 3.2, 3.7, 5.5, 5.9, 0.15]:
-		var base := c + Vector2(cos(a) * (rx + 4.0), sin(a) * (ry + 4.0))
-		for k in 3:
-			var sway := sin(clock * 1.5 + base.x * 0.1 + k) * 1.5
-			var top := base + Vector2(k * 2.0 - 2.0 + sway, -9.0 - k * 2.0)
-			draw_line(base + Vector2(k * 2.0 - 2.0, 0), top, Color("3f7a35"), 1.0)
-			rc(top.x - 1.0, top.y - 3.0, 2, 4, Color("6b4423"))
-	# biển báo
-	var sx := LAKE.position.x - 40.0
-	var sy := LAKE.position.y + 108.0
-	shadow(Vector2(sx, sy), 14.0)
-	rc(sx - 1, sy - 14, 2, 14, Color("5a3a1c"))
-	rc(sx - 29, sy - 25, 58, 12, Color("5a3a1c"))
-	rc(sx - 28, sy - 24, 56, 10, Color("a8733f"))
-	ctext("HỒ SINH VIÊN", sx - 28, sy - 16, 56, 7, Color.WHITE)
