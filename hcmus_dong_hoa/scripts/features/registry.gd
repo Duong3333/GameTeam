@@ -11,4 +11,5 @@ const LIST := [
 	"res://scripts/features/student_panel.gd",   # sổ tay sinh viên
 	"res://scripts/features/building_doors.gd",  # vào / ra công trình và căn tin
 	"res://scripts/features/math_quiz.gd",       # NPC Cô Toán: nhấn E để làm quiz
+	"res://scripts/features/toa B4.2.gd",        # tòa B4.2 và phòng lab máy tính
 ]
