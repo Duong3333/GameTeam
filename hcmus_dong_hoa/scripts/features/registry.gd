@@ -10,5 +10,6 @@ const LIST := [
 	"res://scripts/features/student_hud.gd",     # 2 thanh GPA/rèn luyện, đồng hồ
 	"res://scripts/features/student_panel.gd",   # sổ tay (Tab)
 	"res://scripts/features/building_doors.gd",  # vào / ra các tòa nhà và căn tin
+	"res://scripts/features/day_night.gd",       # chu kỳ ngày đêm, đèn đường và NPC
 	# <<< thêm dòng mới ngay phía trên dòng này
 ]
