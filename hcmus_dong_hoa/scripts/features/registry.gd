@@ -13,4 +13,5 @@ const LIST := [
 	"res://scripts/features/building_doors.gd",  # vào / ra công trình và căn tin
 	"res://scripts/features/math_quiz.gd",       # NPC Cô Toán: nhấn E để làm quiz
 	"res://scripts/features/newcharacters.gd",   # NPC mới
+	"res://scripts/features/student_life.gd",    # Nhiem vu, CLB, the thao va tien/nang luong
 ]
