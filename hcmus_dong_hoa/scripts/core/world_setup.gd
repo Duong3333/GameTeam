@@ -89,6 +89,10 @@ func spawn_npcs() -> void:
 				break
 		npcs.append({"pos": p, "dir": Vector2.ZERO, "timer": randf_range(0.2, 2.0), "face": 0, "anim": 0.0, "shirt": shirts[randi() % shirts.size()], "hair": hairs[randi() % hairs.size()], "uni": randf() < 0.55, "long": randf() < 0.4, "pack": randf() < 0.6, "say": "", "say_t": 0.0})
 
+	# NPC quiz toán: nhấn E khi đứng gần để mở bài tập.
+	npcs.append({"pos": QUIZ_NPC_POS, "dir": Vector2.ZERO, "timer": 0.0, "face": 0, "anim": 0.0, "shirt": Color("8e5bd0"), "hair": Color("3b2a1a"), "uni": false, "long": true, "pack": false, "say": "", "say_t": 0.0, "quiz": true})
+	solids.append(Rect2(QUIZ_NPC_POS.x - 5, QUIZ_NPC_POS.y - 4, 10, 4))
+
 func spawn_bikes() -> void:
 	bikes.append({"x": 100.0, "y": 596.0, "dir": 1.0, "sp": 70.0, "col": Color("c0392b")})
 	bikes.append({"x": 700.0, "y": 596.0, "dir": 1.0, "sp": 55.0, "col": Color("2980b9")})

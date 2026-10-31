@@ -1,4 +1,4 @@
-extends "res://scripts/draw/characters.gd"
+extends "res://scripts/draw/newcharacters.gd"
 # GHÉP LỚP VẼ: sắp xếp cây/người/đèn/ghế theo chiều sâu, bóng mây, cánh phượng, bản đồ nhỏ.
 
 func draw_sorted_items() -> void:
@@ -26,9 +26,16 @@ func draw_sorted_items() -> void:
 			var n: Dictionary = it[2]
 			if not view.has_point(n.pos):
 				continue
-			draw_person(n.pos, n.shirt, n.hair, n.face, n.anim, n.uni, n.long, n.pack)
-			if n.say_t > 0.0:
-				draw_speech(n)
+			if n.has("role"):
+				draw_role_npc(n)
+				if n.say_t > 0.0:
+					draw_role_speech(n)
+			else:
+				draw_person(n.pos, n.shirt, n.hair, n.face, n.anim, n.uni, n.long, n.pack)
+				if n.get("quiz", false):
+					draw_quiz_marker(n)
+				if n.say_t > 0.0:
+					draw_speech(n)
 		else:
 			draw_person(player, Color.WHITE, Color("1b1b1b"), facing, anim, true, false, true)
 			ctext("Bạn", player.x - 15, player.y - 28, 30, 8, Color("ffd23f"))

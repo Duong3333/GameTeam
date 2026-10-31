@@ -28,7 +28,8 @@ scripts/
   draw/pen.gd              bút vẽ cơ bản (hình chữ nhật pixel, bóng, chữ)
   draw/scenery.gd          cỏ, đường, bãi xe, đài phun nước, cổng, cây, đèn, ghế
   draw/structures.gd       tòa nhà, Nhà Điều hành, quầy nhỏ
-  draw/characters.gd       người, bóng thoại, xe máy
+  draw/characters.gd       người, NPC thường, bóng thoại, xe máy
+  draw/newcharacters.gd    5 NPC có tên, hội thoại, chuyển động (lớp kế thừa)
   draw/overlay.gd          sắp xếp chiều sâu, mây, cánh phượng, bản đồ nhỏ
   systems/audio_manager.gd phát âm thanh (thiếu file thì im lặng, không lỗi)
   features/registry.gd     DANH SÁCH feature, thêm feature mới = thêm 1 dòng ở đây
@@ -36,6 +37,9 @@ scripts/
   features/feature.gd      lớp nền cho chức năng mới (câu cá, đánh nhau, ...)
   features/fishing.gd      CHỨC NĂNG CÂU CÁ (quăng cần, chờ cá, kéo cá, sổ cá, điểm)
   features/building_doors.gd đi vào / ra tòa nhà, nhà thể dục, nhà điều hành, căn tin
+  features/dance.gd         nhấn J để nhảy múa
+  features/math_quiz.gd    quiz toán với NPC Cô Toán
+  systems/math_questions.gd ngân hàng và bộ tạo câu hỏi quiz
 assets/
   audio/                   bỏ file âm thanh vào đây
   hcmus_logo.png           (tùy chọn) logo thật, xem mục bên dưới
@@ -108,3 +112,11 @@ Chép ảnh logo trường (vuông, 32x32 hoặc 64x64) vào thư mục `assets`
 
 ## Làm việc nhóm bằng Git
 Xem `HUONG_DAN_GIT.md`.
+
+
+## Quiz Toán và nhảy múa
+- Đến NPC **Cô Toán** có dấu `?` cạnh Tòa F, nhấn **E** để bắt đầu quiz. Không có màn hình chọn độ khó.
+- Mỗi lượt luôn có 5 câu: câu 1-2 là số học cơ bản; câu 3-5 lấy từ Vi tích phân và tăng dần độ khó.
+- Điểm quiz dưới 5/10 bị trừ 0,10 GPA.
+- Nhấn **J** để bật/tắt nhảy múa.
+- Xem `HUONG_DAN_QUIZ.md` và `HUONG_DAN_HOC_MATH_QUIZ.md` để biết cách chơi và cách đọc code.

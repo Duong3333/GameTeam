@@ -15,3 +15,12 @@ Game 2D góc nhìn từ trên xuống, vẽ bằng code, về một ngày của 
 1. Copy `scripts/features/_mau_feature.gd` thành file mới trong `scripts/features/`.
 2. Thêm 1 dòng vào `scripts/features/registry.gd`.
 3. Chạy thử, rồi tạo Pull Request.
+
+
+## Các chức năng đã tích hợp
+- Nhân vật có tên: Thầy LTC, Thầy LĐK, Bác bảo vệ, Bác giữ xe và Cô lao công. Đến gần, nhấn E để trò chuyện.
+- Đi vào / ra công trình: đến cửa và nhấn E.
+- Câu cá: đứng gần hồ và nhấn E; nhấn B để mở sổ cá.
+- Quiz Toán: đến NPC Cô Toán (có dấu ?) và nhấn E.
+- Nhảy múa: nhấn J.
+- Hướng dẫn chi tiết: `HUONG_DAN_QUIZ.md` và `HUONG_DAN_HOC_MATH_QUIZ.md`.

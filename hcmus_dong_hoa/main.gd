@@ -1,7 +1,7 @@
 extends "res://scripts/draw/overlay.gd"
 # MAIN - điều phối chính của game. Toàn bộ logic nằm ở các file phía trên (xem HUONG_DAN.md):
 #   data/game_data.gd -> core/game_state.gd -> core/world_update.gd -> core/world_setup.gd
-#   -> draw/pen.gd -> draw/scenery.gd -> draw/structures.gd -> draw/characters.gd -> draw/overlay.gd -> main.gd
+#   -> draw/pen.gd -> draw/scenery.gd -> draw/structures.gd -> draw/characters.gd -> draw/newcharacters.gd -> draw/overlay.gd -> main.gd
 # Mỗi file kế thừa file đứng trước nó, nên các hàm gọi nhau bình thường.
 
 const Feature := preload("res://scripts/features/feature.gd")

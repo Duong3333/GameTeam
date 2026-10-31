@@ -9,6 +9,7 @@ const GATE_X := 690.0
 const GATE_W := 100.0
 const GATE_Y := 960.0
 const FOUNT := Vector2(928, 421)
+const QUIZ_NPC_POS := Vector2(1180, 580) # Vị trí NPC Cô Toán cạnh Tòa F
 const DIEUHANH := Rect2(860, 680, 260, 170)
 # Tốc độ thời gian: 1 giây thật = TIME_SCALE phút trong game (3.0 -> 1 ngày game dài khoảng 3 phút 20 giây)
 const TIME_SCALE := 3.0
