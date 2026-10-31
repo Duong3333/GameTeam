@@ -7,8 +7,8 @@ const Schedule := preload("res://scripts/features/schedule_data.gd")
 
 const X := 4.0           # góc trái trên (khung 480x270)
 const Y := 4.0
-const LABEL_W := 40.0    # chỗ cho tên thanh
-const BAR_W := 60.0
+const LABEL_W := 62.0    # chỗ cho tên thanh
+const BAR_W := 48.0
 const BAR_H := 6.0
 const ROW_H := 11.0      # khoảng cách giữa 2 thanh
 const POPUP_TIME := 1.6  # số giây chữ +/- tồn tại
@@ -63,13 +63,16 @@ func _on_drl_changed(amount: int, reason: String) -> void:
 	popups.append({"text": text, "color": color, "t": POPUP_TIME})
 
 func _on_draw() -> void:
-	canvas.draw_rect(Rect2(2, 2, 176, 53), Color(0, 0, 0, 0.35))   # nền mờ cho dễ đọc
+	canvas.draw_rect(Rect2(2, 2, 190, 89), Color(0, 0, 0, 0.42))   # nền mờ cho dễ đọc
 	paint_row(0, "Rèn luyện", stats.drl_text(), stats.drl_ratio())
 	paint_row(1, "GPA", stats.gpa_text(), stats.gpa_ratio())
+	paint_row(2, "Tien", stats.money_text(), stats.money_ratio())
+	paint_row(3, "Nang luong", stats.energy_text(), stats.energy_ratio())
 	var minute := int(game.game_min)
 	var clock_line := "%s · %02d:%02d" % [Schedule.DAY_NAMES[Schedule.weekday(game.day)], int(minute / 60.0), minute % 60]
-	write(Vector2(X, Y + 2 * ROW_H + 9), clock_line, Color.WHITE)
-	write(Vector2(X, Y + 2 * ROW_H + 20), Schedule.next_class_text(game.day, game.game_min), Color(1.0, 0.85, 0.3))
+	write(Vector2(X, Y + 4 * ROW_H + 8), clock_line, Color.WHITE)
+	write(Vector2(X, Y + 4 * ROW_H + 19), Schedule.next_class_text(game.day, game.game_min), Color(1.0, 0.85, 0.3))
+	write(Vector2(X, Y + 4 * ROW_H + 30), "Lv.%d · XP %d/%d" % [stats.level, stats.xp, stats.XP_PER_LEVEL], Color(0.75, 0.85, 1.0))
 	for i in popups.size():
 		var p: Dictionary = popups[i]
 		var life := clampf(p.t / POPUP_TIME, 0.0, 1.0)   # 1 = vừa hiện, 0 = biến mất
