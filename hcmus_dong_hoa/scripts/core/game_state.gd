@@ -1,4 +1,4 @@
-extends "res://scripts/data/game_data.gd"
+extends "res://scripts/maps/campus_data.gd"
 # TRẠNG THÁI GAME - các biến dùng chung cho mọi file phía dưới (vị trí người chơi, NPC, giờ, camera...).
 
 var solids: Array = []
@@ -26,4 +26,4 @@ var benches: Array = []
 var clouds: Array = []
 var rng: RandomNumberGenerator
 var audio: Node          # AudioManager (scripts/systems/audio_manager.gd)
-var features: Array = [] # các chức năng đã đăng ký (scripts/features/)
+var features: Array = [] # gameplay dùng chung và module bản đồ đã đăng ký

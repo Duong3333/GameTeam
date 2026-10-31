@@ -6,13 +6,13 @@ Project này được ghép từ:
 - Các file rời đi kèm: dùng `main.gd`, `main.tscn`, `project.godot`, font và tài liệu nhóm làm file cấu hình/đầu vào của project.
 
 ## Các điểm tích hợp quan trọng
-1. `scripts/draw/newcharacters.gd` được đưa vào chuỗi kế thừa sau `characters.gd`, vì script này ghi đè `spawn_npcs()` và `update_npcs()` và gọi `super()`. Không đăng ký nó trong `registry.gd`.
-2. `overlay.gd` kế thừa `newcharacters.gd` và phân biệt NPC có `role`, NPC quiz và NPC thường khi vẽ.
-3. `game_data.gd` giữ `get_doorways()` của bản GameTeam và thêm `QUIZ_NPC_POS` của bản Quiz.
-4. `world_setup.gd` tạo NPC quiz; `world_update.gd` không cho NPC quiz tự đi lang thang.
-5. `registry.gd` bật lại câu cá và đăng ký HUD, sổ tay, cửa công trình, Quiz Toán.
+1. `scripts/draw/newcharacters.gd` chỉ giữ chuỗi kế thừa tương thích sau `characters.gd`; NPC có tên được tạo, cập nhật và vẽ duy nhất bởi feature `scripts/features/newcharacters.gd`.
+2. `maps/campus_overlay.gd` vẽ NPC thường và NPC quiz; feature NPC có tên vẽ lớp riêng để tránh tạo/vẽ trùng.
+3. `maps/campus_data.gd` giữ `get_doorways()` của bản GameTeam và thêm `QUIZ_NPC_POS` của bản Quiz.
+4. `maps/campus_setup.gd` tạo NPC quiz; `maps/campus_update.gd` không cho NPC quiz tự đi lang thang.
+5. `features/registry.gd` đăng ký gameplay dùng chung; `maps/registry.gd` đăng ký module nội dung bản đồ như phòng lab B4.2. Module bản đồ được tải trước khi dựng va chạm và minimap.
 
 ## Mở project
 Mở Godot 4.7 -> Import -> chọn `project.godot` trong thư mục `hcmus_dong_hoa` -> F5.
 
-Lưu ý: môi trường xử lý hiện tại không có Godot 4.7 để chạy game trực tiếp, vì vậy project đã được kiểm tra tĩnh về file, đường dẫn tài nguyên và các phần gộp, nhưng cần mở bằng Godot trên máy bạn để xác nhận runtime.
+Lưu ý: chạy thử project bằng Godot 4.7 sau khi gộp thay đổi để xác nhận runtime.

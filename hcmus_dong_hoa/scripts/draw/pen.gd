@@ -1,4 +1,4 @@
-extends "res://scripts/core/world_setup.gd"
+extends "res://scripts/maps/campus_setup.gd"
 # BÚT VẼ CƠ BẢN: hình chữ nhật pixel, bóng đổ, chữ có viền, nền lát gạch, nhựa đường.
 
 func rc(x: float, y: float, w: float, h: float, c: Color) -> void:

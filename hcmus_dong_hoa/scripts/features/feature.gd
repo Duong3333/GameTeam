@@ -1,5 +1,5 @@
 extends Node
-# LỚP NỀN CHO MỌI CHỨC NĂNG (câu cá, điểm danh, học thư viện, tập thể dục, nói chuyện với NPC...).
+# LỚP NỀN CHO GAMEPLAY DÙNG CHUNG VÀ MODULE BẢN ĐỒ CÓ TƯƠNG TÁC.
 #
 # Cách thêm 1 chức năng mới, ví dụ câu cá:
 #   1. Tạo scripts/features/fishing.gd:
@@ -11,8 +11,8 @@ extends Node
 #            super()
 #      Chức năng là một Node nên tự có _process(delta) và _unhandled_input(event);
 #      nhớ kiểm tra "if not active: return" ở đầu các hàm đó.
-#   2. Đăng ký bằng 1 dòng trong scripts/features/registry.gd (KHÔNG sửa main.gd):
-#        "res://scripts/features/fishing.gd",
+#   2. Đăng ký gameplay dùng chung trong scripts/features/registry.gd;
+#      module riêng của công trình/khu vực đăng ký trong scripts/maps/registry.gd.
 #   3. Gọi begin() khi người chơi bấm phím / đứng đúng chỗ, gọi finish() khi xong.
 #   4. (Tùy chọn) Muốn vẽ thêm thứ gì lên thế giới (cần câu, hiệu ứng...) thì ghi đè draw_front_layer().
 #      Hàm này được main.gd gọi trong _draw(), sau khi vẽ người và cây; dùng game.draw_line(...), game.rc(...), game.ctext(...).

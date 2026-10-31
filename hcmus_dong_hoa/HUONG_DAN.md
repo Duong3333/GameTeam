@@ -17,22 +17,24 @@
 
 ## Cấu trúc thư mục
 ```
-main.gd                    điều phối chính (_ready, _process, _draw)
+main.gd                    điều phối chính (_ready, _process); kế thừa renderer từ maps/campus_overlay.gd
 main.tscn, project.godot   scene và cấu hình
 font.ttf
 scripts/
-  data/game_data.gd        BẢN ĐỒ: BUILDINGS, KIOSKS, ZONES, PALMS, câu NPC (LINES)  <- sửa bản đồ ở đây
-  core/game_state.gd       các biến dùng chung (vị trí người chơi, NPC, giờ...)
-  core/world_update.gd     mỗi khung hình: va chạm, di chuyển, NPC, xe máy, ánh sáng, HUD
-  core/world_setup.gd      dựng thế giới lúc bắt đầu (cây, NPC, đèn, camera, HUD)
+  core/game_state.gd       trạng thái dùng chung (vị trí người chơi, NPC, giờ...)
+  maps/registry.gd         danh sách module bổ sung cho bản đồ
+  maps/campus_data.gd      dữ liệu khuôn viên gốc: BUILDINGS, KIOSKS, ZONES, PALMS...
+  maps/campus_update.gd    cập nhật thế giới khuôn viên
+  maps/campus_setup.gd     dựng va chạm, cây, NPC và cảnh khuôn viên
+  maps/campus_scenery.gd   cảnh nền, đường, bãi xe, đài phun nước, cổng
+  maps/campus_structures.gd tòa nhà, Nhà Điều hành, quầy nhỏ
+  maps/campus_overlay.gd  minimap, hiệu ứng và sắp xếp lớp vẽ khuôn viên
+  maps/b42_lab.gd          module Tòa B4.2 và phòng lab
   draw/pen.gd              bút vẽ cơ bản (hình chữ nhật pixel, bóng, chữ)
-  draw/scenery.gd          cỏ, đường, bãi xe, đài phun nước, cổng, cây, đèn, ghế
-  draw/structures.gd       tòa nhà, Nhà Điều hành, quầy nhỏ
   draw/characters.gd       người, NPC thường, bóng thoại, xe máy
-  draw/newcharacters.gd    5 NPC có tên, hội thoại, chuyển động (lớp kế thừa)
-  draw/overlay.gd          sắp xếp chiều sâu, mây, cánh phượng, bản đồ nhỏ
+  draw/newcharacters.gd    lớp chuyển tiếp; NPC có tên do features/newcharacters.gd quản lý
   systems/audio_manager.gd phát âm thanh (thiếu file thì im lặng, không lỗi)
-  features/registry.gd     DANH SÁCH feature, thêm feature mới = thêm 1 dòng ở đây
+  features/registry.gd     registry gameplay dùng chung (câu cá, quiz, HUD...)
   features/_mau_feature.gd file mẫu để copy khi làm feature mới (không chạy trong game)
   features/feature.gd      lớp nền cho chức năng mới (câu cá, điểm danh, ...)
   features/fishing.gd      CHỨC NĂNG CÂU CÁ (quăng cần, chờ cá, kéo cá, sổ cá, điểm)
@@ -43,7 +45,27 @@ assets/
   audio/                   bỏ file âm thanh vào đây
   hcmus_logo.png           (tùy chọn) logo thật, xem mục bên dưới
 ```
-Các file trong `scripts/data`, `core`, `draw` nối với nhau theo thứ tự từ trên xuống: mỗi file kế thừa file đứng trước (xem dòng `extends` đầu file). Vì vậy một hàm chỉ gọi được hàm nằm ở file **cùng tầng hoặc phía trên**. Thêm hàm vẽ mới thì đặt vào đúng file theo nhóm.
+Bản đồ gốc và module mở rộng đều nằm trong `scripts/maps/`. Các script `campus_*` tạo thành chuỗi kế thừa của khuôn viên ban đầu; `maps/registry.gd` chỉ đăng ký các module bổ sung như B4.2. Gameplay tổng quát vẫn nằm trong `scripts/features/`.
+
+## Quy tắc đăng ký (registry)
+Registry là danh sách đường dẫn để game tự nạp script lúc khởi động. Chọn registry theo **phạm vi sử dụng**, không chỉ theo việc script có vẽ lên bản đồ hay không:
+
+| Loại nội dung | Đặt file tại | Đăng ký tại | Ví dụ |
+|---|---|---|---|
+| Gameplay dùng chung, có thể dùng ở nhiều nơi | `scripts/features/` | `scripts/features/registry.gd` | câu cá, quiz, HUD, cửa ra vào dùng chung |
+| Nội dung chỉ thuộc một tòa/khu vực cụ thể | `scripts/maps/` | `scripts/maps/registry.gd` | Tòa B4.2 và phòng lab |
+
+Khi thêm module:
+1. Tạo file `.gd` trong đúng thư mục và kế thừa lớp nền phù hợp (feature thường dùng `scripts/features/feature.gd`).
+2. Mở đúng registry, kiểm tra đường dẫn chưa có rồi thêm **một dòng mới ngay trước dấu `]` cuối danh sách**. Giữ nguyên các dòng khác, không thay cả danh sách hoặc sắp xếp lại.
+   ```gdscript
+   "res://scripts/features/ten_feature.gd",
+   ```
+   Với nội dung bản đồ, dùng đường dẫn `res://scripts/maps/ten_module.gd` trong `maps/registry.gd`.
+3. Nếu module bản đồ thêm tòa nhà thường, thêm dữ liệu vào `game.BUILDINGS` trong `_ready()`; hệ thống nền sẽ tự lấy dữ liệu để dựng va chạm và minimap. Tránh thêm va chạm lần thứ hai cho cùng tòa.
+4. Chạy game và kiểm tra Output. Đường dẫn trong registry phải khớp chính xác tên file.
+
+Khi nhiều người cùng thêm module vào registry, có thể xảy ra conflict. Giữ lại **tất cả đường dẫn khác nhau còn hợp lệ**, xóa các dấu `<<<<<<<`, `=======`, `>>>>>>>`, rồi kiểm tra không có đường dẫn trùng hoặc trỏ tới file không tồn tại. Không xóa entry của người khác để hết conflict.
 
 ## Câu cá
 Đứng sát bờ hồ đài phun nước (góc trên bên trái sẽ hiện tên "Đài phun nước và vườn điều") rồi:
@@ -55,15 +77,15 @@ Các file trong `scripts/data`, `core`, `draw` nối với nhau theo thứ tự 
 Vớt được cá thì có điểm (cá to hơn điểm cao hơn); đôi khi vớt trúng đồ linh tinh như dép tổ ong, lon nước, thẻ sinh viên cũ.
 
 ## Đi vào / ra công trình
-Đến gần cửa phía trước của Tòa A-F, Nhà Thể Dục, Nhà Điều hành hoặc một trong các quầy Nhà ăn rồi bấm **E**. Bên trong dùng **W A S D** để đi; đến gần cửa ở cạnh dưới phòng và bấm **E** để trở lại đúng vị trí bên ngoài. Tọa độ cửa được tạo từ kích thước trong `BUILDINGS`, `DIEUHANH` và các quầy Nhà ăn ở `scripts/data/game_data.gd`, nên cửa đi theo khi công trình được dời.
+Đến gần cửa phía trước của Tòa A-F, Nhà Thể Dục, Nhà Điều hành hoặc một trong các quầy Nhà ăn rồi bấm **E**. Bên trong dùng **W A S D** để đi; đến gần cửa ở cạnh dưới phòng và bấm **E** để trở lại đúng vị trí bên ngoài. Tọa độ cửa được tạo từ kích thước trong `BUILDINGS`, `DIEUHANH` và các quầy Nhà ăn ở `scripts/maps/campus_data.gd`, nên cửa đi theo khi công trình được dời.
 
 Muốn chỉnh:
 - Thêm/sửa loại cá: bảng `ITEMS` ở đầu `scripts/features/fishing.gd` (tên, độ hiếm, cỡ, độ khó, điểm, màu).
-- Chỉnh vùng câu cá: hằng `FISH_POND` trong `scripts/data/game_data.gd` (hình elip nội tiếp khung này, hiện trùng với mặt nước đài phun nước `FOUNT`). Phần vẽ đài phun nước nằm trong `draw_ground()` của `scripts/draw/scenery.gd`.
+- Chỉnh vùng câu cá: hằng `FISH_POND` trong `scripts/maps/campus_data.gd` (hình elip nội tiếp khung này, hiện trùng với mặt nước đài phun nước `FOUNT`). Phần vẽ đài phun nước nằm trong `draw_ground()` của `scripts/maps/campus_scenery.gd`.
 - Âm thanh (tùy chọn): bỏ file tên `rod`, `cast`, `splash`, `bite`, `reel`, `catch`, `fail` vào `assets/audio/`.
 
 ## Chỉnh bản đồ
-Mở `scripts/data/game_data.gd`: mỗi dòng trong `BUILDINGS` là một tòa (tên, x, y, rộng, cao, màu tường, màu mái, mô tả).
+Mở `scripts/maps/campus_data.gd`: mỗi dòng trong `BUILDINGS` là một tòa (tên, x, y, rộng, cao, màu tường, màu mái, mô tả).
 `KIOSKS` là các quầy nhỏ (nhà ăn, quầy giáo trình...), `ZONES` là các khu vực hiện tên, `LINES` là các câu NPC hay nói, `FISH_POND` là vùng hồ nước dùng để câu cá (đài phun nước).
 
 ## Thêm âm thanh
@@ -87,21 +109,27 @@ func begin() -> void:
 func finish() -> void:
 	super()
 ```
-2. Đăng ký bằng 1 dòng trong `scripts/features/registry.gd` (KHÔNG sửa main.gd):
+2. Đăng ký gameplay dùng chung trong `scripts/features/registry.gd` (KHÔNG sửa main.gd):
 ```gdscript
 	"res://scripts/features/fishing.gd",
 ```
 3. Gọi `begin()` khi người chơi bấm phím hoặc đứng đúng chỗ, gọi `finish()` khi xong.
-4. Muốn vẽ thêm lên thế giới thì ghi đè `draw_front_layer()` (main.gd tự gọi); muốn vẽ giao diện cố định trên màn hình thì làm giống `fishing.gd` (CanvasLayer + Control).
+4. Muốn vẽ thêm lên thế giới thì ghi đè `draw_front_layer()` (renderer khuôn viên tự gọi); muốn vẽ giao diện cố định trên màn hình thì làm giống `fishing.gd` (CanvasLayer + Control).
 
 Ví dụ hoàn chỉnh: `scripts/features/fishing.gd`.
 Chức năng là một Node nên tự có `_process(delta)` và `_unhandled_input(event)`. Trong `game` có `game.player`, `game.audio`, `game.npcs`, `game.game_min`...
+
+## Thêm công trình/khu vực bản đồ riêng
+Nội dung riêng của một công trình (ví dụ phòng bên trong Tòa B4.2) đặt trong một module tại `scripts/maps/`, đăng ký trong `scripts/maps/registry.gd`:
+1. Tạo module kế thừa `scripts/features/feature.gd` để có thể dùng tương tác, cập nhật và vẽ.
+2. Nếu công trình dùng hệ thống tòa nhà chung, thêm dữ liệu vào `game.BUILDINGS` trong `_ready()`. Map modules được khởi tạo trước khi dựng va chạm, minimap và NPC; vì thế dữ liệu tòa nhà sẽ được các hệ thống đó nhận tự động.
+3. Chỉ thêm va chạm riêng cho các vật thể không nằm trong `BUILDINGS`. Cơ chế tổng quát như cửa đi vào công trình thuộc `scripts/features/` và dùng dữ liệu bản đồ chung.
 
 ## Thay logo bằng ảnh thật
 Chép ảnh logo trường (vuông, 32x32 hoặc 64x64) vào thư mục `assets`, đặt tên `hcmus_logo.png`.
 
 ## Quy ước để dễ nâng cấp map / NPC / âm thanh / skin sau này
-1. **Không gắn cứng tọa độ trong feature.** Vị trí, khu vực nào cũng khai báo trong `data/game_data.gd` (như `FISH_POND` cho câu cá) rồi feature đọc lại. Đổi map thì feature tự đi theo.
+1. **Không gắn cứng tọa độ trong gameplay dùng chung.** Vị trí đặc thù của module đặt trong `scripts/maps/`; dữ liệu khuôn viên ban đầu nằm trong `scripts/maps/campus_data.gd`.
 2. **Dữ liệu riêng của feature để trong file feature** (bảng cá, danh sách nhiệm vụ...), không đưa vào file lõi.
 3. **Âm thanh gọi theo tên ngay từ bây giờ** (`game.audio.play_sfx("tên")`). Chưa có file thì game vẫn chạy; sau này chỉ cần thả file vào `assets/audio/`.
 4. **Tên cố định thì giữ nguyên**: tên âm thanh, tên khu vực. Đừng đổi giữa chừng.

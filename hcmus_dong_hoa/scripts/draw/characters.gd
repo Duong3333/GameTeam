@@ -1,4 +1,4 @@
-extends "res://scripts/draw/structures.gd"
+extends "res://scripts/maps/campus_structures.gd"
 # NHÂN VẬT: người (người chơi + NPC), bóng thoại, xe máy.
 
 # nhân vật pixel: áo polo trường (cổ xanh navy sọc trắng, vai trắng, thân và tay navy, logo ngực)

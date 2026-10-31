@@ -15,6 +15,7 @@ var _music: AudioStreamPlayer
 
 func _ready() -> void:
 	_music = AudioStreamPlayer.new()
+	_music.volume_db = -15.0
 	add_child(_music)
 	for i in SFX_CHANNELS:
 		var p := AudioStreamPlayer.new()

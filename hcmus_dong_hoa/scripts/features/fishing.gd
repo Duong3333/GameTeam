@@ -11,7 +11,7 @@ extends "res://scripts/features/feature.gd"
 #
 # Chỗ cần sửa:
 #   - ITEMS (bên dưới): danh sách cá và đồ vớt được (tên, độ hiếm, kích cỡ, độ khó, điểm).
-#   - Hồ câu (vị trí, hình dạng) là FISH_POND trong scripts/data/game_data.gd; phần vẽ đài phun nước nằm trong draw_ground() của draw/scenery.gd.
+#   - Hồ câu (vị trí, hình dạng) là FISH_POND trong scripts/maps/campus_data.gd; phần vẽ nằm trong draw_ground() của maps/campus_scenery.gd.
 #   - Âm thanh (tùy chọn, bỏ file vào assets/audio/): rod, cast, splash, bite, reel, catch, fail.
 
 enum Phase { IDLE, AIM, FLY, WAIT, BITE, REEL, RESULT }
