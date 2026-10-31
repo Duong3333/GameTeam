@@ -1,8 +1,9 @@
-extends "res://scripts/core/world_update.gd"
-# DỰNG THẾ GIỚI LÚC BẮT ĐẦU: va chạm, cây, NPC, xe máy, đèn, ghế, camera, lớp phủ ánh sáng, HUD.
+extends "res://scripts/maps/campus_update.gd"
+# DỰNG KHUÔN VIÊN GỐC: va chạm bản đồ, cây, NPC, xe máy, đèn, camera và HUD.
 
 func setup_world() -> void:
 	load_resources()
+	setup_map_modules()
 	setup_collision()
 	setup_trees()
 	spawn_npcs()
@@ -11,6 +12,9 @@ func setup_world() -> void:
 	setup_camera()
 	setup_overlay()
 	setup_hud()
+
+func setup_map_modules() -> void:
+	pass
 
 func load_resources() -> void:
 	font = ThemeDB.fallback_font

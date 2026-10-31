@@ -1,12 +1,14 @@
-extends "res://scripts/draw/overlay.gd"
+extends "res://scripts/maps/campus_overlay.gd"
 # MAIN - điều phối chính của game. Toàn bộ logic nằm ở các file phía trên (xem HUONG_DAN.md):
-#   data/game_data.gd -> core/game_state.gd -> core/world_update.gd -> core/world_setup.gd
-#   -> draw/pen.gd -> draw/scenery.gd -> draw/structures.gd -> draw/characters.gd -> draw/newcharacters.gd -> draw/overlay.gd -> main.gd
+#   maps/campus_data.gd -> core/game_state.gd -> maps/campus_update.gd -> maps/campus_setup.gd
+#   -> draw/pen.gd -> maps/campus_scenery.gd -> maps/campus_structures.gd -> draw/characters.gd
+#   -> draw/newcharacters.gd -> maps/campus_overlay.gd -> main.gd
 # Mỗi file kế thừa file đứng trước nó, nên các hàm gọi nhau bình thường.
 
 const Feature := preload("res://scripts/features/feature.gd")
 const AudioManager := preload("res://scripts/systems/audio_manager.gd")
 const Registry := preload("res://scripts/features/registry.gd")
+const MapRegistry := preload("res://scripts/maps/registry.gd")
 const StudentStats := preload("res://scripts/features/student_stats.gd")
 
 func _ready() -> void:
@@ -15,6 +17,7 @@ func _ready() -> void:
 	add_child(stats)
 	audio = AudioManager.new()
 	add_child(audio)
+	audio.play_music("xuongrongpiano")
 	setup_features()
 
 func _physics_process(delta: float) -> void:
@@ -35,23 +38,6 @@ func _process(delta: float) -> void:
 	update_hud()
 	queue_redraw()
 
-func _draw() -> void:
-	var cc := cam.get_screen_center_position()
-	view = Rect2(cc - Vector2(262, 152), Vector2(524, 304))
-	draw_ground()
-	draw_dieuhanh()
-	for b in BUILDINGS:
-		draw_building(b)
-	for k in KIOSKS:
-		draw_kiosk(k)
-	for bk in bikes:
-		draw_bike(bk)
-	draw_sorted_items()
-	for f in features:
-		f.draw_front_layer()
-	draw_sky_effects()
-	draw_minimap()
-
 # Tua nhanh để thử/demo: sang n ngày sau, bắt đầu lại từ 7:00
 func skip_days(n: int) -> void:
 	day += n
@@ -59,12 +45,21 @@ func skip_days(n: int) -> void:
 
 # ---------- Chức năng mở rộng (câu cá, điểm danh, ...) ----------
 func setup_features() -> void:
-	# Danh sách feature nằm ở scripts/features/registry.gd (thêm feature mới chỉ cần sửa file đó)
-	for path in Registry.LIST:
-		if ResourceLoader.exists(path):
-			add_feature(load(path).new())
-		else:
-			push_warning("registry.gd: không tìm thấy " + path)
+	_load_registry(Registry.LIST, "features/registry.gd")
+
+func setup_map_modules() -> void:
+	_load_registry(MapRegistry.LIST, "maps/registry.gd")
+
+func _load_registry(paths: Array, registry_name: String) -> void:
+	for path in paths:
+		if not ResourceLoader.exists(path):
+			push_warning("%s: không tìm thấy %s" % [registry_name, path])
+			continue
+		var script: Script = load(path)
+		if not script.can_instantiate():
+			push_error("%s: không thể khởi tạo %s" % [registry_name, path])
+			continue
+		add_feature(script.new())
 
 func add_feature(f: Feature) -> void:
 	f.game = self

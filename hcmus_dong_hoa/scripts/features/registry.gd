@@ -1,9 +1,10 @@
 extends RefCounted
-# DANH SÁCH CHỨC NĂNG - mỗi feature = 1 dòng. Đây là NƠI DUY NHẤT cần sửa để đăng ký feature mới.
-# main.gd đọc danh sách này và tự add_feature cho từng dòng, nên KHÔNG cần sửa main.gd.
+# DANH SÁCH GAMEPLAY DÙNG CHUNG - mỗi feature = 1 dòng.
+# Nội dung riêng của công trình/khu vực bản đồ đăng ký tại scripts/maps/registry.gd.
 #
-# Thêm feature mới: chép file vào scripts/features/, rồi thêm 1 dòng (nhớ dấu phẩy cuối dòng).
+# Thêm gameplay dùng chung: chép file vào scripts/features/, rồi thêm 1 dòng (nhớ dấu phẩy cuối dòng).
 # Thứ tự = thứ tự khởi tạo. Nếu feature B dùng dữ liệu của feature A thì đặt A đứng trước B.
+# Chỉ thêm entry mới trước dấu ] cuối danh sách; không xóa hoặc sắp xếp lại entry hiện có.
 
 const LIST := [
 	"res://scripts/features/fishing.gd",         # câu cá ở hồ đài phun nước
@@ -12,5 +13,4 @@ const LIST := [
 	"res://scripts/features/building_doors.gd",  # vào / ra công trình và căn tin
 	"res://scripts/features/math_quiz.gd",       # NPC Cô Toán: nhấn E để làm quiz
 	"res://scripts/features/newcharacters.gd",   # NPC mới
-	"res://scripts/features/toa B4.2.gd",        # tòa B4.2 và phòng lab máy tính
 ]

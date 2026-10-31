@@ -16,6 +16,8 @@ Game 2D góc nhìn từ trên xuống, vẽ bằng code, về một ngày của 
 2. Thêm 1 dòng vào `scripts/features/registry.gd`.
 3. Chạy thử, rồi tạo Pull Request.
 
+## Bản đồ và module bản đồ
+Toàn bộ mã khuôn viên gốc (dữ liệu, khởi tạo, cập nhật, cảnh và công trình) nằm trong `scripts/maps/campus_*.gd`. Nội dung riêng của từng tòa/khu vực như phòng lab B4.2 cũng nằm trong `scripts/maps/` và đăng ký trong `scripts/maps/registry.gd`. Cơ chế gameplay dùng chung (như câu cá hoặc cửa ra vào) vẫn ở `scripts/features/`.
 
 ## Các chức năng đã tích hợp
 - Nhân vật có tên: Thầy LTC, Thầy LĐK, Bác bảo vệ, Bác giữ xe và Cô lao công. Đến gần, nhấn E để trò chuyện.

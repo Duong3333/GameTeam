@@ -1,5 +1,5 @@
 extends "res://scripts/core/game_state.gd"
-# CẬP NHẬT MỖI KHUNG HÌNH: va chạm, người chơi, NPC, xe máy, mây/cánh phượng, ánh sáng theo giờ, thanh HUD.
+# CẬP NHẬT THẾ GIỚI KHUÔN VIÊN MỖI KHUNG HÌNH: người chơi, NPC, xe máy, vùng và ánh sáng.
 
 func update_player(delta: float) -> void:
 	var v := Vector2.ZERO

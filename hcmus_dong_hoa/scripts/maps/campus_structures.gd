@@ -1,5 +1,5 @@
-extends "res://scripts/draw/scenery.gd"
-# CÔNG TRÌNH: các tòa nhà A-G + Nhà Thể Dục, Nhà Điều hành, quầy nhỏ (kiosk), dãy quán Đường T1, va chạm mặt tiền.
+extends "res://scripts/maps/campus_scenery.gd"
+# CÔNG TRÌNH KHUÔN VIÊN GỐC: các tòa A-G, Nhà Thể Dục, Nhà Điều hành, kiosk và dãy quán.
 
 const FRONTAGE_SOLID_LAYER := 1
 

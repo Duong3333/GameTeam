@@ -7,9 +7,7 @@ extends "res://scripts/features/feature.gd"
 #              bàn giáo viên có máy tính và ghế, máy lạnh. Đi bằng W A S D, bấm E gần ghế để ngồi / đứng dậy,
 #              bấm E gần cửa (góc phải phía dưới) để ra ngoài.
 #
-# Cách tích hợp (không sửa file nào khác): chép file này vào scripts/features/ rồi thêm 1 dòng vào registry.gd:
-#     "res://scripts/features/toa_b42.gd",
-# Nên đặt TRƯỚC dòng npc_nhan_vat.gd / day_night.gd / weather_system.gd để tòa nhà được vẽ trước NPC và mây.
+# Module bản đồ được đăng ký tại scripts/maps/registry.gd. Gameplay dùng chung vẫn nằm trong scripts/features/.
 #
 # Dùng lại của game (không tạo hệ thống mới):
 #   game.solids      va chạm: tòa B4.2 là 1 khối cứng như các tòa khác
@@ -58,8 +56,8 @@ var _seats: Array = []
 var _solid: Array = []        # vật cản trong phòng
 
 func _ready() -> void:
-	game.solids.append(RECT)
-	# Đăng ký vào bảng BUILDINGS có sẵn: minimap và dòng tên khu vực ở góc trái tự nhận. Mặt tiền thật được vẽ đè lên trong draw_front_layer().
+	# Đăng ký trước setup_collision(): bản đồ dùng chung tự thêm va chạm từ BUILDINGS.
+	# Minimap và dòng tên khu vực cũng tự nhận tòa nhà.
 	game.BUILDINGS.append(["B4.2", RECT.position.x, RECT.position.y, RECT.size.x, RECT.size.y, Color("8e959f"), Color("1f4a8c"), "Tòa B4.2 - phòng Lab máy tính."])
 	_build_room()
 	_layer = CanvasLayer.new()

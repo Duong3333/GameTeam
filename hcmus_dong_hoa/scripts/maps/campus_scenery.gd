@@ -1,5 +1,5 @@
 extends "res://scripts/draw/pen.gd"
-# CẢNH VẬT NGOÀI TRỜI: cỏ, hàng rào cây, bồn hoa, đèn, ghế, cây, và toàn bộ nền đất (đường, bãi xe, đài phun nước, cổng).
+# CẢNH VẬT KHUÔN VIÊN GỐC: cỏ, hàng rào, cây, đường, bãi xe, đài phun nước và cổng.
 
 const POLE_STICKERS: Array[Color] = [Color(1.0, 0.82, 0.25), Color(1.0, 0.42, 0.54), Color(0.35, 0.65, 0.84)]
 
@@ -165,8 +165,6 @@ func draw_ground() -> void:
 	asphalt(Rect2(0, GATE_Y + 14, WORLD.x, 26))
 	for x in range(0, 1600, 40):
 		rc(x, GATE_Y + 26, 22, 2, Color("e8e8e8"))
-<<<<<<< HEAD
-=======
 
 # ---------- DÃY QUÁN ĐƯỜNG T1, CỔNG TRƯỜNG ----------
 func draw_t1_strip() -> void:
@@ -379,4 +377,3 @@ func draw_lake() -> void:
 	rc(sx - 29, sy - 25, 58, 12, Color("5a3a1c"))
 	rc(sx - 28, sy - 24, 56, 10, Color("a8733f"))
 	ctext("HỒ SINH VIÊN", sx - 28, sy - 16, 56, 7, Color.WHITE)
->>>>>>> additions-to-the-game_data,-scenery,-sructures

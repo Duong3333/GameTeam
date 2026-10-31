@@ -159,7 +159,7 @@ func draw_front_layer() -> void:
 		if _near_named(b, named):
 			items.append([b.y, 3, b])
 	for o in game.npcs:
-		if _near_named(o.pos, named):
+		if not o.has("role") and _near_named(o.pos, named):
 			items.append([o.pos.y, 4, o])
 	if _near_named(game.player, named):
 		items.append([game.player.y, 5, null])

@@ -1,5 +1,5 @@
 extends Node2D
-# DỮ LIỆU GAME - file bạn sẽ sửa nhiều nhất khi chỉnh bản đồ.
+# DỮ LIỆU KHUÔN VIÊN GỐC - sửa bản đồ cơ sở tại đây.
 # Muốn dời tòa nhà: sửa bảng BUILDINGS (x, y, rộng, cao). Quầy nhỏ: KIOSKS. Khu vực hiện tên: ZONES.
 # Câu NPC hay nói: LINES.
 
@@ -14,6 +14,7 @@ const DIEUHANH := Rect2(860, 680, 260, 170)
 # Tốc độ thời gian: 1 giây thật = TIME_SCALE phút trong game (3.0 -> 1 ngày game dài khoảng 3 phút 20 giây)
 const TIME_SCALE := 3.0
 const FISH_POND := Rect2(886, 379, 84, 84)   # Hồ nước của đài phun nước (tâm = FOUNT, hình elip nội tiếp khung này) - nơi câu cá
+const LAKE := FISH_POND
 const LINES := ["Thi chưa?", "Deadline!", "Đi ăn không?", "Đến giờ học rồi!", "Mượn tui cây bút", "Nhà ăn đông quá", "Sáng nay có kiểm tra!", "Ngủ quên mất...", "Lên thư viện không?"]
 
 var WALL := Color("f2d98c")

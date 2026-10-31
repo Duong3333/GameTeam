@@ -1,5 +1,22 @@
 extends "res://scripts/draw/newcharacters.gd"
-# GHÉP LỚP VẼ: sắp xếp cây/người/đèn/ghế theo chiều sâu, bóng mây, cánh phượng, bản đồ nhỏ.
+# HIỂN THỊ KHUÔN VIÊN: sắp xếp chiều sâu, hiệu ứng trời và minimap.
+
+func _draw() -> void:
+	var cc := cam.get_screen_center_position()
+	view = Rect2(cc - Vector2(262, 152), Vector2(524, 304))
+	draw_ground()
+	draw_dieuhanh()
+	for b in BUILDINGS:
+		draw_building(b)
+	for k in KIOSKS:
+		draw_kiosk(k)
+	for bk in bikes:
+		draw_bike(bk)
+	draw_sorted_items()
+	for f in features:
+		f.draw_front_layer()
+	draw_sky_effects()
+	draw_minimap()
 
 func draw_sorted_items() -> void:
 	var items: Array = []
@@ -26,16 +43,11 @@ func draw_sorted_items() -> void:
 			var n: Dictionary = it[2]
 			if not view.has_point(n.pos):
 				continue
-			if n.has("role"):
-				draw_role_npc(n)
-				if n.say_t > 0.0:
-					draw_role_speech(n)
-			else:
-				draw_person(n.pos, n.shirt, n.hair, n.face, n.anim, n.uni, n.long, n.pack)
-				if n.get("quiz", false):
-					draw_quiz_marker(n)
-				if n.say_t > 0.0:
-					draw_speech(n)
+			draw_person(n.pos, n.shirt, n.hair, n.face, n.anim, n.uni, n.long, n.pack)
+			if n.get("quiz", false):
+				draw_quiz_marker(n)
+			if n.say_t > 0.0:
+				draw_speech(n)
 		else:
 			draw_person(player, Color.WHITE, Color("1b1b1b"), facing, anim, true, false, true)
 			ctext("Bạn", player.x - 15, player.y - 28, 30, 8, Color("ffd23f"))
