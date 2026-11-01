@@ -24,4 +24,5 @@ Toàn bộ mã khuôn viên gốc (dữ liệu, khởi tạo, cập nhật, cả
 - Đi vào / ra công trình: đến cửa và nhấn E.
 - Câu cá: đứng sát hồ đài phun nước giữa các tòa nhà và nhấn E; nhấn B để mở sổ cá.
 - Quiz Toán: đến NPC Cô Toán (có dấu ?) và nhấn E.
+- Nhảy múa: nhấn J.
 - Hướng dẫn chi tiết: `HUONG_DAN_QUIZ.md` và `HUONG_DAN_HOC_MATH_QUIZ.md`.

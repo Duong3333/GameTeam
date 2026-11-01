@@ -3,6 +3,7 @@ extends "res://scripts/maps/campus_overlay.gd"
 #   maps/campus_data.gd -> core/game_state.gd -> maps/campus_update.gd -> maps/campus_setup.gd
 #   -> draw/pen.gd -> maps/campus_scenery.gd -> maps/campus_structures.gd -> draw/characters.gd
 #   -> draw/newcharacters.gd -> maps/campus_overlay.gd -> main.gd
+# Các nhánh cũ có tên khác nhau nhưng cùng chuỗi kế thừa chính; giữ nguyên cấu trúc hiện tại của project.
 # Mỗi file kế thừa file đứng trước nó, nên các hàm gọi nhau bình thường.
 
 const Feature := preload("res://scripts/features/feature.gd")
