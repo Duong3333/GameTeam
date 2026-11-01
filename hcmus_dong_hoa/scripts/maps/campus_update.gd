@@ -1,5 +1,5 @@
 extends "res://scripts/core/game_state.gd"
-# CẬP NHẬT THẾ GIỚI KHUÔN VIÊN MỖI KHUNG HÌNH: người chơi, NPC, xe máy, vùng và ánh sáng.
+# CẬP NHẬT THẾ GIỚI KHUÔN VIÊN MỖI KHUNG HÌNH: người chơi, NPC, vùng và ánh sáng.
 
 func update_player(delta: float) -> void:
 	var v := Vector2.ZERO
@@ -88,14 +88,6 @@ func update_ambient(delta: float) -> void:
 		p.life += delta
 		p.pos = p.pos + Vector2(sin(p.life * 3.0 + p.ph) * 12.0 * delta + 6.0 * delta, 18.0 * delta)
 	petals = petals.filter(func(p): return p.life < 2.2)
-
-func update_bikes(delta: float) -> void:
-	for b in bikes:
-		b.x += b.dir * b.sp * delta
-		if b.x > WORLD.x + 20.0:
-			b.x = -20.0
-		if b.x < -20.0:
-			b.x = WORLD.x + 20.0
 
 func update_daylight() -> void:
 	var h := game_min / 60.0

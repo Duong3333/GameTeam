@@ -10,7 +10,7 @@
 - Bản đồ theo sơ đồ cơ sở: Tòa A, B, C, D, E (dãy phía tây), đài phun nước và vườn, Tòa F, G (phía đông), Nhà Thể Dục, Nhà Điều hành ở phía nam, bãi giữ xe, cổng trường ở Đường T1.
 - Nhà Điều hành có dòng chữ vàng "TRƯỜNG ĐẠI HỌC KHOA HỌC TỰ NHIÊN" và "UNIVERSITY OF SCIENCE", có bậc thềm và hoa cảnh. Các tòa còn lại giống nhau (tường vàng, mái đỏ), chỉ khác chữ cái.
 - Nhân vật mặc áo polo trường: cổ xanh sọc trắng, vai trắng, thân và tay xanh navy, có logo ở ngực.
-- Sinh viên đi lại và nói chuyện, xe máy chạy trên đường nội bộ, đồng hồ 7:00 - 17:00.
+- Sinh viên đi lại và nói chuyện trên khuôn viên, đồng hồ 7:00 - 17:00.
 - **Hồ đài phun nước** (giữa các tòa nhà) là nơi câu cá. Đứng sát bờ rồi bấm **E** để câu cá (xem mục "Câu cá").
 - Có thể đi vào **Tòa A-F, Nhà Thể Dục, Nhà Điều hành và Căn tin** bằng cách đến gần cửa rồi bấm **E**. Đi đến cửa phía dưới bên trong và bấm **E** để quay ra.
 - Đi gần tòa nhà hoặc quầy nào thì góc trên bên trái hiện tên và mô tả.
@@ -31,14 +31,15 @@ scripts/
   maps/campus_overlay.gd  minimap, hiệu ứng và sắp xếp lớp vẽ khuôn viên
   maps/b42_lab.gd          module Tòa B4.2 và phòng lab
   draw/pen.gd              bút vẽ cơ bản (hình chữ nhật pixel, bóng, chữ)
-  draw/characters.gd       người, NPC thường, bóng thoại, xe máy
-  draw/newcharacters.gd    lớp chuyển tiếp; NPC có tên do features/newcharacters.gd quản lý
+  draw/characters.gd       người chơi, NPC thường, bóng thoại
+  draw/newcharacters.gd    lớp chuyển tiếp + NPC có tên, hội thoại và chuyển động
   systems/audio_manager.gd phát âm thanh (thiếu file thì im lặng, không lỗi)
   features/registry.gd     registry gameplay dùng chung (câu cá, quiz, HUD...)
   features/_mau_feature.gd file mẫu để copy khi làm feature mới (không chạy trong game)
   features/feature.gd      lớp nền cho chức năng mới (câu cá, điểm danh, ...)
   features/fishing.gd      CHỨC NĂNG CÂU CÁ (quăng cần, chờ cá, kéo cá, sổ cá, điểm)
   features/building_doors.gd đi vào / ra tòa nhà, nhà thể dục, nhà điều hành, căn tin
+  features/dance.gd         nhấn J để nhảy múa
   features/math_quiz.gd    quiz toán với NPC Cô Toán
   systems/math_questions.gd ngân hàng và bộ tạo câu hỏi quiz
 assets/
@@ -65,7 +66,7 @@ Khi thêm module:
 3. Nếu module bản đồ thêm tòa nhà thường, thêm dữ liệu vào `game.BUILDINGS` trong `_ready()`; hệ thống nền sẽ tự lấy dữ liệu để dựng va chạm và minimap. Tránh thêm va chạm lần thứ hai cho cùng tòa.
 4. Chạy game và kiểm tra Output. Đường dẫn trong registry phải khớp chính xác tên file.
 
-Khi nhiều người cùng thêm module vào registry, có thể xảy ra conflict. Giữ lại **tất cả đường dẫn khác nhau còn hợp lệ**, xóa các dấu `<<<<<<<`, `=======`, `>>>>>>>`, rồi kiểm tra không có đường dẫn trùng hoặc trỏ tới file không tồn tại. Không xóa entry của người khác để hết conflict.
+Khi nhiều người cùng thêm module vào registry, có thể xảy ra conflict. Giữ lại **tất cả đường dẫn khác nhau còn hợp lệ**, xóa các dấu `<<<<<<<`, `=======`, `>>>>>>>`, rồi kiểm tra không có đường dẫn trùng hoặc trỏ tới file không tồn tại. Không xóa entry của người khác để hết conflict; chỉ cần giữ cả các entry hợp lệ và loại bỏ các dấu merge marker.
 
 ## Câu cá
 Đứng sát bờ hồ đài phun nước (góc trên bên trái sẽ hiện tên "Đài phun nước và vườn điều") rồi:
@@ -140,8 +141,9 @@ Chép ảnh logo trường (vuông, 32x32 hoặc 64x64) vào thư mục `assets`
 Xem `HUONG_DAN_GIT.md`.
 
 
-## Quiz Toán
+## Quiz Toán và nhảy múa
 - Đến NPC **Cô Toán** có dấu `?` cạnh Tòa F, nhấn **E** để bắt đầu quiz. Không có màn hình chọn độ khó.
 - Mỗi lượt luôn có 5 câu: câu 1-2 là số học cơ bản; câu 3-5 lấy từ Vi tích phân và tăng dần độ khó.
 - Điểm quiz dưới 5/10 bị trừ 0,10 GPA.
+- Nhấn **J** để bật/tắt nhảy múa.
 - Xem `HUONG_DAN_QUIZ.md` và `HUONG_DAN_HOC_MATH_QUIZ.md` để biết cách chơi và cách đọc code.

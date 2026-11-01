@@ -5,7 +5,6 @@ var solids: Array = []
 var trees: Array = []   # [x, y, loại] 0 thường, 1 phượng, 2 cọ
 var tufts: Array = []
 var npcs: Array = []
-var bikes: Array = []
 var player := Vector2(740, 940)
 var facing := 1
 var anim := 0.0
