@@ -1,5 +1,5 @@
 extends "res://scripts/maps/campus_update.gd"
-# DỰNG KHUÔN VIÊN GỐC: va chạm bản đồ, cây, NPC, xe máy, đèn, camera và HUD.
+# DỰNG KHUÔN VIÊN GỐC: va chạm bản đồ, cây, NPC, đèn, camera và HUD.
 
 func setup_world() -> void:
 	load_resources()
@@ -7,7 +7,6 @@ func setup_world() -> void:
 	setup_collision()
 	setup_trees()
 	spawn_npcs()
-	spawn_bikes()
 	setup_decor()
 	setup_camera()
 	setup_overlay()
@@ -82,11 +81,6 @@ func spawn_npcs() -> void:
 	# NPC quiz toán: nhấn E khi đứng gần để mở bài tập.
 	npcs.append({"pos": QUIZ_NPC_POS, "dir": Vector2.ZERO, "timer": 0.0, "face": 0, "anim": 0.0, "shirt": Color("8e5bd0"), "hair": Color("3b2a1a"), "uni": false, "long": true, "pack": false, "say": "", "say_t": 0.0, "quiz": true})
 	solids.append(Rect2(QUIZ_NPC_POS.x - 5, QUIZ_NPC_POS.y - 4, 10, 4))
-
-func spawn_bikes() -> void:
-	bikes.append({"x": 100.0, "y": 596.0, "dir": 1.0, "sp": 70.0, "col": Color("c0392b")})
-	bikes.append({"x": 700.0, "y": 596.0, "dir": 1.0, "sp": 55.0, "col": Color("2980b9")})
-	bikes.append({"x": 1200.0, "y": 620.0, "dir": -1.0, "sp": 65.0, "col": Color("27ae60")})
 
 func setup_decor() -> void:
 	for i in 420:

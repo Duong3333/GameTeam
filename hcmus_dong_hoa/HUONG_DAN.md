@@ -10,7 +10,7 @@
 - Bản đồ theo sơ đồ cơ sở: Tòa A, B, C, D, E (dãy phía tây), đài phun nước và vườn, Tòa F, G (phía đông), Nhà Thể Dục, Nhà Điều hành ở phía nam, bãi giữ xe, cổng trường ở Đường T1.
 - Nhà Điều hành có dòng chữ vàng "TRƯỜNG ĐẠI HỌC KHOA HỌC TỰ NHIÊN" và "UNIVERSITY OF SCIENCE", có bậc thềm và hoa cảnh. Các tòa còn lại giống nhau (tường vàng, mái đỏ), chỉ khác chữ cái.
 - Nhân vật mặc áo polo trường: cổ xanh sọc trắng, vai trắng, thân và tay xanh navy, có logo ở ngực.
-- Sinh viên đi lại và nói chuyện, xe máy chạy trên đường nội bộ, đồng hồ 7:00 - 17:00.
+- Sinh viên đi lại và nói chuyện trên khuôn viên, đồng hồ 7:00 - 17:00.
 - **Hồ đài phun nước** (giữa các tòa nhà) là nơi câu cá. Đứng sát bờ rồi bấm **E** để câu cá (xem mục "Câu cá").
 - Có thể đi vào **Tòa A-F, Nhà Thể Dục, Nhà Điều hành và Căn tin** bằng cách đến gần cửa rồi bấm **E**. Đi đến cửa phía dưới bên trong và bấm **E** để quay ra.
 - Đi gần tòa nhà hoặc quầy nào thì góc trên bên trái hiện tên và mô tả.
@@ -31,7 +31,7 @@ scripts/
   maps/campus_overlay.gd  minimap, hiệu ứng và sắp xếp lớp vẽ khuôn viên
   maps/b42_lab.gd          module Tòa B4.2 và phòng lab
   draw/pen.gd              bút vẽ cơ bản (hình chữ nhật pixel, bóng, chữ)
-  draw/characters.gd       người, NPC thường, bóng thoại, xe máy
+  draw/characters.gd       người chơi, NPC thường, bóng thoại
   draw/newcharacters.gd    lớp chuyển tiếp + NPC có tên, hội thoại và chuyển động
   systems/audio_manager.gd phát âm thanh (thiếu file thì im lặng, không lỗi)
   features/registry.gd     registry gameplay dùng chung (câu cá, quiz, HUD...)

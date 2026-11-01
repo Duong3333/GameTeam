@@ -34,7 +34,6 @@ func _process(delta: float) -> void:
 	cam.position = player
 	clock += delta
 	update_ambient(delta)
-	update_bikes(delta)
 	update_daylight()
 	update_hud()
 	queue_redraw()
@@ -67,7 +66,7 @@ func add_feature(f: Feature) -> void:
 	features.append(f)
 	add_child(f)
 
-# true khi có chức năng đang chạy -> người chơi đứng yên (NPC và xe máy vẫn chạy)
+# true khi có chức năng đang chạy -> người chơi đứng yên (NPC vẫn chạy)
 func is_busy() -> bool:
 	for f in features:
 		if f.active:

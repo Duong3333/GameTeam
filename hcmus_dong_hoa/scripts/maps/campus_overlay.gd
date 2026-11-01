@@ -11,8 +11,6 @@ func _draw() -> void:
 		draw_building(b)
 	for k in KIOSKS:
 		draw_kiosk(k)
-	for bk in bikes:
-		draw_bike(bk)
 	draw_sorted_items()
 	for f in features:
 		f.draw_front_layer()
