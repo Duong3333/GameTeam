@@ -1,0 +1,51 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=1.8cm,headheight=48pt,headsep=12pt,footskip=22pt]{geometry}
+\usepackage{fontspec}
+\setmainfont{Noto Serif}
+\setsansfont{Noto Sans}
+\setmonofont{DejaVu Sans Mono}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{enumitem,tabularx,booktabs,array,multicol}
+\usepackage{xcolor,graphicx,tikz,fancyhdr,lastpage}
+\usepackage{listings,tcolorbox,hyperref}
+\hypersetup{colorlinks=true,linkcolor=blue!60!black,urlcolor=blue!60!black}
+\definecolor{hcmusblue}{RGB}{18,58,110}
+\definecolor{lightblue}{RGB}{235,242,250}
+\definecolor{codebg}{RGB}{247,248,250}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt}
+\setlist[enumerate]{leftmargin=*,itemsep=3pt,topsep=3pt}
+\setlist[itemize]{leftmargin=*,itemsep=2pt,topsep=2pt}
+\lstset{language=C++,basicstyle=\ttfamily\footnotesize,backgroundcolor=\color{codebg},frame=single,rulecolor=\color{black!15},breaklines=true,showstringspaces=false,columns=fullflexible,keywordstyle=\color{hcmusblue}\bfseries,commentstyle=\color{green!40!black},numbers=left,numberstyle=\tiny\color{black!45},xleftmargin=1.5em,framexleftmargin=1.2em}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\includegraphics[height=1.05cm,keepaspectratio]{assets/images/institution_logo.png}\hspace{0.45em}\begin{minipage}[c]{0.64\textwidth}\textbf{TRƯỜNG ĐẠI HỌC KHOA HỌC TỰ NHIÊN}\\[-1pt]\small ĐHQG TP. HỒ CHÍ MINH\end{minipage}}
+\fancyhead[R]{\small\textcolor{hcmusblue}{TÀI LIỆU LUYỆN TẬP}}
+\fancyfoot[L]{\scriptsize Biên soạn độc lập - Không phải đề thi chính thức}
+\fancyfoot[R]{\scriptsize Trang \thepage}
+\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\footrulewidth}{0.3pt}
+\newcommand{\examtitle}[4]{\begin{center}{\Large\bfseries\color{hcmusblue}#1}\par\vspace{3pt}{\large\bfseries #2}\par\vspace{3pt}\small #3\quad\textbullet\quad #4\end{center}\vspace{5pt}\hrule\vspace{8pt}}
+\newcommand{\studentline}{\begin{tabularx}{\textwidth}{X X}\textbf{Họ và tên:} \hrulefill & \textbf{MSSV:} \hrulefill\\[7pt]\textbf{Lớp:} \hrulefill & \textbf{Ngày làm:} \hrulefill\end{tabularx}\vspace{8pt}}
+\newcommand{\points}[1]{\hfill\textbf{(#1 điểm)}}
+\newtcolorbox{notebox}{colback=lightblue,colframe=hcmusblue!55,boxrule=0.5pt,arc=1.5mm,left=2mm,right=2mm,top=1mm,bottom=1mm}
+\begin{document}
+\examtitle{ĐỀ LUYỆN TẬP 01 - VI TÍCH PHÂN 1}{VI TÍCH PHÂN 1 - HCMUS (bộ luyện tập)}{60 phút - 10 điểm - Không sử dụng tài liệu}{Học phần giữa kỳ 1}
+
+\studentline
+\begin{notebox}\textbf{Lưu ý:} Trình bày rõ các bước lập luận. Với giới hạn, ghi rõ dạng vô định trước khi dùng quy tắc L'Hospital.\end{notebox}
+\begin{enumerate}
+\item Cho hàm số
+\[
+f(x)=\begin{cases}x^2+1,&x\le 0,\\ ax+1,&0<x<2,\\ x^2-3x+b,&x\ge 2.\end{cases}
+\]
+(a) Xét tính liên tục của $f$ tại $x=0$. (b) Tìm quan hệ giữa $a,b$ để $f$ liên tục tại $x=2$. (c) Tìm $b$ khi $a=2$. \points{2}
+\item Dùng định nghĩa đạo hàm (giới hạn thương sai phân) để tính $g'(x)$ với $g(x)=\dfrac{1}{x+1}$, $x\ne -1$. \points{2}
+\item Một tấm kim loại hình vuông có cạnh đo được $s=4$ cm, sai số đo cạnh là $ds=0.01$ cm. Dùng vi phân để ước tính sai số diện tích. \points{1.5}
+\item Đường cong $C$ có phương trình $x^2+xy+y^2=7$. Giả sử $y$ là hàm khả vi theo $x$. Tìm $y'$ và phương trình tiếp tuyến tại $(1,2)$. \points{2.5}
+\item Tính giới hạn $\displaystyle\lim_{x\to0}\frac{e^{3x}-1-3x}{x^2}$. \points{2}
+\end{enumerate}
+\vfill
+\begin{center}\textit{--- Hết ---}\end{center}
+
+\end{document}

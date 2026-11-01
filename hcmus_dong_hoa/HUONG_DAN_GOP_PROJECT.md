@@ -1,7 +1,7 @@
 # Ghi chú gộp ba nguồn project
 
 Project này được ghép từ:
-- `GameTeam-da923`: giữ bản đồ, câu cá, cửa công trình và năm nhân vật có tên.
+- `GameTeam-da923`: giữ bản đồ, cửa công trình và năm nhân vật có tên.
 - `GameTeam-Quiz`: lấy Quiz Toán và ngân hàng câu hỏi (feature nhảy múa đã được gỡ bỏ).
 - Các file rời đi kèm: dùng `main.gd`, `main.tscn`, `project.godot`, font và tài liệu nhóm làm file cấu hình/đầu vào của project.
 

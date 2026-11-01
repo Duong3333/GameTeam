@@ -2,16 +2,29 @@
 
 ## Chạy game
 1. Mở Godot 4.7, bấm Import, chọn file `project.godot` trong thư mục này.
-2. Bấm nút Play (hoặc F5). Dùng **W A S D** để đi, **E** để vào/ra cửa khi đứng gần công trình hoặc câu cá khi đứng sát hồ đài phun nước, **B** để mở sổ cá.
+2. Bấm nút Play (hoặc F5). Dùng **W A S D** để đi, **E** để vào/ra cửa khi đứng gần công trình.
 3. Khi Godot lần đầu mở có thể mất vài giây để nhập (import) file font.
 4. Nếu có lỗi đỏ ở ô Output, chép nguyên dòng lỗi gửi lại để sửa.
+
+## Chơi online qua relay server
+1. Khi mở game, chọn **Chơi đơn** hoặc **Multiplayer**. Form nhập server chỉ xuất hiện sau khi chọn Multiplayer; dùng nút **Đổi chế độ** ở góc trên trái để ẩn/mở lại lựa chọn hoặc quay về chơi đơn. Chuyển về chơi đơn sẽ ngắt phòng đang kết nối.
+2. Cần chạy relay server trên máy có IP công khai (ví dụ VPS). Trên máy đã cài Godot 4.7, mở thư mục `hcmus_dong_hoa` và chạy:
+   ```powershell
+   godot --headless --path . -- --multiplayer-server --port=2456
+   ```
+   Nếu không truyền `--port`, server dùng cổng UDP `2456`.
+3. Mở cổng **UDP 2456** trong firewall/security group của máy chủ. Không cần mở cổng trên router của người chơi.
+4. Cả hai người mở cùng phiên bản game, chọn Multiplayer, nhập cùng IP công khai hoặc tên miền của relay server và cùng cổng. Một người bấm **Tạo phòng**, rồi gửi mã phòng hiện trong trạng thái cho bạn.
+5. Người còn lại nhập mã đó và bấm **Tham gia**. `127.0.0.1` chỉ dùng khi game client và relay server chạy trên cùng máy.
+
+Relay server cần luôn chạy trong lúc chơi; chỉ sửa game client không tự cung cấp máy chủ công khai. Bản thử hiện đồng bộ vị trí/hướng nhân vật trong khuôn viên. Phòng bên trong, quiz, NPC, thời gian và tiến trình khác chưa được đồng bộ; chưa có tài khoản hay xác thực.
 
 ## Có gì trong game
 - Bản đồ theo sơ đồ cơ sở: Tòa A, B, C, D, E (dãy phía tây), đài phun nước và vườn, Tòa F, G (phía đông), Nhà Thể Dục, Nhà Điều hành ở phía nam, bãi giữ xe, cổng trường ở Đường T1.
 - Nhà Điều hành có dòng chữ vàng "TRƯỜNG ĐẠI HỌC KHOA HỌC TỰ NHIÊN" và "UNIVERSITY OF SCIENCE", có bậc thềm và hoa cảnh. Các tòa còn lại giống nhau (tường vàng, mái đỏ), chỉ khác chữ cái.
 - Nhân vật mặc áo polo trường: cổ xanh sọc trắng, vai trắng, thân và tay xanh navy, có logo ở ngực.
 - Sinh viên đi lại và nói chuyện, xe máy chạy trên đường nội bộ, đồng hồ 7:00 - 17:00.
-- **Hồ đài phun nước** (giữa các tòa nhà) là nơi câu cá. Đứng sát bờ rồi bấm **E** để câu cá (xem mục "Câu cá").
+- **Hồ đài phun nước** nằm giữa các tòa nhà.
 - Có thể đi vào **Tòa A-F, Nhà Thể Dục, Nhà Điều hành và Căn tin** bằng cách đến gần cửa rồi bấm **E**. Đi đến cửa phía dưới bên trong và bấm **E** để quay ra.
 - Đi gần tòa nhà hoặc quầy nào thì góc trên bên trái hiện tên và mô tả.
 
@@ -34,12 +47,13 @@ scripts/
   draw/characters.gd       người, NPC thường, bóng thoại, xe máy
   draw/newcharacters.gd    lớp chuyển tiếp; NPC có tên do features/newcharacters.gd quản lý
   systems/audio_manager.gd phát âm thanh (thiếu file thì im lặng, không lỗi)
-  features/registry.gd     registry gameplay dùng chung (câu cá, quiz, HUD...)
+  features/registry.gd     registry gameplay dùng chung (quiz, HUD...)
   features/_mau_feature.gd file mẫu để copy khi làm feature mới (không chạy trong game)
-  features/feature.gd      lớp nền cho chức năng mới (câu cá, điểm danh, ...)
-  features/fishing.gd      CHỨC NĂNG CÂU CÁ (quăng cần, chờ cá, kéo cá, sổ cá, điểm)
+  features/feature.gd      lớp nền cho chức năng mới
+  systems/multiplayer_manager.gd client online, mã phòng và relay server chuyên dụng
   features/building_doors.gd đi vào / ra tòa nhà, nhà thể dục, nhà điều hành, căn tin
-  features/math_quiz.gd    quiz toán với NPC Cô Toán
+  features/math_quiz.gd    quiz luyện tập và kỳ thi với NPC
+  features/admin_time.gd   công cụ admin tua tuần, thứ và giờ trong game
   systems/math_questions.gd ngân hàng và bộ tạo câu hỏi quiz
 assets/
   audio/                   bỏ file âm thanh vào đây
@@ -52,7 +66,7 @@ Registry là danh sách đường dẫn để game tự nạp script lúc khởi
 
 | Loại nội dung | Đặt file tại | Đăng ký tại | Ví dụ |
 |---|---|---|---|
-| Gameplay dùng chung, có thể dùng ở nhiều nơi | `scripts/features/` | `scripts/features/registry.gd` | câu cá, quiz, HUD, cửa ra vào dùng chung |
+| Gameplay dùng chung, có thể dùng ở nhiều nơi | `scripts/features/` | `scripts/features/registry.gd` | quiz, HUD, cửa ra vào dùng chung |
 | Nội dung chỉ thuộc một tòa/khu vực cụ thể | `scripts/maps/` | `scripts/maps/registry.gd` | Tòa B4.2 và phòng lab |
 
 Khi thêm module:
@@ -67,26 +81,12 @@ Khi thêm module:
 
 Khi nhiều người cùng thêm module vào registry, có thể xảy ra conflict. Giữ lại **tất cả đường dẫn khác nhau còn hợp lệ**, xóa các dấu `<<<<<<<`, `=======`, `>>>>>>>`, rồi kiểm tra không có đường dẫn trùng hoặc trỏ tới file không tồn tại. Không xóa entry của người khác để hết conflict.
 
-## Câu cá
-Đứng sát bờ hồ đài phun nước (góc trên bên trái sẽ hiện tên "Đài phun nước và vườn điều") rồi:
-1. Bấm **E** (hoặc Space) để lấy cần. Thanh "Sức quăng" chạy qua lại, bấm **E** để quăng. Quăng càng xa càng dễ ra cá to, cá hiếm (cá koi vàng chỉ xuất hiện ở xa).
-2. Chờ phao. Phao rung nhẹ là cá chỉ "thử" (đừng kéo). Khi phao chìm mạnh và có dấu **!** trên đầu thì bấm **E** ngay (chậm quá hoặc sớm quá cá sẽ chạy mất).
-3. Giữ **E** để nâng vùng xanh lên, thả ra thì vùng xanh rơi xuống. Giữ con cá trong vùng xanh cho thanh tiến độ đầy là bắt được. Cá nhanh hơn thì khó hơn.
-4. **Q** hoặc **Esc** để thu cần giữa chừng. **B** mở Sổ cá: số lượng từng loại, cỡ lớn nhất, tổng điểm.
-
-Vớt được cá thì có điểm (cá to hơn điểm cao hơn); đôi khi vớt trúng đồ linh tinh như dép tổ ong, lon nước, thẻ sinh viên cũ.
-
 ## Đi vào / ra công trình
 Đến gần cửa phía trước của Tòa A-F, Nhà Thể Dục, Nhà Điều hành hoặc một trong các quầy Nhà ăn rồi bấm **E**. Bên trong dùng **W A S D** để đi; đến gần cửa ở cạnh dưới phòng và bấm **E** để trở lại đúng vị trí bên ngoài. Tọa độ cửa được tạo từ kích thước trong `BUILDINGS`, `DIEUHANH` và các quầy Nhà ăn ở `scripts/maps/campus_data.gd`, nên cửa đi theo khi công trình được dời.
 
-Muốn chỉnh:
-- Thêm/sửa loại cá: bảng `ITEMS` ở đầu `scripts/features/fishing.gd` (tên, độ hiếm, cỡ, độ khó, điểm, màu).
-- Chỉnh vùng câu cá: hằng `FISH_POND` trong `scripts/maps/campus_data.gd` (hình elip nội tiếp khung này, hiện trùng với mặt nước đài phun nước `FOUNT`). Phần vẽ đài phun nước nằm trong `draw_ground()` của `scripts/maps/campus_scenery.gd`.
-- Âm thanh (tùy chọn): bỏ file tên `rod`, `cast`, `splash`, `bite`, `reel`, `catch`, `fail` vào `assets/audio/`.
-
 ## Chỉnh bản đồ
 Mở `scripts/maps/campus_data.gd`: mỗi dòng trong `BUILDINGS` là một tòa (tên, x, y, rộng, cao, màu tường, màu mái, mô tả).
-`KIOSKS` là các quầy nhỏ (nhà ăn, quầy giáo trình...), `ZONES` là các khu vực hiện tên, `LINES` là các câu NPC hay nói, `FISH_POND` là vùng hồ nước dùng để câu cá (đài phun nước).
+`KIOSKS` là các quầy nhỏ (nhà ăn, quầy giáo trình...), `ZONES` là các khu vực hiện tên, `LINES` là các câu NPC hay nói.
 
 ## Thêm âm thanh
 Bỏ file `.ogg` / `.wav` / `.mp3` vào `assets/audio/`, rồi gọi bằng tên file (không cần đuôi):
@@ -98,25 +98,23 @@ audio.stop_music()
 Muốn nhạc lặp lại: chọn file trong Godot, tab Import, bật Loop, bấm Reimport.
 
 ## Thêm chức năng mới (điểm danh, học thư viện, tập thể dục, nói chuyện NPC...)
-1. Tạo file mới trong `scripts/features/`, ví dụ `fishing.gd`:
+1. Tạo file mới trong `scripts/features/`:
 ```gdscript
 extends "res://scripts/features/feature.gd"
 
 func begin() -> void:
 	super()                       # bật chế độ bận: người chơi đứng yên
-	game.audio.play_sfx("splash")
+
 
 func finish() -> void:
 	super()
 ```
 2. Đăng ký gameplay dùng chung trong `scripts/features/registry.gd` (KHÔNG sửa main.gd):
 ```gdscript
-	"res://scripts/features/fishing.gd",
+	"res://scripts/features/ten_feature.gd",
 ```
 3. Gọi `begin()` khi người chơi bấm phím hoặc đứng đúng chỗ, gọi `finish()` khi xong.
-4. Muốn vẽ thêm lên thế giới thì ghi đè `draw_front_layer()` (renderer khuôn viên tự gọi); muốn vẽ giao diện cố định trên màn hình thì làm giống `fishing.gd` (CanvasLayer + Control).
-
-Ví dụ hoàn chỉnh: `scripts/features/fishing.gd`.
+4. Muốn vẽ thêm lên thế giới thì ghi đè `draw_front_layer()` (renderer khuôn viên tự gọi); muốn vẽ giao diện cố định trên màn hình thì tạo `CanvasLayer` + `Control`.
 Chức năng là một Node nên tự có `_process(delta)` và `_unhandled_input(event)`. Trong `game` có `game.player`, `game.audio`, `game.npcs`, `game.game_min`...
 
 ## Thêm công trình/khu vực bản đồ riêng
@@ -140,8 +138,10 @@ Chép ảnh logo trường (vuông, 32x32 hoặc 64x64) vào thư mục `assets`
 Xem `HUONG_DAN_GIT.md`.
 
 
-## Quiz Toán
-- Đến NPC **Cô Toán** có dấu `?` cạnh Tòa F, nhấn **E** để bắt đầu quiz. Không có màn hình chọn độ khó.
-- Mỗi lượt luôn có 5 câu: câu 1-2 là số học cơ bản; câu 3-5 lấy từ Vi tích phân và tăng dần độ khó.
-- Điểm quiz dưới 5/10 bị trừ 0,10 GPA.
+## Quiz ôn đề
+- Đến NPC **Cô Toán** có dấu `?` cạnh Tòa F, nhấn **E** để mở quiz rồi chọn Cơ sở lập trình hoặc Vi tích phân 1.
+- Ngày trong game hiển thị theo **thứ · tuần**. Hai tuần thi giữa kỳ là tuần 8–9: Thầy LĐK tổ chức thi Cơ sở lập trình ở tuần 8; Thầy LTC tổ chức thi Vi tích phân 1 ở tuần 9. Trong tuần thi, tới gần đúng thầy và nhấn **E** để bắt đầu.
+- Mỗi lần vào thi, game chọn ngẫu nhiên một đề gồm 5 câu của đúng môn; Cô Toán vẫn dùng để luyện tập.
+- Nhấn **Esc** để mở menu tạm dừng, chọn **Thời gian** để mở bảng Admin nhỏ giữa màn hình; chọn tuần, thứ, giờ rồi nhấn **CHUYỂN TỚI**. Bảng thời gian tạm dừng game; nhấn **ĐÓNG** để quay lại menu Esc.
+- Chỉ câu đã xác minh với `grading_method: exact` được tự chấm. GPA chỉ bị trừ nếu toàn bộ đề tự chấm được; ngân hàng hiện tại còn câu chấm thủ công nên không làm giảm GPA.
 - Xem `HUONG_DAN_QUIZ.md` và `HUONG_DAN_HOC_MATH_QUIZ.md` để biết cách chơi và cách đọc code.

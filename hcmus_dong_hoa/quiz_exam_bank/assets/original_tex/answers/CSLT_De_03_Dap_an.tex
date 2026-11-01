@@ -1,0 +1,97 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=1.8cm,headheight=48pt,headsep=12pt,footskip=22pt]{geometry}
+\usepackage{fontspec}
+\setmainfont{Noto Serif}
+\setsansfont{Noto Sans}
+\setmonofont{DejaVu Sans Mono}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{enumitem,tabularx,booktabs,array,multicol}
+\usepackage{xcolor,graphicx,tikz,fancyhdr,lastpage}
+\usepackage{listings,tcolorbox,hyperref}
+\hypersetup{colorlinks=true,linkcolor=blue!60!black,urlcolor=blue!60!black}
+\definecolor{hcmusblue}{RGB}{28,55,111}
+\definecolor{lightblue}{RGB}{237,242,250}
+\definecolor{codebg}{RGB}{247,248,250}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt}
+\setlist[enumerate]{leftmargin=*,itemsep=5pt,topsep=4pt}
+\setlist[itemize]{leftmargin=*,itemsep=2pt,topsep=2pt}
+\lstset{language=C++,basicstyle=\ttfamily\footnotesize,backgroundcolor=\color{codebg},frame=single,rulecolor=\color{black!15},breaklines=true,showstringspaces=false,columns=fullflexible,keywordstyle=\color{hcmusblue}\bfseries,commentstyle=\color{green!40!black},numbers=left,numberstyle=\tiny\color{black!45},xleftmargin=1.5em,framexleftmargin=1.2em}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\includegraphics[height=1.05cm,keepaspectratio]{../../04_Nhan_dien/hcmus_logo.png}\hspace{0.45em}\begin{minipage}[c]{0.64\textwidth}\textbf{TRƯỜNG ĐẠI HỌC KHOA HỌC TỰ NHIÊN}\\[-1pt]\small ĐHQG TP. HỒ CHÍ MINH\end{minipage}}
+\fancyhead[R]{\small\textcolor{hcmusblue}{TÀI LIỆU LUYỆN TẬP}}
+\fancyfoot[L]{\scriptsize Biên soạn độc lập - Không phải đề thi chính thức}
+\fancyfoot[R]{\scriptsize Trang \thepage}
+\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\footrulewidth}{0.3pt}
+\newcommand{\examtitle}[4]{\begin{center}{\Large\bfseries\color{hcmusblue}#1}\par\vspace{3pt}{\large\bfseries #2}\par\vspace{3pt}\small #3\quad\textbullet\quad #4\end{center}\vspace{5pt}\hrule\vspace{8pt}}
+\newcommand{\studentline}{\begin{tabularx}{\textwidth}{X X}\textbf{Họ và tên:} \hrulefill & \textbf{MSSV:} \hrulefill\\[7pt]\textbf{Lớp:} \hrulefill & \textbf{Ngày làm:} \hrulefill\end{tabularx}\vspace{8pt}}
+\newcommand{\points}[1]{\hfill\textbf{(#1 điểm)}}
+\newtcolorbox{notebox}{colback=lightblue,colframe=hcmusblue!55,boxrule=0.5pt,arc=1.5mm,left=2mm,right=2mm,top=1mm,bottom=1mm}
+\begin{document}
+\small
+\examtitle{ĐÁP ÁN ĐỀ LUYỆN TẬP 03 - CƠ SỞ LẬP TRÌNH}{CƠ SỞ LẬP TRÌNH - HCMUS (theo lịch học tuần 1--5)}{Lời giải chi tiết và mã C++11}{Giữa kỳ 1 - HK1 2026--2027}
+
+\section*{Đáp án và lời giải - Đề 03}
+\begin{enumerate}
+\item \begin{minipage}[t]{\linewidth}
+Với $i=1$, tổng được cộng một lần: $1+1=2$. Với $i=2$, cộng $2+1$ và $2+2$, tổng 7. Với $i=3$, cộng $3+1$, $3+2$, $3+3$, tổng 15. Vậy $s=2+7+15=24$. Tổng số lần cộng là $1+2+3=6$.
+\end{minipage}
+\item \begin{minipage}[t]{\linewidth}
+Mã C++11 tham khảo:
+\begin{lstlisting}
+bool isPrime(int n) {
+    if (n < 2) return false;
+    for (int d = 2; d <= n / d; ++d)
+        if (n % d == 0) return false;
+    return true;
+}
+\end{lstlisting}
+Chỉ cần thử ước $d$ đến căn bậc hai của $n$. Điều kiện \texttt{d <= n/d} tránh phép nhân $d*d$ có thể tràn số nguyên.
+\end{minipage}
+\item \begin{minipage}[t]{\linewidth}
+Mã C++11 tham khảo:
+\begin{lstlisting}
+int digitSum(int n) {
+    if (n < 10) return n;
+    return n % 10 + digitSum(n / 10);
+}
+\end{lstlisting}
+Điều kiện dừng là chỉ còn một chữ số. Với 5072: $2+7+0+5=14$.
+\end{minipage}
+\item \begin{minipage}[t]{\linewidth}
+Mã C++11 tham khảo:
+\begin{lstlisting}
+int longestIncreasingRun(const int a[], int n, int &start) {
+    if (n <= 0) { start = -1; return 0; }
+    int bestStart = 0, bestLen = 1;
+    int curStart = 0, curLen = 1;
+    for (int i = 1; i < n; ++i) {
+        if (a[i] > a[i-1]) ++curLen;
+        else { curStart = i; curLen = 1; }
+        if (curLen > bestLen) {
+            bestLen = curLen;
+            bestStart = curStart;
+        }
+    }
+    start = bestStart;
+    return bestLen;
+}
+\end{lstlisting}
+Chỉ cập nhật khi dài hơn để giữ đoạn đầu tiên khi hòa.
+\end{minipage}
+\item \begin{minipage}[t]{\linewidth}
+Mã C++11 tham khảo:
+\begin{lstlisting}
+void transpose(const int A[][MAX], int T[][MAX], int R, int C) {
+    for (int i = 0; i < R; ++i)
+        for (int j = 0; j < C; ++j)
+            T[j][i] = A[i][j];
+}
+\end{lstlisting}
+Phần tử ở hàng $i$, cột $j$ của $A$ được đưa sang hàng $j$, cột $i$ của $T$.
+\end{minipage}
+\end{enumerate}
+
+\end{document}

@@ -1,0 +1,47 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=1.8cm,headheight=48pt,headsep=12pt,footskip=22pt]{geometry}
+\usepackage{fontspec}
+\setmainfont{Noto Serif}
+\setsansfont{Noto Sans}
+\setmonofont{DejaVu Sans Mono}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{enumitem,tabularx,booktabs,array,multicol}
+\usepackage{xcolor,graphicx,tikz,fancyhdr,lastpage}
+\usepackage{listings,tcolorbox,hyperref}
+\hypersetup{colorlinks=true,linkcolor=blue!60!black,urlcolor=blue!60!black}
+\definecolor{hcmusblue}{RGB}{18,58,110}
+\definecolor{lightblue}{RGB}{235,242,250}
+\definecolor{codebg}{RGB}{247,248,250}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt}
+\setlist[enumerate]{leftmargin=*,itemsep=3pt,topsep=3pt}
+\setlist[itemize]{leftmargin=*,itemsep=2pt,topsep=2pt}
+\lstset{language=C++,basicstyle=\ttfamily\footnotesize,backgroundcolor=\color{codebg},frame=single,rulecolor=\color{black!15},breaklines=true,showstringspaces=false,columns=fullflexible,keywordstyle=\color{hcmusblue}\bfseries,commentstyle=\color{green!40!black},numbers=left,numberstyle=\tiny\color{black!45},xleftmargin=1.5em,framexleftmargin=1.2em}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\includegraphics[height=1.05cm,keepaspectratio]{../../04_Nhan_dien/hcmus_logo.png}\hspace{0.45em}\begin{minipage}[c]{0.64\textwidth}\textbf{TRƯỜNG ĐẠI HỌC KHOA HỌC TỰ NHIÊN}\\[-1pt]\small ĐHQG TP. HỒ CHÍ MINH\end{minipage}}
+\fancyhead[R]{\small\textcolor{hcmusblue}{TÀI LIỆU LUYỆN TẬP}}
+\fancyfoot[L]{\scriptsize Biên soạn độc lập - Không phải đề thi chính thức}
+\fancyfoot[R]{\scriptsize Trang \thepage}
+\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\footrulewidth}{0.3pt}
+\newcommand{\examtitle}[4]{\begin{center}{\Large\bfseries\color{hcmusblue}#1}\par\vspace{3pt}{\large\bfseries #2}\par\vspace{3pt}\small #3\quad\textbullet\quad #4\end{center}\vspace{5pt}\hrule\vspace{8pt}}
+\newcommand{\studentline}{\begin{tabularx}{\textwidth}{X X}\textbf{Họ và tên:} \hrulefill & \textbf{MSSV:} \hrulefill\\[7pt]\textbf{Lớp:} \hrulefill & \textbf{Ngày làm:} \hrulefill\end{tabularx}\vspace{8pt}}
+\newcommand{\points}[1]{\hfill\textbf{(#1 điểm)}}
+\newtcolorbox{notebox}{colback=lightblue,colframe=hcmusblue!55,boxrule=0.5pt,arc=1.5mm,left=2mm,right=2mm,top=1mm,bottom=1mm}
+\begin{document}
+\examtitle{ĐÁP ÁN ĐỀ LUYỆN TẬP 05 - VI TÍCH PHÂN 1}{VI TÍCH PHÂN 1 - HCMUS (bộ luyện tập)}{Lời giải chi tiết}{Học phần giữa kỳ 1}
+
+\section*{Đáp án và lời giải - Đề 05}
+\begin{enumerate}
+\item Liên tục: $a+2=1+b$, tức $b=a+1$. Khả vi: đạo hàm trái $a$, đạo hàm phải $2+b$. Suy ra $a=2+b$. Kết hợp $b=a+1$ cho $a=2+a+1$, vô nghiệm. Vì vậy không tồn tại cặp $(a,b)$ đồng thời làm hàm liên tục và khả vi tại 1. (Điều kiện liên tục riêng là $b=a+1$.)
+\item Theo định nghĩa:
+\[
+f'(x)=\lim_{h\to0}\frac{e^{2x+2h}-e^{2x}}h=e^{2x}\lim_{h\to0}\frac{e^{2h}-1}{h}=2e^{2x}.
+\]
+\item $h(1)=\sqrt2$, $h'(x)=x/\sqrt{x^2+1}$ nên $h'(1)=1/\sqrt2$. $L(x)=\sqrt2+(x-1)/\sqrt2$. Do đó $h(1.02)\approx\sqrt2+0.02/\sqrt2$.
+\item Đạo hàm: $2x+y+xy'=0$, suy ra $y'=-(2x+y)/x$. Tại $(2,1)$, $y'=-5/2$. Tiếp tuyến: $y-1=-\frac52(x-2)$.
+\item Khai triển gần 0: $\tan x=x+x^3/3+o(x^3)$ và $\sin x=x-x^3/6+o(x^3)$, hiệu là $x^3/2+o(x^3)$. Giới hạn bằng $1/2$.
+\end{enumerate}
+
+\end{document}

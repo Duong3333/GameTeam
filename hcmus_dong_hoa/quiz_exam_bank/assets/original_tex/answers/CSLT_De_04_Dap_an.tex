@@ -1,0 +1,101 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=1.8cm,headheight=48pt,headsep=12pt,footskip=22pt]{geometry}
+\usepackage{fontspec}
+\setmainfont{Noto Serif}
+\setsansfont{Noto Sans}
+\setmonofont{DejaVu Sans Mono}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{enumitem,tabularx,booktabs,array,multicol}
+\usepackage{xcolor,graphicx,tikz,fancyhdr,lastpage}
+\usepackage{listings,tcolorbox,hyperref}
+\hypersetup{colorlinks=true,linkcolor=blue!60!black,urlcolor=blue!60!black}
+\definecolor{hcmusblue}{RGB}{28,55,111}
+\definecolor{lightblue}{RGB}{237,242,250}
+\definecolor{codebg}{RGB}{247,248,250}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt}
+\setlist[enumerate]{leftmargin=*,itemsep=5pt,topsep=4pt}
+\setlist[itemize]{leftmargin=*,itemsep=2pt,topsep=2pt}
+\lstset{language=C++,basicstyle=\ttfamily\footnotesize,backgroundcolor=\color{codebg},frame=single,rulecolor=\color{black!15},breaklines=true,showstringspaces=false,columns=fullflexible,keywordstyle=\color{hcmusblue}\bfseries,commentstyle=\color{green!40!black},numbers=left,numberstyle=\tiny\color{black!45},xleftmargin=1.5em,framexleftmargin=1.2em}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\includegraphics[height=1.05cm,keepaspectratio]{../../04_Nhan_dien/hcmus_logo.png}\hspace{0.45em}\begin{minipage}[c]{0.64\textwidth}\textbf{TRƯỜNG ĐẠI HỌC KHOA HỌC TỰ NHIÊN}\\[-1pt]\small ĐHQG TP. HỒ CHÍ MINH\end{minipage}}
+\fancyhead[R]{\small\textcolor{hcmusblue}{TÀI LIỆU LUYỆN TẬP}}
+\fancyfoot[L]{\scriptsize Biên soạn độc lập - Không phải đề thi chính thức}
+\fancyfoot[R]{\scriptsize Trang \thepage}
+\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\footrulewidth}{0.3pt}
+\newcommand{\examtitle}[4]{\begin{center}{\Large\bfseries\color{hcmusblue}#1}\par\vspace{3pt}{\large\bfseries #2}\par\vspace{3pt}\small #3\quad\textbullet\quad #4\end{center}\vspace{5pt}\hrule\vspace{8pt}}
+\newcommand{\studentline}{\begin{tabularx}{\textwidth}{X X}\textbf{Họ và tên:} \hrulefill & \textbf{MSSV:} \hrulefill\\[7pt]\textbf{Lớp:} \hrulefill & \textbf{Ngày làm:} \hrulefill\end{tabularx}\vspace{8pt}}
+\newcommand{\points}[1]{\hfill\textbf{(#1 điểm)}}
+\newtcolorbox{notebox}{colback=lightblue,colframe=hcmusblue!55,boxrule=0.5pt,arc=1.5mm,left=2mm,right=2mm,top=1mm,bottom=1mm}
+\begin{document}
+\small
+\examtitle{ĐÁP ÁN ĐỀ LUYỆN TẬP 04 - CƠ SỞ LẬP TRÌNH}{CƠ SỞ LẬP TRÌNH - HCMUS (theo lịch học tuần 1--5)}{Lời giải chi tiết và mã C++11}{Giữa kỳ 1 - HK1 2026--2027}
+
+\section*{Đáp án và lời giải - Đề 04}
+\begin{enumerate}
+\item \begin{minipage}[t]{\linewidth}
+Xét điều kiện từ trên xuống dưới để tránh nhánh rộng hơn bắt mất trường hợp cụ thể:
+\begin{lstlisting}
+if (x < 0 || x > 10) cout << "Invalid";
+else if (x >= 8.5) cout << "Excellent";
+else if (x >= 7.0) cout << "Good";
+else if (x >= 5.0) cout << "Pass";
+else cout << "Not pass";
+\end{lstlisting}
+\end{minipage}
+\item \begin{minipage}[t]{\linewidth}
+Mã C++11 tham khảo:
+\begin{lstlisting}
+int countDivisors(int n) {
+    int count = 0;
+    for (int d = 1; d <= n; ++d)
+        if (n % d == 0) ++count;
+    return count;
+}
+\end{lstlisting}
+Ví dụ $n=12$ có các ước $1,2,3,4,6,12$, kết quả 6.
+\end{minipage}
+\item \begin{minipage}[t]{\linewidth}
+Mã C++11 tham khảo:
+\begin{lstlisting}
+const double PI = 3.141592653589793;
+double area(double r) {
+    return PI * r * r;
+}
+double area(double w, double h) {
+    return w * h;
+}
+\end{lstlisting}
+Khác số lượng tham số nên trình biên dịch phân biệt được hai hàm cùng tên.
+\end{minipage}
+\item \begin{minipage}[t]{\linewidth}
+Mã C++11 tham khảo:
+\begin{lstlisting}
+void moveZerosToEnd(int a[], int n) {
+    int write = 0;
+    for (int read = 0; read < n; ++read)
+        if (a[read] != 0) a[write++] = a[read];
+    while (write < n) a[write++] = 0;
+}
+\end{lstlisting}
+Ví dụ $[0,4,0,2,7]$ trở thành $[4,2,7,0,0]$. Khi ghi, chỉ ghi vào vị trí không vượt quá chỉ số đang đọc nên thứ tự phần tử khác 0 được bảo toàn.
+\end{minipage}
+\item \begin{minipage}[t]{\linewidth}
+Mã C++11 tham khảo:
+\begin{lstlisting}
+long long borderSum(const int a[][MAX], int R, int C) {
+    long long sum = 0;
+    for (int i = 0; i < R; ++i)
+        for (int j = 0; j < C; ++j)
+            if (i == 0 || i == R-1 || j == 0 || j == C-1)
+                sum += a[i][j];
+    return sum;
+}
+\end{lstlisting}
+Mỗi ô được duyệt đúng một lần và kiểm tra điều kiện biên bằng phép OR, do đó không đếm trùng các góc hoặc các ô khi $R=1$ hay $C=1$.
+\end{minipage}
+\end{enumerate}
+
+\end{document}

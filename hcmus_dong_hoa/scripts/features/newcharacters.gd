@@ -10,6 +10,7 @@ const ROLE_TALK_RANGE := 30.0
 const ROLE_SPEED := 20.0
 const ROLE_WALK_RADIUS := 36.0
 const ROLE_SAY_TIME := 4.5
+const Schedule := preload("res://scripts/features/schedule_data.gd")
 
 # Thông tin từng nhân vật: tên, chỗ đứng, câu thoại (GIỮ NGUYÊN từng chữ, từng dấu)
 const ROLE_NPCS := {
@@ -127,6 +128,25 @@ func _unhandled_input(event: InputEvent) -> void:
 	var n: Variant = role_npc_near()
 	if n == null:
 		return
+	var exam := Schedule.exam_for_teacher(str(n.role))
+	if not exam.is_empty():
+		if Schedule.week_no(game.day) == int(exam["week"]):
+			for feature in game.features:
+				if feature.has_method("start_teacher_exam") and feature.start_teacher_exam(str(n.role)):
+					n.dir = Vector2.ZERO
+					n.face = role_face(game.player - n.pos)
+					get_viewport().set_input_as_handled()
+					return
+			push_error("No quiz feature could start the scheduled exam for %s." % str(n.role))
+		var exam_message := Schedule.teacher_exam_message(str(n.role), game.day)
+		if not exam_message.is_empty():
+			n.say = exam_message
+			n.say_t = ROLE_SAY_TIME
+			n.talk = ROLE_SAY_TIME
+			n.dir = Vector2.ZERO
+			n.face = role_face(game.player - n.pos)
+			get_viewport().set_input_as_handled()
+			return
 	var lines: Array = n.lines
 	n.say = lines[n.line_i % lines.size()]
 	n.line_i += 1

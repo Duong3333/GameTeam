@@ -1,0 +1,48 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=1.8cm,headheight=48pt,headsep=12pt,footskip=22pt]{geometry}
+\usepackage{fontspec}
+\setmainfont{Noto Serif}
+\setsansfont{Noto Sans}
+\setmonofont{DejaVu Sans Mono}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{enumitem,tabularx,booktabs,array,multicol}
+\usepackage{xcolor,graphicx,tikz,fancyhdr,lastpage}
+\usepackage{listings,tcolorbox,hyperref}
+\hypersetup{colorlinks=true,linkcolor=blue!60!black,urlcolor=blue!60!black}
+\definecolor{hcmusblue}{RGB}{28,55,111}
+\definecolor{lightblue}{RGB}{237,242,250}
+\definecolor{codebg}{RGB}{247,248,250}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt}
+\setlist[enumerate]{leftmargin=*,itemsep=5pt,topsep=4pt}
+\setlist[itemize]{leftmargin=*,itemsep=2pt,topsep=2pt}
+\lstset{language=C++,basicstyle=\ttfamily\footnotesize,backgroundcolor=\color{codebg},frame=single,rulecolor=\color{black!15},breaklines=true,showstringspaces=false,columns=fullflexible,keywordstyle=\color{hcmusblue}\bfseries,commentstyle=\color{green!40!black},numbers=left,numberstyle=\tiny\color{black!45},xleftmargin=1.5em,framexleftmargin=1.2em}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\includegraphics[height=1.05cm,keepaspectratio]{assets/images/institution_logo.png}\hspace{0.45em}\begin{minipage}[c]{0.64\textwidth}\textbf{TRƯỜNG ĐẠI HỌC KHOA HỌC TỰ NHIÊN}\\[-1pt]\small ĐHQG TP. HỒ CHÍ MINH\end{minipage}}
+\fancyhead[R]{\small\textcolor{hcmusblue}{TÀI LIỆU LUYỆN TẬP}}
+\fancyfoot[L]{\scriptsize Biên soạn độc lập - Không phải đề thi chính thức}
+\fancyfoot[R]{\scriptsize Trang \thepage}
+\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\footrulewidth}{0.3pt}
+\newcommand{\examtitle}[4]{\begin{center}{\Large\bfseries\color{hcmusblue}#1}\par\vspace{3pt}{\large\bfseries #2}\par\vspace{3pt}\small #3\quad\textbullet\quad #4\end{center}\vspace{5pt}\hrule\vspace{8pt}}
+\newcommand{\studentline}{\begin{tabularx}{\textwidth}{X X}\textbf{Họ và tên:} \hrulefill & \textbf{MSSV:} \hrulefill\\[7pt]\textbf{Lớp:} \hrulefill & \textbf{Ngày làm:} \hrulefill\end{tabularx}\vspace{8pt}}
+\newcommand{\points}[1]{\hfill\textbf{(#1 điểm)}}
+\newtcolorbox{notebox}{colback=lightblue,colframe=hcmusblue!55,boxrule=0.5pt,arc=1.5mm,left=2mm,right=2mm,top=1mm,bottom=1mm}
+\begin{document}
+\examtitle{ĐỀ LUYỆN TẬP 04 - CƠ SỞ LẬP TRÌNH}{CƠ SỞ LẬP TRÌNH - HCMUS (theo lịch học tuần 1--5)}{90 phút - 10 điểm - C++11 - Không sử dụng tài liệu}{Giữa kỳ 1 - HK1 2026--2027}
+
+\studentline
+\begin{notebox}\textbf{Phạm vi:} Rẽ nhánh nhiều mức, vòng lặp đếm, nạp chồng hàm, thao tác mảng 1D tại chỗ và duyệt biên ma trận 2D.\end{notebox}
+\begin{enumerate}
+\item Một học phần chấm điểm theo thang 10. Viết đoạn \texttt{if/else} phân loại điểm $x$: ngoài đoạn $[0,10]$ là \texttt{Invalid}; từ 8.5 trở lên là \texttt{Excellent}; từ 7 đến dưới 8.5 là \texttt{Good}; từ 5 đến dưới 7 là \texttt{Pass}; dưới 5 là \texttt{Not pass}. \points{2}
+\item Viết hàm \texttt{countDivisors(n)} đếm số ước nguyên dương của $n$, với $n>0$. Sử dụng vòng lặp. \points{2}
+\item Nạp chồng hàm \texttt{area}: phiên bản một tham số tính diện tích hình tròn bán kính $r$; phiên bản hai tham số tính diện tích hình chữ nhật có chiều rộng $w$ và chiều dài $h$. Dùng hằng số $\pi=3.141592653589793$. \points{2}
+\item Viết hàm dồn tất cả phần tử khác 0 lên đầu mảng, giữ nguyên thứ tự tương đối của chúng; các phần tử 0 chuyển về cuối. Thực hiện ngay trên mảng, không dùng mảng phụ. \points{2}
+Prototype: \texttt{void moveZerosToEnd(int a[], int n);}
+\item Viết hàm tính tổng các phần tử nằm trên biên của ma trận $R\times C$ ($R,C>0$). Mỗi ô biên chỉ được tính đúng một lần, kể cả khi ma trận chỉ có một hàng hoặc một cột. \points{2}
+Prototype: \texttt{long long borderSum(const int a[][MAX], int R, int C);}
+\end{enumerate}
+\vfill\begin{center}\textit{--- Hết ---}\end{center}
+
+\end{document}

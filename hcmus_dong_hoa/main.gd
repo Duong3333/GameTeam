@@ -7,6 +7,7 @@ extends "res://scripts/maps/campus_overlay.gd"
 
 const Feature := preload("res://scripts/features/feature.gd")
 const AudioManager := preload("res://scripts/systems/audio_manager.gd")
+const MultiplayerManager := preload("res://scripts/systems/multiplayer_manager.gd")
 const Registry := preload("res://scripts/features/registry.gd")
 const MapRegistry := preload("res://scripts/maps/registry.gd")
 const StudentStats := preload("res://scripts/features/student_stats.gd")
@@ -19,9 +20,15 @@ func _ready() -> void:
 	add_child(audio)
 	audio.play_music("xuongrongpiano")
 	setup_features()
+	multiplayer_manager = MultiplayerManager.new()
+	multiplayer_manager.name = "MultiplayerManager"
+	multiplayer_manager.game = self
+	add_child(multiplayer_manager)
 
 func _physics_process(delta: float) -> void:
-	if not is_busy():
+	if multiplayer_manager != null and multiplayer_manager.is_connected_to_session():
+		multiplayer_manager.physics_tick(delta)
+	elif not is_busy():
 		update_player(delta)
 	update_npcs(delta)
 
@@ -43,7 +50,7 @@ func skip_days(n: int) -> void:
 	day += n
 	game_min = 7.0 * 60.0
 
-# ---------- Chức năng mở rộng (câu cá, điểm danh, ...) ----------
+# ---------- Chức năng mở rộng ----------
 func setup_features() -> void:
 	_load_registry(Registry.LIST, "features/registry.gd")
 

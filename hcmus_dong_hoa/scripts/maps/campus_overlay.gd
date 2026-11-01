@@ -24,6 +24,10 @@ func draw_sorted_items() -> void:
 		items.append([float(t[1]), 0, t])
 	for n in npcs:
 		items.append([n.pos.y, 1, n])
+	if multiplayer_manager != null:
+		var remote_players: Dictionary = multiplayer_manager.get_other_players()
+		for remote in remote_players.values():
+			items.append([remote.pos.y, 5, remote])
 	for l in lamps:
 		items.append([l.y, 3, l])
 	for bn in benches:
@@ -48,6 +52,14 @@ func draw_sorted_items() -> void:
 				draw_quiz_marker(n)
 			if n.say_t > 0.0:
 				draw_speech(n)
+		elif it[1] == 5:
+			var remote: Dictionary = it[2]
+			var remote_pos: Vector2 = remote.pos
+			if not view.has_point(remote_pos):
+				continue
+			draw_person(remote_pos, Color("7dc8ff"), Color("3b2a1a"), remote.facing, remote.anim, true, false, false)
+			var peer_id: int = remote.get("id", 0)
+			ctext("Chủ phòng" if peer_id == 1 else "Người chơi %d" % peer_id, remote_pos.x - 36, remote_pos.y - 28, 72, 8, Color("9fe3ff"))
 		else:
 			draw_person(player, Color.WHITE, Color("1b1b1b"), facing, anim, true, false, true)
 			ctext("Bạn", player.x - 15, player.y - 28, 30, 8, Color("ffd23f"))
@@ -75,3 +87,6 @@ func draw_minimap() -> void:
 	if int(clock * 3.0) % 2 == 0:
 		rc(o.x + player.x * sc - 1.5, o.y + player.y * sc - 1.5, 3, 3, Color.WHITE)
 	rc(o.x + player.x * sc - 0.5, o.y + player.y * sc - 0.5, 1, 1, Color("e5322d"))
+	if multiplayer_manager != null:
+		for remote in multiplayer_manager.get_other_players().values():
+			rc(o.x + remote.pos.x * sc - 1.0, o.y + remote.pos.y * sc - 1.0, 2, 2, Color("36d9ff"))

@@ -1,0 +1,1 @@
+Các công thức được giữ ở dạng LaTeX trong `questions/*.json` (`question_latex`, `solution_latex`) và `latex/*.tex`. Không có hình công thức riêng được nhúng trong đề nguồn; công thức PDF là văn bản/vector.

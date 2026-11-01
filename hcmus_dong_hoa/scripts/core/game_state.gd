@@ -27,3 +27,4 @@ var clouds: Array = []
 var rng: RandomNumberGenerator
 var audio: Node          # AudioManager (scripts/systems/audio_manager.gd)
 var features: Array = [] # gameplay dùng chung và module bản đồ đã đăng ký
+var multiplayer_manager: Node
