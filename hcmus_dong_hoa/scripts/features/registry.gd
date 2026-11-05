@@ -14,4 +14,5 @@ const LIST := [
 	"res://scripts/features/dance.gd",           # nhấn J để nhảy múa
 	"res://scripts/features/math_quiz.gd",       # NPC Cô Toán: nhấn E để làm quiz
 	"res://scripts/features/newcharacters.gd",   # NPC mới có tên NPC
+	"res://scripts/features/gym_basketball.gd",  # bóng rổ
 ]
