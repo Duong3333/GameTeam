@@ -1,0 +1,376 @@
+{
+  "generated_from": [
+    "02_De_luyen_tap.zip",
+    "03_Dap_an.zip"
+  ],
+  "scope": "Chỉ nội dung của hai ZIP được người dùng cung cấp; không có nguồn bên ngoài.",
+  "archives": [
+    {
+      "filename": "02_De_luyen_tap.zip",
+      "size_bytes": 2051156,
+      "sha256": "c95ff080f19d8ab2ad3a2e69e93cb5f3185521289ad55b2af6889d1166b67a5e",
+      "file_count": 20,
+      "files": [
+        {
+          "path_in_zip": "02_De_luyen_tap/Co_so_lap_trinh/CSLT_De_01.pdf",
+          "size_bytes": 213891
+        },
+        {
+          "path_in_zip": "02_De_luyen_tap/Co_so_lap_trinh/CSLT_De_01.tex",
+          "size_bytes": 4426
+        },
+        {
+          "path_in_zip": "02_De_luyen_tap/Co_so_lap_trinh/CSLT_De_02.pdf",
+          "size_bytes": 203761
+        },
+        {
+          "path_in_zip": "02_De_luyen_tap/Co_so_lap_trinh/CSLT_De_02.tex",
+          "size_bytes": 4113
+        },
+        {
+          "path_in_zip": "02_De_luyen_tap/Co_so_lap_trinh/CSLT_De_03.pdf",
+          "size_bytes": 203395
+        },
+        {
+          "path_in_zip": "02_De_luyen_tap/Co_so_lap_trinh/CSLT_De_03.tex",
+          "size_bytes": 4185
+        },
+        {
+          "path_in_zip": "02_De_luyen_tap/Co_so_lap_trinh/CSLT_De_04.pdf",
+          "size_bytes": 204969
+        },
+        {
+          "path_in_zip": "02_De_luyen_tap/Co_so_lap_trinh/CSLT_De_04.tex",
+          "size_bytes": 4182
+        },
+        {
+          "path_in_zip": "02_De_luyen_tap/Co_so_lap_trinh/CSLT_De_05.pdf",
+          "size_bytes": 202915
+        },
+        {
+          "path_in_zip": "02_De_luyen_tap/Co_so_lap_trinh/CSLT_De_05.tex",
+          "size_bytes": 4189
+        },
+        {
+          "path_in_zip": "02_De_luyen_tap/Vi_tich_phan/VTP1_De_01.pdf",
+          "size_bytes": 197049
+        },
+        {
+          "path_in_zip": "02_De_luyen_tap/Vi_tich_phan/VTP1_De_01.tex",
+          "size_bytes": 3632
+        },
+        {
+          "path_in_zip": "02_De_luyen_tap/Vi_tich_phan/VTP1_De_02.pdf",
+          "size_bytes": 195636
+        },
+        {
+          "path_in_zip": "02_De_luyen_tap/Vi_tich_phan/VTP1_De_02.tex",
+          "size_bytes": 3431
+        },
+        {
+          "path_in_zip": "02_De_luyen_tap/Vi_tich_phan/VTP1_De_03.pdf",
+          "size_bytes": 195256
+        },
+        {
+          "path_in_zip": "02_De_luyen_tap/Vi_tich_phan/VTP1_De_03.tex",
+          "size_bytes": 3350
+        },
+        {
+          "path_in_zip": "02_De_luyen_tap/Vi_tich_phan/VTP1_De_04.pdf",
+          "size_bytes": 196490
+        },
+        {
+          "path_in_zip": "02_De_luyen_tap/Vi_tich_phan/VTP1_De_04.tex",
+          "size_bytes": 3473
+        },
+        {
+          "path_in_zip": "02_De_luyen_tap/Vi_tich_phan/VTP1_De_05.pdf",
+          "size_bytes": 195415
+        },
+        {
+          "path_in_zip": "02_De_luyen_tap/Vi_tich_phan/VTP1_De_05.tex",
+          "size_bytes": 3374
+        }
+      ]
+    },
+    {
+      "filename": "03_Dap_an.zip",
+      "size_bytes": 2362319,
+      "sha256": "d680e31e07e61d5c3c8e6c257a4c3177e4e677a70327e425051b44ec0df52d18",
+      "file_count": 20,
+      "files": [
+        {
+          "path_in_zip": "03_Dap_an/Co_so_lap_trinh/CSLT_De_01_Dap_an.pdf",
+          "size_bytes": 209392
+        },
+        {
+          "path_in_zip": "03_Dap_an/Co_so_lap_trinh/CSLT_De_01_Dap_an.tex",
+          "size_bytes": 4747
+        },
+        {
+          "path_in_zip": "03_Dap_an/Co_so_lap_trinh/CSLT_De_02_Dap_an.pdf",
+          "size_bytes": 368014
+        },
+        {
+          "path_in_zip": "03_Dap_an/Co_so_lap_trinh/CSLT_De_02_Dap_an.tex",
+          "size_bytes": 5143
+        },
+        {
+          "path_in_zip": "03_Dap_an/Co_so_lap_trinh/CSLT_De_03_Dap_an.pdf",
+          "size_bytes": 209182
+        },
+        {
+          "path_in_zip": "03_Dap_an/Co_so_lap_trinh/CSLT_De_03_Dap_an.tex",
+          "size_bytes": 4579
+        },
+        {
+          "path_in_zip": "03_Dap_an/Co_so_lap_trinh/CSLT_De_04_Dap_an.pdf",
+          "size_bytes": 210498
+        },
+        {
+          "path_in_zip": "03_Dap_an/Co_so_lap_trinh/CSLT_De_04_Dap_an.tex",
+          "size_bytes": 4676
+        },
+        {
+          "path_in_zip": "03_Dap_an/Co_so_lap_trinh/CSLT_De_05_Dap_an.pdf",
+          "size_bytes": 365344
+        },
+        {
+          "path_in_zip": "03_Dap_an/Co_so_lap_trinh/CSLT_De_05_Dap_an.tex",
+          "size_bytes": 4801
+        },
+        {
+          "path_in_zip": "03_Dap_an/Vi_tich_phan/VTP1_De_01_Dap_an.pdf",
+          "size_bytes": 191999
+        },
+        {
+          "path_in_zip": "03_Dap_an/Vi_tich_phan/VTP1_De_01_Dap_an.tex",
+          "size_bytes": 3377
+        },
+        {
+          "path_in_zip": "03_Dap_an/Vi_tich_phan/VTP1_De_02_Dap_an.pdf",
+          "size_bytes": 190727
+        },
+        {
+          "path_in_zip": "03_Dap_an/Vi_tich_phan/VTP1_De_02_Dap_an.tex",
+          "size_bytes": 3274
+        },
+        {
+          "path_in_zip": "03_Dap_an/Vi_tich_phan/VTP1_De_03_Dap_an.pdf",
+          "size_bytes": 190981
+        },
+        {
+          "path_in_zip": "03_Dap_an/Vi_tich_phan/VTP1_De_03_Dap_an.tex",
+          "size_bytes": 3323
+        },
+        {
+          "path_in_zip": "03_Dap_an/Vi_tich_phan/VTP1_De_04_Dap_an.pdf",
+          "size_bytes": 191331
+        },
+        {
+          "path_in_zip": "03_Dap_an/Vi_tich_phan/VTP1_De_04_Dap_an.tex",
+          "size_bytes": 3230
+        },
+        {
+          "path_in_zip": "03_Dap_an/Vi_tich_phan/VTP1_De_05_Dap_an.pdf",
+          "size_bytes": 190274
+        },
+        {
+          "path_in_zip": "03_Dap_an/Vi_tich_phan/VTP1_De_05_Dap_an.tex",
+          "size_bytes": 3399
+        }
+      ]
+    }
+  ],
+  "exams": [
+    {
+      "exam_index": 1,
+      "exam_id": "CSLT_EXAM_001",
+      "subject": "Cơ sở lập trình",
+      "title": "ĐỀ LUYỆN TẬP 01 - CƠ SỞ LẬP TRÌNH",
+      "question_count": 5,
+      "question_pdf": "02_De_luyen_tap/Co_so_lap_trinh/CSLT_De_01.pdf",
+      "question_tex": "02_De_luyen_tap/Co_so_lap_trinh/CSLT_De_01.tex",
+      "question_pages": 1,
+      "answer_pdf": "03_Dap_an/Co_so_lap_trinh/CSLT_De_01_Dap_an.pdf",
+      "answer_tex": "03_Dap_an/Co_so_lap_trinh/CSLT_De_01_Dap_an.tex",
+      "answer_pages": 1,
+      "exam_type": "midterm",
+      "classification_source": "Lịch thi trong game được gán theo tuần giữa kỳ cấu hình.",
+      "subject_id": "",
+      "teacher_id": "",
+      "scheduled_game_week": 8
+    },
+    {
+      "exam_index": 2,
+      "exam_id": "CSLT_EXAM_002",
+      "subject": "Cơ sở lập trình",
+      "title": "ĐỀ LUYỆN TẬP 02 - CƠ SỞ LẬP TRÌNH",
+      "question_count": 5,
+      "question_pdf": "02_De_luyen_tap/Co_so_lap_trinh/CSLT_De_02.pdf",
+      "question_tex": "02_De_luyen_tap/Co_so_lap_trinh/CSLT_De_02.tex",
+      "question_pages": 1,
+      "answer_pdf": "03_Dap_an/Co_so_lap_trinh/CSLT_De_02_Dap_an.pdf",
+      "answer_tex": "03_Dap_an/Co_so_lap_trinh/CSLT_De_02_Dap_an.tex",
+      "answer_pages": 2,
+      "exam_type": "midterm",
+      "classification_source": "Lịch thi trong game được gán theo tuần giữa kỳ cấu hình.",
+      "subject_id": "",
+      "teacher_id": "",
+      "scheduled_game_week": 8
+    },
+    {
+      "exam_index": 3,
+      "exam_id": "CSLT_EXAM_003",
+      "subject": "Cơ sở lập trình",
+      "title": "ĐỀ LUYỆN TẬP 03 - CƠ SỞ LẬP TRÌNH",
+      "question_count": 5,
+      "question_pdf": "02_De_luyen_tap/Co_so_lap_trinh/CSLT_De_03.pdf",
+      "question_tex": "02_De_luyen_tap/Co_so_lap_trinh/CSLT_De_03.tex",
+      "question_pages": 1,
+      "answer_pdf": "03_Dap_an/Co_so_lap_trinh/CSLT_De_03_Dap_an.pdf",
+      "answer_tex": "03_Dap_an/Co_so_lap_trinh/CSLT_De_03_Dap_an.tex",
+      "answer_pages": 1,
+      "exam_type": "midterm",
+      "classification_source": "Lịch thi trong game được gán theo tuần giữa kỳ cấu hình.",
+      "subject_id": "",
+      "teacher_id": "",
+      "scheduled_game_week": 8
+    },
+    {
+      "exam_index": 4,
+      "exam_id": "CSLT_EXAM_004",
+      "subject": "Cơ sở lập trình",
+      "title": "ĐỀ LUYỆN TẬP 04 - CƠ SỞ LẬP TRÌNH",
+      "question_count": 5,
+      "question_pdf": "02_De_luyen_tap/Co_so_lap_trinh/CSLT_De_04.pdf",
+      "question_tex": "02_De_luyen_tap/Co_so_lap_trinh/CSLT_De_04.tex",
+      "question_pages": 1,
+      "answer_pdf": "03_Dap_an/Co_so_lap_trinh/CSLT_De_04_Dap_an.pdf",
+      "answer_tex": "03_Dap_an/Co_so_lap_trinh/CSLT_De_04_Dap_an.tex",
+      "answer_pages": 1,
+      "exam_type": "midterm",
+      "classification_source": "Lịch thi trong game được gán theo tuần giữa kỳ cấu hình.",
+      "subject_id": "",
+      "teacher_id": "",
+      "scheduled_game_week": 8
+    },
+    {
+      "exam_index": 5,
+      "exam_id": "CSLT_EXAM_005",
+      "subject": "Cơ sở lập trình",
+      "title": "ĐỀ LUYỆN TẬP 05 - CƠ SỞ LẬP TRÌNH",
+      "question_count": 5,
+      "question_pdf": "02_De_luyen_tap/Co_so_lap_trinh/CSLT_De_05.pdf",
+      "question_tex": "02_De_luyen_tap/Co_so_lap_trinh/CSLT_De_05.tex",
+      "question_pages": 1,
+      "answer_pdf": "03_Dap_an/Co_so_lap_trinh/CSLT_De_05_Dap_an.pdf",
+      "answer_tex": "03_Dap_an/Co_so_lap_trinh/CSLT_De_05_Dap_an.tex",
+      "answer_pages": 2,
+      "exam_type": "midterm",
+      "classification_source": "Lịch thi trong game được gán theo tuần giữa kỳ cấu hình.",
+      "subject_id": "",
+      "teacher_id": "",
+      "scheduled_game_week": 8
+    },
+    {
+      "exam_index": 6,
+      "exam_id": "VTP1_EXAM_001",
+      "subject": "Vi tích phân 1",
+      "title": "ĐỀ LUYỆN TẬP 01 - VI TÍCH PHÂN 1",
+      "question_count": 5,
+      "question_pdf": "02_De_luyen_tap/Vi_tich_phan/VTP1_De_01.pdf",
+      "question_tex": "02_De_luyen_tap/Vi_tich_phan/VTP1_De_01.tex",
+      "question_pages": 1,
+      "answer_pdf": "03_Dap_an/Vi_tich_phan/VTP1_De_01_Dap_an.pdf",
+      "answer_tex": "03_Dap_an/Vi_tich_phan/VTP1_De_01_Dap_an.tex",
+      "answer_pages": 1,
+      "exam_type": "midterm",
+      "classification_source": "Lịch thi trong game được gán theo tuần giữa kỳ cấu hình.",
+      "subject_id": "",
+      "teacher_id": "",
+      "scheduled_game_week": 9
+    },
+    {
+      "exam_index": 7,
+      "exam_id": "VTP1_EXAM_002",
+      "subject": "Vi tích phân 1",
+      "title": "ĐỀ LUYỆN TẬP 02 - VI TÍCH PHÂN 1",
+      "question_count": 5,
+      "question_pdf": "02_De_luyen_tap/Vi_tich_phan/VTP1_De_02.pdf",
+      "question_tex": "02_De_luyen_tap/Vi_tich_phan/VTP1_De_02.tex",
+      "question_pages": 1,
+      "answer_pdf": "03_Dap_an/Vi_tich_phan/VTP1_De_02_Dap_an.pdf",
+      "answer_tex": "03_Dap_an/Vi_tich_phan/VTP1_De_02_Dap_an.tex",
+      "answer_pages": 1,
+      "exam_type": "midterm",
+      "classification_source": "Lịch thi trong game được gán theo tuần giữa kỳ cấu hình.",
+      "subject_id": "",
+      "teacher_id": "",
+      "scheduled_game_week": 9
+    },
+    {
+      "exam_index": 8,
+      "exam_id": "VTP1_EXAM_003",
+      "subject": "Vi tích phân 1",
+      "title": "ĐỀ LUYỆN TẬP 03 - VI TÍCH PHÂN 1",
+      "question_count": 5,
+      "question_pdf": "02_De_luyen_tap/Vi_tich_phan/VTP1_De_03.pdf",
+      "question_tex": "02_De_luyen_tap/Vi_tich_phan/VTP1_De_03.tex",
+      "question_pages": 1,
+      "answer_pdf": "03_Dap_an/Vi_tich_phan/VTP1_De_03_Dap_an.pdf",
+      "answer_tex": "03_Dap_an/Vi_tich_phan/VTP1_De_03_Dap_an.tex",
+      "answer_pages": 1,
+      "exam_type": "midterm",
+      "classification_source": "Lịch thi trong game được gán theo tuần giữa kỳ cấu hình.",
+      "subject_id": "",
+      "teacher_id": "",
+      "scheduled_game_week": 9
+    },
+    {
+      "exam_index": 9,
+      "exam_id": "VTP1_EXAM_004",
+      "subject": "Vi tích phân 1",
+      "title": "ĐỀ LUYỆN TẬP 04 - VI TÍCH PHÂN 1",
+      "question_count": 5,
+      "question_pdf": "02_De_luyen_tap/Vi_tich_phan/VTP1_De_04.pdf",
+      "question_tex": "02_De_luyen_tap/Vi_tich_phan/VTP1_De_04.tex",
+      "question_pages": 1,
+      "answer_pdf": "03_Dap_an/Vi_tich_phan/VTP1_De_04_Dap_an.pdf",
+      "answer_tex": "03_Dap_an/Vi_tich_phan/VTP1_De_04_Dap_an.tex",
+      "answer_pages": 1,
+      "exam_type": "midterm",
+      "classification_source": "Lịch thi trong game được gán theo tuần giữa kỳ cấu hình.",
+      "subject_id": "",
+      "teacher_id": "",
+      "scheduled_game_week": 9
+    },
+    {
+      "exam_index": 10,
+      "exam_id": "VTP1_EXAM_005",
+      "subject": "Vi tích phân 1",
+      "title": "ĐỀ LUYỆN TẬP 05 - VI TÍCH PHÂN 1",
+      "question_count": 5,
+      "question_pdf": "02_De_luyen_tap/Vi_tich_phan/VTP1_De_05.pdf",
+      "question_tex": "02_De_luyen_tap/Vi_tich_phan/VTP1_De_05.tex",
+      "question_pages": 1,
+      "answer_pdf": "03_Dap_an/Vi_tich_phan/VTP1_De_05_Dap_an.pdf",
+      "answer_tex": "03_Dap_an/Vi_tich_phan/VTP1_De_05_Dap_an.tex",
+      "answer_pages": 1,
+      "exam_type": "midterm",
+      "classification_source": "Lịch thi trong game được gán theo tuần giữa kỳ cấu hình.",
+      "subject_id": "",
+      "teacher_id": "",
+      "scheduled_game_week": 9
+    }
+  ],
+  "user_classification": {
+    "exam_type": "midterm",
+    "basis": "Người dùng xác nhận các bộ đề luyện tập thuộc nhóm ôn giữa kỳ.",
+    "note": "Lịch thi trong game; nguồn đề vẫn được giữ nguyên là đề luyện tập.",
+    "game_weeks": {
+      "CSLT": 8,
+      "VTP1": 9
+    }
+  }
+}

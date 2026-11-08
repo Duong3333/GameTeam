@@ -3,11 +3,11 @@ extends "res://scripts/maps/campus_overlay.gd"
 #   maps/campus_data.gd -> core/game_state.gd -> maps/campus_update.gd -> maps/campus_setup.gd
 #   -> draw/pen.gd -> maps/campus_scenery.gd -> maps/campus_structures.gd -> draw/characters.gd
 #   -> draw/newcharacters.gd -> maps/campus_overlay.gd -> main.gd
-# Các nhánh cũ có tên khác nhau nhưng cùng chuỗi kế thừa chính; giữ nguyên cấu trúc hiện tại của project.
 # Mỗi file kế thừa file đứng trước nó, nên các hàm gọi nhau bình thường.
 
 const Feature := preload("res://scripts/features/feature.gd")
 const AudioManager := preload("res://scripts/systems/audio_manager.gd")
+const MultiplayerManager := preload("res://scripts/systems/multiplayer_manager.gd")
 const Registry := preload("res://scripts/features/registry.gd")
 const MapRegistry := preload("res://scripts/maps/registry.gd")
 const StudentStats := preload("res://scripts/features/student_stats.gd")
@@ -20,9 +20,15 @@ func _ready() -> void:
 	add_child(audio)
 	audio.play_music("xuongrongpiano")
 	setup_features()
+	multiplayer_manager = MultiplayerManager.new()
+	multiplayer_manager.name = "MultiplayerManager"
+	multiplayer_manager.game = self
+	add_child(multiplayer_manager)
 
 func _physics_process(delta: float) -> void:
-	if not is_busy():
+	if multiplayer_manager != null and multiplayer_manager.is_connected_to_session():
+		multiplayer_manager.physics_tick(delta)
+	elif not is_busy():
 		update_player(delta)
 	update_npcs(delta)
 
@@ -34,6 +40,7 @@ func _process(delta: float) -> void:
 	cam.position = player
 	clock += delta
 	update_ambient(delta)
+	update_bikes(delta)
 	update_daylight()
 	update_hud()
 	queue_redraw()
@@ -43,7 +50,7 @@ func skip_days(n: int) -> void:
 	day += n
 	game_min = 7.0 * 60.0
 
-# ---------- Chức năng mở rộng (câu cá, điểm danh, ...) ----------
+# ---------- Chức năng mở rộng ----------
 func setup_features() -> void:
 	_load_registry(Registry.LIST, "features/registry.gd")
 
@@ -66,7 +73,7 @@ func add_feature(f: Feature) -> void:
 	features.append(f)
 	add_child(f)
 
-# true khi có chức năng đang chạy -> người chơi đứng yên (NPC vẫn chạy)
+# true khi có chức năng đang chạy -> người chơi đứng yên (NPC và xe máy vẫn chạy)
 func is_busy() -> bool:
 	for f in features:
 		if f.active:

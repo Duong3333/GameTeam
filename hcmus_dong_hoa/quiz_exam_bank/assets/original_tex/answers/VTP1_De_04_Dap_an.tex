@@ -1,0 +1,44 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=1.8cm,headheight=48pt,headsep=12pt,footskip=22pt]{geometry}
+\usepackage{fontspec}
+\setmainfont{Noto Serif}
+\setsansfont{Noto Sans}
+\setmonofont{DejaVu Sans Mono}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{enumitem,tabularx,booktabs,array,multicol}
+\usepackage{xcolor,graphicx,tikz,fancyhdr,lastpage}
+\usepackage{listings,tcolorbox,hyperref}
+\hypersetup{colorlinks=true,linkcolor=blue!60!black,urlcolor=blue!60!black}
+\definecolor{hcmusblue}{RGB}{18,58,110}
+\definecolor{lightblue}{RGB}{235,242,250}
+\definecolor{codebg}{RGB}{247,248,250}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt}
+\setlist[enumerate]{leftmargin=*,itemsep=3pt,topsep=3pt}
+\setlist[itemize]{leftmargin=*,itemsep=2pt,topsep=2pt}
+\lstset{language=C++,basicstyle=\ttfamily\footnotesize,backgroundcolor=\color{codebg},frame=single,rulecolor=\color{black!15},breaklines=true,showstringspaces=false,columns=fullflexible,keywordstyle=\color{hcmusblue}\bfseries,commentstyle=\color{green!40!black},numbers=left,numberstyle=\tiny\color{black!45},xleftmargin=1.5em,framexleftmargin=1.2em}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\includegraphics[height=1.05cm,keepaspectratio]{../../04_Nhan_dien/hcmus_logo.png}\hspace{0.45em}\begin{minipage}[c]{0.64\textwidth}\textbf{TRƯỜNG ĐẠI HỌC KHOA HỌC TỰ NHIÊN}\\[-1pt]\small ĐHQG TP. HỒ CHÍ MINH\end{minipage}}
+\fancyhead[R]{\small\textcolor{hcmusblue}{TÀI LIỆU LUYỆN TẬP}}
+\fancyfoot[L]{\scriptsize Biên soạn độc lập - Không phải đề thi chính thức}
+\fancyfoot[R]{\scriptsize Trang \thepage}
+\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\footrulewidth}{0.3pt}
+\newcommand{\examtitle}[4]{\begin{center}{\Large\bfseries\color{hcmusblue}#1}\par\vspace{3pt}{\large\bfseries #2}\par\vspace{3pt}\small #3\quad\textbullet\quad #4\end{center}\vspace{5pt}\hrule\vspace{8pt}}
+\newcommand{\studentline}{\begin{tabularx}{\textwidth}{X X}\textbf{Họ và tên:} \hrulefill & \textbf{MSSV:} \hrulefill\\[7pt]\textbf{Lớp:} \hrulefill & \textbf{Ngày làm:} \hrulefill\end{tabularx}\vspace{8pt}}
+\newcommand{\points}[1]{\hfill\textbf{(#1 điểm)}}
+\newtcolorbox{notebox}{colback=lightblue,colframe=hcmusblue!55,boxrule=0.5pt,arc=1.5mm,left=2mm,right=2mm,top=1mm,bottom=1mm}
+\begin{document}
+\examtitle{ĐÁP ÁN ĐỀ LUYỆN TẬP 04 - VI TÍCH PHÂN 1}{VI TÍCH PHÂN 1 - HCMUS (bộ luyện tập)}{Lời giải chi tiết}{Học phần giữa kỳ 1}
+
+\section*{Đáp án và lời giải - Đề 04}
+\begin{enumerate}
+\item Với $x\ne2$, $\frac{x^2-4}{x-2}=x+2$. Giới hạn tại 2 bằng 4, nên $c=4$. Khi đó hàm trùng với $x+2$ trên toàn miền, do đó khả vi và $f'(2)=1$.
+\item $g'(x)=\lim_{h\to0}\frac{1/(2x+2h+1)-1/(2x+1)}h=\lim_{h\to0}\frac{-2}{(2x+2h+1)(2x+1)}=-\frac2{(2x+1)^2}$.
+\item $dC=2\pi\,dr=2\pi(-0.03)=-0.06\pi$ cm. Chu vi giảm xấp xỉ $0.06\pi$ cm.
+\item Lấy đạo hàm: $y+xy'+2yy'=0$, do đó $y'=-y/(x+2y)$. Tại $(2,2)$, hệ số góc $-2/6=-1/3$. Tiếp tuyến: $y-2=-\frac13(x-2)$.
+\item Dùng giới hạn chuẩn $1-\cos u\sim u^2/2$: kết quả $25/2$. Có thể dùng L'Hospital hai lần để thu được cùng kết quả.
+\end{enumerate}
+
+\end{document}

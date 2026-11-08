@@ -11,6 +11,20 @@ const SEMESTER_WEEKS := 17
 const MIDTERM_WEEKS := [8, 9]     # tuần thi giữa kỳ
 const FINAL_WEEKS := [16, 17]     # tuần thi cuối kỳ
 const DAY_NAMES := ["Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7", "Chủ nhật"]
+const MIDTERM_EXAMS := {
+	"thay_ldk": {
+		"teacher_name": "Thầy LĐK",
+		"subject_code": "CSLT",
+		"subject_name": "Cơ sở lập trình",
+		"week": MIDTERM_WEEKS[0],
+	},
+	"thay_ltc": {
+		"teacher_name": "Thầy LTC",
+		"subject_code": "VTP1",
+		"subject_name": "Vi tích phân 1",
+		"week": MIDTERM_WEEKS[1],
+	},
+}
 
 # ---------- Giờ từng tiết LÝ THUYẾT: tiết -> [phút bắt đầu, phút kết thúc], tính từ 0:00 ----------
 const LT_PERIODS := {
@@ -80,6 +94,33 @@ static func weekday(day: int) -> int:
 
 static func week_no(day: int) -> int:
 	return int(day / 7.0) + 1
+
+static func date_text(day: int) -> String:
+	return "%s · Tuần %d" % [DAY_NAMES[weekday(day)], week_no(day)]
+
+static func exam_for_teacher(role: String) -> Dictionary:
+	if not MIDTERM_EXAMS.has(role):
+		return {}
+	return MIDTERM_EXAMS[role].duplicate()
+
+static func teacher_exam_message(role: String, day: int) -> String:
+	var exam := exam_for_teacher(role)
+	if exam.is_empty():
+		return ""
+	var current_week := week_no(day)
+	if current_week == int(exam["week"]):
+		return "Tuần này thi giữa kỳ môn %s. Nhấn E để bắt đầu làm bài." % exam["subject_name"]
+	if current_week in FINAL_WEEKS:
+		return "Tuần này là thời gian thi cuối kỳ."
+	return ""
+
+static func upcoming_midterm_text(day: int) -> String:
+	var current_week := week_no(day)
+	for role in MIDTERM_EXAMS:
+		var exam := exam_for_teacher(role)
+		if current_week == int(exam["week"]):
+			return "Thi giữa kỳ tuần này: %s" % exam["subject_name"]
+	return ""
 
 # "G" -> "Tòa G"; nơi đặc biệt lấy tên ngắn trong PLACE_NAMES
 static func place_text(place: String) -> String:

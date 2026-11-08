@@ -1,0 +1,49 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=1.8cm,headheight=48pt,headsep=12pt,footskip=22pt]{geometry}
+\usepackage{fontspec}
+\setmainfont{Noto Serif}
+\setsansfont{Noto Sans}
+\setmonofont{DejaVu Sans Mono}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{enumitem,tabularx,booktabs,array,multicol}
+\usepackage{xcolor,graphicx,tikz,fancyhdr,lastpage}
+\usepackage{listings,tcolorbox,hyperref}
+\hypersetup{colorlinks=true,linkcolor=blue!60!black,urlcolor=blue!60!black}
+\definecolor{hcmusblue}{RGB}{28,55,111}
+\definecolor{lightblue}{RGB}{237,242,250}
+\definecolor{codebg}{RGB}{247,248,250}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt}
+\setlist[enumerate]{leftmargin=*,itemsep=5pt,topsep=4pt}
+\setlist[itemize]{leftmargin=*,itemsep=2pt,topsep=2pt}
+\lstset{language=C++,basicstyle=\ttfamily\footnotesize,backgroundcolor=\color{codebg},frame=single,rulecolor=\color{black!15},breaklines=true,showstringspaces=false,columns=fullflexible,keywordstyle=\color{hcmusblue}\bfseries,commentstyle=\color{green!40!black},numbers=left,numberstyle=\tiny\color{black!45},xleftmargin=1.5em,framexleftmargin=1.2em}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\includegraphics[height=1.05cm,keepaspectratio]{../../04_Nhan_dien/hcmus_logo.png}\hspace{0.45em}\begin{minipage}[c]{0.64\textwidth}\textbf{TRƯỜNG ĐẠI HỌC KHOA HỌC TỰ NHIÊN}\\[-1pt]\small ĐHQG TP. HỒ CHÍ MINH\end{minipage}}
+\fancyhead[R]{\small\textcolor{hcmusblue}{TÀI LIỆU LUYỆN TẬP}}
+\fancyfoot[L]{\scriptsize Biên soạn độc lập - Không phải đề thi chính thức}
+\fancyfoot[R]{\scriptsize Trang \thepage}
+\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\footrulewidth}{0.3pt}
+\newcommand{\examtitle}[4]{\begin{center}{\Large\bfseries\color{hcmusblue}#1}\par\vspace{3pt}{\large\bfseries #2}\par\vspace{3pt}\small #3\quad\textbullet\quad #4\end{center}\vspace{5pt}\hrule\vspace{8pt}}
+\newcommand{\studentline}{\begin{tabularx}{\textwidth}{X X}\textbf{Họ và tên:} \hrulefill & \textbf{MSSV:} \hrulefill\\[7pt]\textbf{Lớp:} \hrulefill & \textbf{Ngày làm:} \hrulefill\end{tabularx}\vspace{8pt}}
+\newcommand{\points}[1]{\hfill\textbf{(#1 điểm)}}
+\newtcolorbox{notebox}{colback=lightblue,colframe=hcmusblue!55,boxrule=0.5pt,arc=1.5mm,left=2mm,right=2mm,top=1mm,bottom=1mm}
+\begin{document}
+\examtitle{ĐỀ LUYỆN TẬP 02 - CƠ SỞ LẬP TRÌNH}{CƠ SỞ LẬP TRÌNH - HCMUS (theo lịch học tuần 1--5)}{90 phút - 10 điểm - C++11 - Không sử dụng tài liệu}{Giữa kỳ 1 - HK1 2026--2027}
+
+\studentline
+\begin{notebox}\textbf{Phạm vi:} Câu lệnh điều kiện, vòng lặp \texttt{while}, hàm Euclid, nạp chồng hàm và thao tác mảng 1D/2D. Dùng C++11.\end{notebox}
+\begin{enumerate}
+\item Nhập ba số nguyên dương $a,b,c$. Viết các điều kiện để kiểm tra ba số có thể là độ dài ba cạnh tam giác hay không. Nếu là tam giác, phân loại thành đều, cân hoặc thường (ưu tiên đều trước, cân sau). Trình bày đoạn lệnh \texttt{if/else} hoàn chỉnh. \points{2}
+\item Viết hàm \texttt{gcd(a,b)} tìm ước chung lớn nhất của hai số nguyên không âm, sử dụng thuật toán Euclid với vòng lặp \texttt{while}. Quy ước \texttt{gcd(a,0)=a}. \points{2}
+\item Nạp chồng hàm \texttt{maxValue} để hàm hoạt động với hai số nguyên và với hai số thực kiểu \texttt{double}. Sau đó cho biết kết quả của hai lệnh:\
+\texttt{cout << maxValue(3, 5) << " " << maxValue(2.5, 1.8);}. \points{2}
+\item Viết hàm quay mảng sang phải $k$ vị trí ngay trên mảng, không dùng mảng phụ. Nếu $k<0$, hiểu là quay trái $|k|$ vị trí. Có thể viết hàm phụ đảo một đoạn mảng. Giả sử $n>0$. \points{2}
+Prototype: \texttt{void rotate(int a[], int n, int k);}
+\item Viết hàm in ra số phần tử chẵn trên từng hàng của ma trận $R\times C$. \points{2}
+Prototype: \texttt{void printEvenCountPerRow(const int a[][MAX], int R, int C);}
+\end{enumerate}
+\vfill\begin{center}\textit{--- Hết ---}\end{center}
+
+\end{document}
