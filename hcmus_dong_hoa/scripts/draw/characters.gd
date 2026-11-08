@@ -1,5 +1,5 @@
 extends "res://scripts/maps/campus_structures.gd"
-# NHÂN VẬT: người chơi, NPC và bóng thoại.
+# NHÂN VẬT: người (người chơi + NPC), bóng thoại, xe máy.
 
 # nhân vật pixel: áo polo trường (cổ xanh navy sọc trắng, vai trắng, thân và tay navy, logo ngực)
 func draw_person(pos: Vector2, shirt: Color, hair: Color, face: int, step: float, uni: bool, long_hair: bool, pack: bool) -> void:
@@ -90,3 +90,19 @@ func draw_speech(n: Dictionary) -> void:
 func draw_quiz_marker(n: Dictionary) -> void:
 	ctext("Thầy Toán", n.pos.x - 25, n.pos.y - 27, 50, 8, Color("7fe0a0"))
 	ctext("?", n.pos.x - 6, n.pos.y - 34 + sin(clock * 4.0) * 2.0, 12, 11, Color("ffd23f"))
+
+func draw_bike(b: Dictionary) -> void:
+	var x: float = b.x
+	var y: float = b.y
+	if not view.grow(20.0).has_point(Vector2(x, y)):
+		return
+	shadow(Vector2(x + 8, y + 7), 10.0)
+	rc(x, y, 14, 4, b.col)
+	rc(x + 2, y - 1, 8, 2, b.col.lightened(0.3))
+	rc(x, y + 3, 4, 4, Color.BLACK)
+	rc(x + 10, y + 3, 4, 4, Color.BLACK)
+	rc(x + 1, y + 4, 2, 2, Color("9aa3ad"))
+	rc(x + 11, y + 4, 2, 2, Color("9aa3ad"))
+	rc(x + 5, y - 8, 4, 8, Color("e8e8e8"))
+	rc(x + 5, y - 12, 4, 4, Color("f1c27d"))
+	rc(x + 4, y - 14, 6, 3, Color("cc2b2b"))

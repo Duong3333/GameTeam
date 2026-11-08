@@ -297,7 +297,7 @@ func draw_school_gate() -> void:
 	for b in GATE_BARRICADES:
 		draw_red_barricade(b)
 
-# ---------- HỒ SINH VIÊN (nơi câu cá, xem scripts/features/fishing.gd) ----------
+# ---------- HỒ SINH VIÊN ----------
 func lake_poly(c: Vector2, rx: float, ry: float, n: int = 40) -> PackedVector2Array:
 	var pts := PackedVector2Array()
 	for i in n:

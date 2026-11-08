@@ -14,7 +14,7 @@ extends "res://scripts/features/feature.gd"
 #   game.BUILDINGS   bảng tòa nhà: minimap và dòng tên khu vực ở góc trái tự nhận tòa B4.2
 #   game.rc/ctext/hedge/draw_person/draw_tree/draw_lamp/draw_bench   hàm vẽ có sẵn
 #   draw_front_layer()  vẽ lên thế giới (như mọi feature); begin()/finish()/active của feature.gd
-#                       (active = true thì người chơi ngoài trời đứng yên, giống lúc câu cá)
+#                       (active = true thì người chơi ngoài trời đứng yên)
 #   Nhân vật trong phòng lab được vẽ bằng chính draw_person() của game (cùng áo polo, cùng animation đi bộ).
 
 # ---------- Tòa nhà ngoài trời ----------

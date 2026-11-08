@@ -17,12 +17,14 @@ Game 2D góc nhìn từ trên xuống, vẽ bằng code, về một ngày của 
 3. Chạy thử, rồi tạo Pull Request.
 
 ## Bản đồ và module bản đồ
-Toàn bộ mã khuôn viên gốc (dữ liệu, khởi tạo, cập nhật, cảnh và công trình) nằm trong `scripts/maps/campus_*.gd`. Nội dung riêng của từng tòa/khu vực như phòng lab B4.2 cũng nằm trong `scripts/maps/` và đăng ký trong `scripts/maps/registry.gd`. Cơ chế gameplay dùng chung (như câu cá hoặc cửa ra vào) vẫn ở `scripts/features/`.
+Toàn bộ mã khuôn viên gốc (dữ liệu, khởi tạo, cập nhật, cảnh và công trình) nằm trong `scripts/maps/campus_*.gd`. Nội dung riêng của từng tòa/khu vực như phòng lab B4.2 cũng nằm trong `scripts/maps/` và đăng ký trong `scripts/maps/registry.gd`. Cơ chế gameplay dùng chung như cửa ra vào vẫn ở `scripts/features/`.
 
 ## Các chức năng đã tích hợp
 - Nhân vật có tên: Thầy LTC, Thầy LĐK, Bác bảo vệ, Bác giữ xe và Cô lao công. Đến gần, nhấn E để trò chuyện.
+- Lịch game hiển thị theo thứ và tuần học. Kỳ giữa kỳ diễn ra trong tuần 8–9: Cơ sở lập trình với Thầy LĐK ở tuần 8, Vi tích phân 1 với Thầy LTC ở tuần 9. Mỗi lần thi chọn ngẫu nhiên một đề của môn.
+- Chế độ Admin: nhấn **Esc** trong game, chọn **Thời gian**; bảng tua thời gian gọn ở giữa màn hình cho phép chọn tuần, thứ, giờ.
 - Đi vào / ra công trình: đến cửa và nhấn E.
-- Câu cá: đứng sát hồ đài phun nước giữa các tòa nhà và nhấn E; nhấn B để mở sổ cá.
-- Quiz Toán: đến NPC Cô Toán (có dấu ?) và nhấn E.
-- Nhảy múa: nhấn J.
-- Hướng dẫn chi tiết: `HUONG_DAN_QUIZ.md` và `HUONG_DAN_HOC_MATH_QUIZ.md`.
+- Chơi đơn hoặc online: chọn chế độ qua nút ở góc trên trái; form tạo/tham gia phòng chỉ hiện trong Multiplayer. Chế độ online đồng bộ di chuyển nhân vật; xem `HUONG_DAN.md` để biết cách kết nối.
+- Luyện tập Quiz Toán: đến NPC Cô Toán (có dấu ?) và nhấn E; hai kỳ thi giữa kỳ chỉ mở từ đúng thầy trong tuần thi của môn.
+- Bản thử chỉ đồng bộ vị trí/hướng nhân vật; các tính năng còn lại chưa chia sẻ giữa người chơi. Chơi khác mạng cần chạy relay server trên máy chủ có IP công khai và mở **UDP 2456** trên máy chủ; người chơi không cần mở cổng trên router. Cách chạy xem `HUONG_DAN.md`.
+- Hướng dẫn chi tiết: `HUONG_DAN.md`, `HUONG_DAN_QUIZ.md` và `HUONG_DAN_HOC_MATH_QUIZ.md`.

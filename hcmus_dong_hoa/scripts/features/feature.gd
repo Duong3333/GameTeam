@@ -1,8 +1,8 @@
 extends Node
 # LỚP NỀN CHO GAMEPLAY DÙNG CHUNG VÀ MODULE BẢN ĐỒ CÓ TƯƠNG TÁC.
 #
-# Cách thêm 1 chức năng mới, ví dụ câu cá:
-#   1. Tạo scripts/features/fishing.gd:
+# Cách thêm một chức năng mới:
+#   1. Tạo script kế thừa lớp này:
 #        extends "res://scripts/features/feature.gd"
 #        func begin() -> void:
 #            super()                        # bật active -> người chơi đứng yên
@@ -16,7 +16,7 @@ extends Node
 #   3. Gọi begin() khi người chơi bấm phím / đứng đúng chỗ, gọi finish() khi xong.
 #   4. (Tùy chọn) Muốn vẽ thêm thứ gì lên thế giới (cần câu, hiệu ứng...) thì ghi đè draw_front_layer().
 #      Hàm này được main.gd gọi trong _draw(), sau khi vẽ người và cây; dùng game.draw_line(...), game.rc(...), game.ctext(...).
-#      Muốn vẽ giao diện cố định trên màn hình (thanh sức mạnh, bảng điểm) thì tạo CanvasLayer + Control như features/fishing.gd.
+#      Muốn vẽ giao diện cố định trên màn hình thì tạo CanvasLayer + Control.
 
 var game: Node2D     # tham chiếu tới Main, main.gd gán khi đăng ký (dùng game.player, game.audio, ...)
 var active := false  # true = đang chạy; khi đó người chơi không di chuyển được

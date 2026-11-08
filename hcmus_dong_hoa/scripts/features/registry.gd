@@ -7,11 +7,10 @@ extends RefCounted
 # Chỉ thêm entry mới trước dấu ] cuối danh sách; không xóa hoặc sắp xếp lại entry hiện có.
 
 const LIST := [
-	"res://scripts/features/fishing.gd",         # câu cá ở hồ đài phun nước
 	"res://scripts/features/student_hud.gd",     # GPA/rèn luyện, đồng hồ và thời khóa biểu
 	"res://scripts/features/student_panel.gd",   # sổ tay sinh viên
 	"res://scripts/features/building_doors.gd",  # vào / ra công trình và căn tin
-	"res://scripts/features/dance.gd",           # nhấn J để nhảy múa
 	"res://scripts/features/math_quiz.gd",       # NPC Cô Toán: nhấn E để làm quiz
-	"res://scripts/features/newcharacters.gd",   # NPC mới có tên NPC
+	"res://scripts/features/newcharacters.gd",   # NPC mới
+	"res://scripts/features/admin_time.gd",      # Chế độ admin: tua tuần, thứ và giờ từ menu Esc
 ]

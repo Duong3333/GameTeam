@@ -1,0 +1,7 @@
+{
+  "conversion": {
+    "scale_10": 10.0,
+    "gpa_multiplier": 0.4,
+    "gpa_max": 4.0
+  }
+}

@@ -63,13 +63,14 @@ func _on_drl_changed(amount: int, reason: String) -> void:
 	popups.append({"text": text, "color": color, "t": POPUP_TIME})
 
 func _on_draw() -> void:
-	canvas.draw_rect(Rect2(2, 2, 176, 53), Color(0, 0, 0, 0.35))   # nền mờ cho dễ đọc
+	canvas.draw_rect(Rect2(2, 2, 250, 66), Color(0, 0, 0, 0.35))   # nền mờ cho dễ đọc
 	paint_row(0, "Rèn luyện", stats.drl_text(), stats.drl_ratio())
 	paint_row(1, "GPA", stats.gpa_text(), stats.gpa_ratio())
 	var minute := int(game.game_min)
-	var clock_line := "%s · %02d:%02d" % [Schedule.DAY_NAMES[Schedule.weekday(game.day)], int(minute / 60.0), minute % 60]
+	var clock_line := "%s · %02d:%02d" % [Schedule.date_text(game.day), int(minute / 60.0), minute % 60]
 	write(Vector2(X, Y + 2 * ROW_H + 9), clock_line, Color.WHITE)
 	write(Vector2(X, Y + 2 * ROW_H + 20), Schedule.next_class_text(game.day, game.game_min), Color(1.0, 0.85, 0.3))
+	write(Vector2(X, Y + 2 * ROW_H + 31), Schedule.upcoming_midterm_text(game.day), Color("ffd23f"))
 	for i in popups.size():
 		var p: Dictionary = popups[i]
 		var life := clampf(p.t / POPUP_TIME, 0.0, 1.0)   # 1 = vừa hiện, 0 = biến mất

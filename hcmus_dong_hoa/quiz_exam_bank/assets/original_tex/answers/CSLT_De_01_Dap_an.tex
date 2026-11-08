@@ -1,0 +1,96 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=1.8cm,headheight=48pt,headsep=12pt,footskip=22pt]{geometry}
+\usepackage{fontspec}
+\setmainfont{Noto Serif}
+\setsansfont{Noto Sans}
+\setmonofont{DejaVu Sans Mono}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{enumitem,tabularx,booktabs,array,multicol}
+\usepackage{xcolor,graphicx,tikz,fancyhdr,lastpage}
+\usepackage{listings,tcolorbox,hyperref}
+\hypersetup{colorlinks=true,linkcolor=blue!60!black,urlcolor=blue!60!black}
+\definecolor{hcmusblue}{RGB}{28,55,111}
+\definecolor{lightblue}{RGB}{237,242,250}
+\definecolor{codebg}{RGB}{247,248,250}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt}
+\setlist[enumerate]{leftmargin=*,itemsep=5pt,topsep=4pt}
+\setlist[itemize]{leftmargin=*,itemsep=2pt,topsep=2pt}
+\lstset{language=C++,basicstyle=\ttfamily\footnotesize,backgroundcolor=\color{codebg},frame=single,rulecolor=\color{black!15},breaklines=true,showstringspaces=false,columns=fullflexible,keywordstyle=\color{hcmusblue}\bfseries,commentstyle=\color{green!40!black},numbers=left,numberstyle=\tiny\color{black!45},xleftmargin=1.5em,framexleftmargin=1.2em}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\includegraphics[height=1.05cm,keepaspectratio]{../../04_Nhan_dien/hcmus_logo.png}\hspace{0.45em}\begin{minipage}[c]{0.64\textwidth}\textbf{TRƯỜNG ĐẠI HỌC KHOA HỌC TỰ NHIÊN}\\[-1pt]\small ĐHQG TP. HỒ CHÍ MINH\end{minipage}}
+\fancyhead[R]{\small\textcolor{hcmusblue}{TÀI LIỆU LUYỆN TẬP}}
+\fancyfoot[L]{\scriptsize Biên soạn độc lập - Không phải đề thi chính thức}
+\fancyfoot[R]{\scriptsize Trang \thepage}
+\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\footrulewidth}{0.3pt}
+\newcommand{\examtitle}[4]{\begin{center}{\Large\bfseries\color{hcmusblue}#1}\par\vspace{3pt}{\large\bfseries #2}\par\vspace{3pt}\small #3\quad\textbullet\quad #4\end{center}\vspace{5pt}\hrule\vspace{8pt}}
+\newcommand{\studentline}{\begin{tabularx}{\textwidth}{X X}\textbf{Họ và tên:} \hrulefill & \textbf{MSSV:} \hrulefill\\[7pt]\textbf{Lớp:} \hrulefill & \textbf{Ngày làm:} \hrulefill\end{tabularx}\vspace{8pt}}
+\newcommand{\points}[1]{\hfill\textbf{(#1 điểm)}}
+\newtcolorbox{notebox}{colback=lightblue,colframe=hcmusblue!55,boxrule=0.5pt,arc=1.5mm,left=2mm,right=2mm,top=1mm,bottom=1mm}
+\begin{document}
+\small
+\examtitle{ĐÁP ÁN ĐỀ LUYỆN TẬP 01 - CƠ SỞ LẬP TRÌNH}{CƠ SỞ LẬP TRÌNH - HCMUS (theo lịch học tuần 1--5)}{Lời giải chi tiết và mã C++11}{Giữa kỳ 1 - HK1 2026--2027}
+
+\section*{Đáp án và lời giải - Đề 01}
+\begin{enumerate}
+\item \begin{minipage}[t]{\linewidth}
+Ban đầu $a=2,b=4,s=0$. Biểu thức \texttt{a++ < 3} dùng giá trị cũ $2$ nên đúng, sau đó $a=3$. Vì vế trái đúng, xét tiếp \texttt{++b == 5}: $b$ tăng lên 5 và điều kiện đúng. Do đó $s=5$. Vòng \texttt{for} cộng $1+2+3=6$, suy ra $s=11$. Kết quả: \texttt{3 5 11}.
+\end{minipage}
+\item \begin{minipage}[t]{\linewidth}
+Mã C++11 tham khảo:
+\begin{lstlisting}
+int sumMultiples(int n, int k = 3) {
+    int sum = 0;
+    for (int i = k; i <= n; i += k)
+        sum += i;
+    return sum;
+}
+\end{lstlisting}
+Ví dụ \texttt{sumMultiples(10)} trả về $3+6+9=18$; \texttt{sumMultiples(10,2)} trả về 30. Tham số có giá trị mặc định phải nằm sau các tham số không có mặc định.
+\end{minipage}
+\item \begin{minipage}[t]{\linewidth}
+\texttt{x} nhận bản sao của $a$, nên việc tăng \texttt{x} không làm đổi $a$. Sau \texttt{x += 3}, $x=5$; \texttt{y} là bí danh của $b$, nên \texttt{y += x} làm $b=10$. Kết quả: \texttt{2 10}.
+\end{minipage}
+\item \begin{minipage}[t]{\linewidth}
+Mã C++11 tham khảo:
+\begin{lstlisting}
+long long sumPositive(const int a[], int n, int &cnt) {
+    long long sum = 0;
+    cnt = 0;
+    for (int i = 0; i < n; ++i) {
+        if (a[i] > 0) {
+            sum += a[i];
+            ++cnt;
+        }
+    }
+    return sum;
+}
+\end{lstlisting}
+Vòng lặp không chạy khi $n=0$, nên kết quả tự nhiên là tổng 0 và \texttt{cnt}=0.
+\end{minipage}
+\item \begin{minipage}[t]{\linewidth}
+Mã C++11 tham khảo:
+\begin{lstlisting}
+int rowWithMaxSum(const int a[][MAX], int R, int C) {
+    int bestRow = 0;
+    long long bestSum = 0;
+    for (int j = 0; j < C; ++j) bestSum += a[0][j];
+
+    for (int i = 1; i < R; ++i) {
+        long long sum = 0;
+        for (int j = 0; j < C; ++j) sum += a[i][j];
+        if (sum > bestSum) {
+            bestSum = sum;
+            bestRow = i;
+        }
+    }
+    return bestRow;
+}
+\end{lstlisting}
+Chỉ cập nhật khi tổng lớn hơn, không cập nhật khi bằng nhau, nên tự động giữ hàng xuất hiện trước.
+\end{minipage}
+\end{enumerate}
+
+\end{document}
