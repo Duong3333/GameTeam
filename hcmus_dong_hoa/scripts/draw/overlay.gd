@@ -1,4 +1,4 @@
-extends "res://scripts/draw/newcharacters.gd"
+extends "res://scripts/draw/characters.gd"
 # GHÉP LỚP VẼ: sắp xếp cây/người/đèn/ghế theo chiều sâu, bóng mây, cánh phượng, bản đồ nhỏ.
 
 func draw_sorted_items() -> void:

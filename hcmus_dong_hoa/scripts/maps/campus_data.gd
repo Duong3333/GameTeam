@@ -109,11 +109,14 @@ func get_doorways() -> Array:
 		if building_name in ["A", "B", "C", "D", "E", "F", "NHÀ THỂ DỤC"]:
 			var kind := "gym" if building_name == "NHÀ THỂ DỤC" else "classroom"
 			var title := "Nhà Thể Dục" if kind == "gym" else "Tòa " + building_name
-			doors.append({
+			var door := {
 				"title": title,
 				"kind": kind,
 				"position": Vector2(b[1] + b[3] * 0.5, b[2] + b[4] + 7.0),
-			})
+			}
+			if building_name == "B":
+				door["interior"] = "hall_b"   # nội thất riêng: scripts/maps/hoitruongB.gd
+			doors.append(door)
 
 	doors.append({
 		"title": "Nhà Điều hành",
