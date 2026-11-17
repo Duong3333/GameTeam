@@ -6,5 +6,8 @@ extends RefCounted
 const LIST := [
 	"res://scripts/maps/b42_lab.gd", # Tòa B4.2 và phòng lab
 	"res://scripts/maps/nha_dieu_hanh.gd", # Nhà Điều hành và sảnh đón
-    "res://scripts/maps/thu_vien.gd", # Thư viện (cửa Tòa C)
+	 # Tòa căn tin
+	"res://scripts/maps/thu_vien.gd", # Tòa thư viện
+	"res://scripts/maps/thu_vien_phulam.gd", # Tòa thư viện
+	
 ]
