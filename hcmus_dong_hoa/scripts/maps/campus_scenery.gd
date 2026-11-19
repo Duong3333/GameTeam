@@ -1,7 +1,8 @@
 extends "res://scripts/draw/pen.gd"
-# CẢNH VẬT KHUÔN VIÊN GỐC: cỏ, hàng rào, cây, đường, bãi xe, đài phun nước và cổng.
+# CẢNH VẬT KHUÔN VIÊN GỐC: cỏ, hàng rào, cây, đường, bãi xe và cổng; đài phun nước nằm trong ho_nuoc.gd.
 
 const POLE_STICKERS: Array[Color] = [Color(1.0, 0.82, 0.25), Color(1.0, 0.42, 0.54), Color(0.35, 0.65, 0.84)]
+const WATER_MODULE := preload("res://scripts/maps/ho_nuoc.gd")
 
 func draw_grass() -> void:
 	draw_rect(view, Color("6aa84f"))
@@ -124,35 +125,11 @@ func draw_ground() -> void:
 	ctext("BÃI GIỮ XE", 150, 884, 520, 10, Color.WHITE)
 	paved(Rect2(FOUNT.x - 96, 315, 192, 213), beige)
 	paved(Rect2(900, 528, 56, 36), beige)
-	for q in [Vector2(840, 323), Vector2(946, 323), Vector2(840, 450), Vector2(946, 450)]:
-		rc(q.x - 2, q.y - 2, 74, 74, Color("b9a77c"))
-		rc(q.x, q.y, 70, 70, Color("5fa04a"))
-		for i in 10:
-			rc(q.x + hs(i, int(q.x)) * 0.6, q.y + hs(int(q.y), i) * 0.6, 3, 3, Color("7bbf5e"))
 	flowerbed(880, 536, 40, 14)
 	flowerbed(936, 536, 40, 14)
 	flowerbed(DIEUHANH.position.x + 44, DIEUHANH.end.y + 52, 60, 10)
 	flowerbed(DIEUHANH.end.x - 104, DIEUHANH.end.y + 52, 60, 10)
-	# đài phun nước chuyển động
-	shadow(FOUNT + Vector2(6, 38), 52.0)
-	octa(FOUNT, 50, Color("b7a77f"))
-	octa(FOUNT, 47, Color("d9c9a3"))
-	octa(FOUNT, 42, Color("5aa5d6"))
-	octa(FOUNT, 36, Color("6fb7e0"))
-	octa(FOUNT, 25, Color("d9c9a3"))
-	octa(FOUNT, 22, Color("5aa5d6"))
-	octa(FOUNT, 13, Color("d9c9a3"))
-	octa(FOUNT, 10, Color("7cc3ea"))
-	for i in 3:
-		var rr := fmod(clock * 10.0 + i * 12.0, 36.0)
-		draw_arc(FOUNT, 10.0 + rr, 0.0, TAU, 32, Color(1, 1, 1, 0.6 - rr / 60.0), 1.0)
-	for i in 8:
-		var a := i * PI / 4.0
-		draw_line(FOUNT, FOUNT + Vector2.from_angle(a) * (9.0 + sin(clock * 5.0 + i) * 2.0), Color("e8f6ff"), 2.0)
-	for i in 8:
-		var sp := FOUNT + Vector2.from_angle(clock * 0.7 + i * 0.785) * (30.0 + sin(clock * 3.0 + i) * 5.0)
-		rc(sp.x, sp.y, 2, 2, Color(1, 1, 1, 0.85))
-	draw_circle(FOUNT, 4, Color("ffffff"))
+	WATER_MODULE.draw_landscape(self, FOUNT, clock)
 	rc(880, 650, 400, 12, Color("5fb7b0"))
 	rc(880, 650, 400, 3, Color("a8e0da"))
 	rc(880, 662, 400, 3, Color(0, 0, 0, 0.2))

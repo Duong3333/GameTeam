@@ -21,7 +21,7 @@ var ROOF := Color("c0453a")
 # [tên, x, y, rộng, cao, màu tường, màu mái, mô tả]
 var BUILDINGS := [
 	["A", 152, 157, 120, 260, WALL, ROOF, "Tòa A - giảng đường."],
-	["B", 296, 240, 105, 100, WALL, ROOF, "Tòa B - giảng đường, có khu vực tự học."],
+	["B", 240, 440, 182, 110, WALL, ROOF, "Hội trường B - hội trường lớn, có nhiều cửa vào."],
 	["C", 432, 240, 105, 213, WALL, ROOF, "Tòa C - có Thư viện, Quầy giáo trình và ATM."],
 	["D", 576, 240, 100, 213, WALL, ROOF, "Tòa D - giảng đường, gần nhà ăn và khu tự học."],
 	["E", 712, 278, 105, 286, WALL, ROOF, "Tòa E - giảng đường lớn."],
@@ -109,11 +109,19 @@ func get_doorways() -> Array:
 		if building_name in ["A", "B", "C", "D", "E", "F", "NHÀ THỂ DỤC"]:
 			var kind := "gym" if building_name == "NHÀ THỂ DỤC" else "classroom"
 			var title := "Nhà Thể Dục" if kind == "gym" else "Tòa " + building_name
-			doors.append({
+			var door := {
 				"title": title,
 				"kind": kind,
 				"position": Vector2(b[1] + b[3] * 0.5, b[2] + b[4] + 7.0),
-			})
+			}
+			if building_name == "B":
+				for fraction in [0.2, 0.5, 0.8]:
+					var hall_door: Dictionary = door.duplicate()
+					hall_door["position"] = Vector2(b[1] + b[3] * fraction, b[2] + b[4] + 7.0)
+					hall_door["interior"] = "hall_b"   # nội thất riêng: scripts/maps/hoitruongB.gd
+					doors.append(hall_door)
+			else:
+				doors.append(door)
 
 	doors.append({
 		"title": "Nhà Điều hành",

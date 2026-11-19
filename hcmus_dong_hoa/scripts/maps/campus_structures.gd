@@ -7,8 +7,14 @@ var _frontage_root: Node2D
 
 func draw_building(b: Array) -> void:
 	var r := Rect2(b[1], b[2], b[3], b[4])
-	if not view.intersects(r.grow(16.0)):
+	var draw_margin := 32.0 if str(b[0]) == "B" else 16.0
+	if not view.intersects(r.grow(draw_margin)):
 		return
+	if str(b[0]) == "B":
+		for feature in features:
+			if feature.has_method("draw_hall_b_exterior"):
+				feature.call("draw_hall_b_exterior", r)
+				return
 	var wall: Color = b[5]
 	var roof: Color = b[6]
 	var x := r.position.x

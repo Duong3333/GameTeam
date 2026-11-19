@@ -39,7 +39,8 @@ scripts/
   maps/campus_data.gd      dữ liệu khuôn viên gốc: BUILDINGS, KIOSKS, ZONES, PALMS...
   maps/campus_update.gd    cập nhật thế giới khuôn viên
   maps/campus_setup.gd     dựng va chạm, cây, NPC và cảnh khuôn viên
-  maps/campus_scenery.gd   cảnh nền, đường, bãi xe, đài phun nước, cổng
+  maps/campus_scenery.gd   cảnh nền, đường, bãi xe, cổng
+  maps/ho_nuoc.gd          hồ cảnh quan nhiều tầng, cầu nhỏ và đài phun nước
   maps/campus_structures.gd tòa nhà, Nhà Điều hành, quầy nhỏ
   maps/campus_overlay.gd  minimap, hiệu ứng và sắp xếp lớp vẽ khuôn viên
   maps/b42_lab.gd          module Tòa B4.2 và phòng lab

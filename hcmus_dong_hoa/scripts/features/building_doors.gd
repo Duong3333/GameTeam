@@ -73,6 +73,8 @@ func _find_nearby_door() -> Dictionary:
 	var nearest: Dictionary = {}
 	var nearest_distance := DOOR_DISTANCE
 	for door in doors:
+		if door.has("interior"):
+			continue   # cửa có nội thất riêng do module trong scripts/maps/ tự xử lý
 		var door_position: Vector2 = door["position"]
 		var distance: float = game.player.distance_to(door_position)
 		if distance <= nearest_distance:
