@@ -1,7 +1,0 @@
-# Godot editor cache and imported assets
-.godot/
-
-# OS-generated files
-.DS_Store
-Thumbs.db
-Desktop.ini
