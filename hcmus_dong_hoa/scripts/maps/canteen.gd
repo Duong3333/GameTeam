@@ -13,7 +13,8 @@ extends "res://scripts/features/feature.gd"
 #
 # Dùng lại của game: BUILDINGS (va chạm, minimap, tên khu vực), ZONES, solids, trees, draw_person/draw_speech/rc/ctext/
 # shadow/paved/hedge/draw_tree/draw_kiosk, begin()/finish()/active của feature.gd, is_busy().
-# Game chưa có hệ thống tiền -> ví (money) nằm trong file này, hiện ở góc trên phải.
+# Game chưa có hệ thống tiền hay lưu game chung -> ví (money), tiền tuần và bản lưu (user://canteen_economy.cfg) nằm trong file này.
+#   Ví hiện ở góc trên phải. 2.000.000đ cấp một lần khi chưa có bản lưu; +500.000đ mỗi tuần mới trong game.
 
 # ---------- Tiến độ triển khai (giai đoạn) ----------
 # 2: vị trí, nền sân, đăng ký module, cửa vào/ra (nội thất tạm), kiosk Nhà ăn cũ trong sân đã bị xóa khỏi KIOSKS (campus_data.gd).
@@ -102,8 +103,12 @@ const BAG_CAP := 24              # sức chứa túi đồ (tổng số món)
 const START_ITEMS := ["sach", "vo", "giay", "but", "laptop", "dien_thoai", "may_tinh_bang", "hop_but", "tui_nho"]
 const NOT_EDIBLE := ["coc_nhua", "coc_da_dung", "binh_nuoc"]
 const USE_MAP := {"coc_nuoc": "coc_da_dung", "binh_nuoc_day": "binh_nuoc"}   # đồ uống còn vỏ sau khi dùng
-const START_MONEY := 150000
-const PAYMENT := false           # 4C: chưa tính tiền / trừ tiền; giai đoạn 5 đặt true để _on_buy trừ tiền
+const START_MONEY := 2000000     # giai đoạn 5: tiền cấp một lần khi bắt đầu game mới
+const WEEKLY_MONEY := 500000     # tiền sinh hoạt mỗi tuần trong game
+const PAYMENT := true            # giai đoạn 5: mua hàng tính tiền thật
+const BUY_LOCK := 0.25           # giây khoá giữa hai lần mua: nhấn/giữ phím liên tục không nhân đôi giao dịch
+const SAVE_PATH := "user://canteen_economy.cfg"
+const Schedule := preload("res://scripts/features/schedule_data.gd")
 const STAFF_Y := 65.0
 const SERVE_SLOT := Vector2(126, 102)   # chỗ khách đứng mua ngay trước thu ngân; hàng xếp dọc xuống dưới
 const QUEUE_STEP := 14.0
@@ -173,7 +178,12 @@ const C_STEEL_HI := Color("5b636e")
 const C_STAFF := Color("2f8f4a")
 
 var inside := false
-var money := START_MONEY
+var money := 0               # số dư hiện tại (không bao giờ âm), đổi qua _money_add / _money_spend
+var _paid_weeks: Array = []  # các tuần trong game đã nhận tiền sinh hoạt
+var _buy_lock := 0.0
+var _eco_t := 0.0
+var _eco_sig := ""           # dấu vết dữ liệu đã lưu lần cuối, để chỉ ghi file khi có thay đổi
+var _eco_ready := false
 var _layer: CanvasLayer
 var _painter: Node2D
 var _ui: CanvasLayer
@@ -207,6 +217,7 @@ var _shop_root: Control
 var _shop_title: Label
 var _shop_say: Label
 var _shop_money: Label
+var _shop_bag: Label
 var _shop_note: Label
 var _rows: Array = []        # mỗi hàng: {panel, name, price, qty}
 var _toast: Label
@@ -268,8 +279,6 @@ var _ig_blk := PackedByteArray()
 
 func _ready() -> void:
 	_rng.seed = 2468
-	for sid in START_ITEMS:
-		_inv[sid] = 1
 	# Đăng ký trước setup_collision(): va chạm, minimap, tên khu vực tự có từ BUILDINGS / ZONES.
 	game.BUILDINGS.append(["CĂN TIN", BUILDING.position.x, BUILDING.position.y, BUILDING.size.x, BUILDING.size.y, C_WALL, Color("4f7a2a"), "Căn tin HCMUS - cơm, mì, bánh mì, trà. Bấm E ở cửa để vào."])
 	game.ZONES.append(["Sân căn tin HCMUS - bàn ghế sắt ngoài trời", Rect2(368, 40, 366, 208)])
@@ -283,6 +292,7 @@ func _ready() -> void:
 	if STAGE >= 6:
 		for i in MENU.size():
 			_qty.append(1)
+	_eco_init()   # sau khi _tops đã có (bàn ngoài sân / trong nhà) và trước khi dựng giao diện
 	_build_overlay_nodes()
 	if STAGE >= 6:
 		_build_ui()
@@ -637,10 +647,18 @@ func _util_pick() -> Dictionary:
 	var bd := UTIL_RANGE
 	for u in [["water", WATER_USE], ["cup", CUP_USE], ["bin", BIN_USE]]:
 		var d := _pos.distance_to(u[1])
+		if u[0] == "bin":
+			d = minf(d, _bin_dist())
 		if d < bd:
 			bd = d
 			best = {"kind": u[0], "d": d}
 	return best
+
+# khoảng cách từ người chơi tới thân dãy thùng rác (ba thùng cao ~19, rộng 28); đứng phía nào cũng chạm được
+func _bin_dist() -> float:
+	var r := Rect2(IN_BINS.x - 6.0, IN_BINS.y - 19.0, 28.0, 20.0)
+	var q := Vector2(clampf(_pos.x, r.position.x, r.end.x), clampf(_pos.y, r.position.y, r.end.y))
+	return _pos.distance_to(q)
 
 func _use_water() -> void:
 	if _inv_has("coc_nhua") > 0:
@@ -1606,17 +1624,19 @@ func _flat(fill: Color, border: Color, bw: int = 1) -> StyleBoxFlat:
 
 func _lbl(parent: Control, text: String, pos: Vector2, sz: Vector2, fs: int, col: Color, al: HorizontalAlignment = HORIZONTAL_ALIGNMENT_LEFT) -> Label:
 	var l := Label.new()
-	l.text = text
-	l.position = pos
-	l.size = sz
-	l.horizontal_alignment = al
-	l.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	# font và cỡ chữ phải có TRƯỚC khi đặt size: Control ép size >= kích thước tối thiểu theo cỡ chữ mặc định (16)
 	l.add_theme_font_override("font", game.font)
 	l.add_theme_font_size_override("font_size", fs)
 	l.add_theme_color_override("font_color", col)
-	l.clip_text = true
+	l.clip_text = false   # dấu tiếng Việt của font.ttf cao hơn ascent: cắt sẽ mất dấu
+	l.horizontal_alignment = al
+	l.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	l.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	l.text = text
 	parent.add_child(l)
+	# size đặt SAU add_child: trước khi vào cây, Godot chưa nạp theme override (font 8) và ép size theo font mặc định 16
+	l.position = pos
+	l.size = sz
 	return l
 
 func _panel(parent: Control, r: Rect2, fill: Color, border: Color) -> Panel:
@@ -1630,9 +1650,6 @@ func _panel(parent: Control, r: Rect2, fill: Color, border: Color) -> Panel:
 
 func _btn(parent: Control, text: String, r: Rect2, cb: Callable, fs: int = 8) -> Button:
 	var b := Button.new()
-	b.text = text
-	b.position = r.position
-	b.size = r.size
 	b.focus_mode = Control.FOCUS_NONE   # không cướp phím E / Enter / Space của game
 	b.add_theme_font_override("font", game.font)
 	b.add_theme_font_size_override("font_size", fs)
@@ -1640,8 +1657,12 @@ func _btn(parent: Control, text: String, r: Rect2, cb: Callable, fs: int = 8) ->
 	b.add_theme_stylebox_override("hover", _flat(Color("3f66a8"), Color("0f1b33")))
 	b.add_theme_stylebox_override("pressed", _flat(Color("1d3050"), Color("0f1b33")))
 	b.add_theme_stylebox_override("disabled", _flat(Color("444444"), Color("222222")))
+	b.text = text
 	b.pressed.connect(cb)
 	parent.add_child(b)
+	# size đặt SAU add_child: trước khi vào cây, Godot ép size theo font 16 và stylebox mặc định (nút cao ~30)
+	b.position = r.position
+	b.size = r.size
 	return b
 
 func _build_ui() -> void:
@@ -1669,28 +1690,65 @@ func _build_ui() -> void:
 	_build_shop_ui(root)
 	_refresh_shop()
 
+# ---------- hệ thống căn chỉnh chung (toạ độ viewport 480x270) ----------
+# Mọi giao diện căn tin dùng chung: khung 400 rộng, lề 8, thanh tiêu đề 20, nút cao 16.
+# Hộp chữ luôn cao hơn dòng chữ của font.ttf (dấu tiếng Việt cao vượt ascent) nên không bật clip_text.
+const UI_X := 40.0
+const UI_W := 400.0
+const UI_PAD := 8.0
+const UI_BAR := 20.0
+const UI_BTN_H := 16.0
+const UI_BTN_W := 36.0
+const UI_BTN_CLOSE_W := 72.0
+const UI_GAP := 4.0
+const UI_FRAME := Color(0.06, 0.09, 0.16, 0.98)
+const UI_ZONE := Color(0.03, 0.05, 0.1, 0.9)
+const TBL_ROW_H := 24.0
+
+# khung chính + thanh tiêu đề; trả về nhãn tiêu đề
+func _ui_frame(parent: Control, y: float, h: float, tfs: int) -> Label:
+	_panel(parent, Rect2(UI_X, y, UI_W, h), UI_FRAME, Color("e0b020"))
+	_panel(parent, Rect2(UI_X, y, UI_W, UI_BAR), Color("1b2f6e"), Color("e0b020"))
+	return _lbl(parent, "", Vector2(UI_X, y), Vector2(UI_W, UI_BAR), tfs, Color("ffe28a"), HORIZONTAL_ALIGNMENT_CENTER)
+
+# một nhãn nằm trọn trong một ô chữ nhật
+func _lblr(parent: Control, text: String, r: Rect2, fs: int, col: Color, al: HorizontalAlignment = HORIZONTAL_ALIGNMENT_LEFT) -> Label:
+	return _lbl(parent, text, r.position, r.size, fs, col, al)
+
+# nút căn giữa theo chiều dọc trong một dải [y, y+h]
+func _btn_in(parent: Control, text: String, x: float, y: float, w: float, h: float, cb: Callable, fs: int = 8) -> Button:
+	return _btn(parent, text, Rect2(x, y + floorf((h - UI_BTN_H) / 2.0), w, UI_BTN_H), cb, fs)
+
 func _build_dialog_ui(root: Control) -> void:
 	_dlg_root = Control.new()
 	_dlg_root.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_dlg_root.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_dlg_root.visible = false
 	root.add_child(_dlg_root)
-	# bố cục: thẻ tên / lời thoại / lưới 2x2 nút / dòng hướng dẫn, mỗi vùng một dải riêng
-	_panel(_dlg_root, Rect2(30, 150, 420, 108), Color(0.04, 0.07, 0.13, 0.96), Color("e0b020"))
-	_panel(_dlg_root, Rect2(36, 142, 140, 16), Color("1b2f6e"), Color("e0b020"))
-	_dlg_name = _lbl(_dlg_root, "", Vector2(36, 142), Vector2(140, 16), 9, Color("ffe28a"), HORIZONTAL_ALIGNMENT_CENTER)
-	_dlg_text = _lbl(_dlg_root, "", Vector2(42, 162), Vector2(396, 34), 9, Color.WHITE)
-	_dlg_text.clip_text = false
+	# vùng: thẻ tên / lời thoại / lưới 2x2 nút / dải dưới (hướng dẫn + nút đóng)
+	var px := 30.0
+	var pw := 420.0
+	var ix := px + UI_PAD
+	var iw := pw - 2.0 * UI_PAD
+	var py := 144.0
+	_panel(_dlg_root, Rect2(px, py, pw, 116.0), UI_FRAME, Color("e0b020"))
+	_panel(_dlg_root, Rect2(ix, py - 8.0, 140, 16), Color("1b2f6e"), Color("e0b020"))
+	_dlg_name = _lblr(_dlg_root, "", Rect2(ix, py - 8.0, 140, 16), 9, Color("ffe28a"), HORIZONTAL_ALIGNMENT_CENTER)
+	var ty := py + 12.0
+	_dlg_text = _lblr(_dlg_root, "", Rect2(ix, ty, iw, 36), 9, Color.WHITE)
 	_dlg_text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_dlg_text.vertical_alignment = VERTICAL_ALIGNMENT_TOP
 	_dlg_btns.clear()
 	var names := ["1  Xem thực đơn", "2  Hỏi món ăn", "3  Nhận cốc nhựa", "4  Kết thúc (Esc)"]
+	var bw := (iw - UI_GAP) / 2.0
+	var by0 := ty + 36.0 + UI_GAP
 	for i in 4:
-		var bx := 42.0 + float(i % 2) * 204.0
-		var by := 200.0 + floorf(float(i) / 2.0) * 19.0
-		_dlg_btns.append(_btn(_dlg_root, str(names[i]), Rect2(bx, by, 198, 17), _dlg_choose.bind(i), 8))
-	_dlg_hint = _lbl(_dlg_root, "", Vector2(42, 240), Vector2(320, 12), 7, Color("9fd3f0"))
-	_dlg_btn = _btn(_dlg_root, "Đóng (Esc)", Rect2(368, 240, 74, 14), _close_dialog, 7)
+		var bx := ix + float(i % 2) * (bw + UI_GAP)
+		var by := by0 + floorf(float(i) / 2.0) * (UI_BTN_H + 3.0)
+		_dlg_btns.append(_btn(_dlg_root, str(names[i]), Rect2(bx, by, bw, UI_BTN_H), _dlg_choose.bind(i), 8))
+	var fy := by0 + 2.0 * UI_BTN_H + 3.0 + UI_GAP
+	_dlg_hint = _lblr(_dlg_root, "", Rect2(ix, fy, iw - UI_BTN_CLOSE_W - UI_GAP, UI_BTN_H), 7, Color("9fd3f0"))
+	_dlg_btn = _btn(_dlg_root, "Đóng (Esc)", Rect2(ix + iw - UI_BTN_CLOSE_W, fy, UI_BTN_CLOSE_W, UI_BTN_H), _close_dialog, 7)
 
 func _build_shop_ui(root: Control) -> void:
 	_shop_root = Control.new()
@@ -1703,43 +1761,67 @@ func _build_shop_ui(root: Control) -> void:
 	dim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	dim.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_shop_root.add_child(dim)
-	# dải: tiêu đề / lời nhân viên / tiêu đề cột / 7 hàng món / thông báo + ghi chú giá / hướng dẫn + nút đóng
-	_panel(_shop_root, Rect2(40, 8, 400, 252), Color(0.06, 0.09, 0.16, 0.98), Color("e0b020"))
-	_panel(_shop_root, Rect2(40, 8, 400, 18), Color("1b2f6e"), Color("e0b020"))
-	_shop_title = _lbl(_shop_root, "CĂN TIN HCMUS", Vector2(40, 8), Vector2(400, 18), 11, Color("ffe28a"), HORIZONTAL_ALIGNMENT_CENTER)
-	_shop_say = _lbl(_shop_root, "", Vector2(48, 28), Vector2(384, 14), 8, Color("cfe8ff"), HORIZONTAL_ALIGNMENT_CENTER)
+	# vùng từ trên xuống: tiêu đề / lời nhân viên / tên cột / 7 hàng món / ghi chú + giá + túi / hướng dẫn + nút đóng
+	var py := 6.0
+	var ix := UI_X + UI_PAD
+	var iw := UI_W - 2.0 * UI_PAD
+	var row_h := 20.0
+	var pitch := row_h + 1.0
+	var n := MENU.size()
+	var say_y := py + UI_BAR + 3.0
+	var head_y := say_y + 13.0 + 2.0
+	var rows_y := head_y + 11.0 + 2.0
+	var zone_y := rows_y + float(n) * pitch - 1.0 + UI_GAP
+	var zone_h := 30.0
+	var bar_y := zone_y + zone_h + UI_GAP
+	var frame_h := bar_y + UI_BTN_H + UI_PAD - py
+	_shop_title = _ui_frame(_shop_root, py, frame_h, 11)
+	_shop_title.text = "CĂN TIN HCMUS"
+	_shop_say = _lblr(_shop_root, "", Rect2(ix, say_y, iw, 13), 8, Color("cfe8ff"), HORIZONTAL_ALIGNMENT_CENTER)
+	# cột (toạ độ tương đối trong hàng): icon / tên / giá / số lượng / mua / trong túi
+	var c_icon := 4.0
+	var c_name := 34.0
+	var c_price_r := 198.0
+	var c_minus := 208.0
+	var c_qty := c_minus + 16.0
+	var c_plus := c_qty + 24.0
+	var c_buy := c_plus + 16.0 + 10.0
+	var c_own_r := iw - 4.0
 	var hc := Color("8fa6c8")
-	_lbl(_shop_root, "MÓN", Vector2(84, 43), Vector2(100, 11), 7, hc)
-	_lbl(_shop_root, "GIÁ", Vector2(194, 43), Vector2(64, 11), 7, hc, HORIZONTAL_ALIGNMENT_RIGHT)
-	_lbl(_shop_root, "SỐ LƯỢNG", Vector2(262, 43), Vector2(60, 11), 7, hc, HORIZONTAL_ALIGNMENT_CENTER)
-	_lbl(_shop_root, "TRONG TÚI", Vector2(372, 43), Vector2(60, 11), 7, hc, HORIZONTAL_ALIGNMENT_RIGHT)
+	_lblr(_shop_root, "MÓN", Rect2(ix + c_name, head_y, 100, 12), 7, hc)
+	_lblr(_shop_root, "GIÁ", Rect2(ix + c_price_r - 60.0, head_y, 60, 12), 7, hc, HORIZONTAL_ALIGNMENT_RIGHT)
+	_lblr(_shop_root, "SỐ LƯỢNG", Rect2(ix + c_minus, head_y, 56, 12), 7, hc, HORIZONTAL_ALIGNMENT_CENTER)
+	_lblr(_shop_root, "TRONG TÚI", Rect2(ix + c_own_r - 58.0, head_y, 58, 12), 7, hc, HORIZONTAL_ALIGNMENT_RIGHT)
 	_rows.clear()
-	for i in MENU.size():
-		var y := 57.0 + i * 22.0
+	for i in n:
+		var y := rows_y + float(i) * pitch
 		var bg := ColorRect.new()
-		bg.position = Vector2(48, y)
-		bg.size = Vector2(384, 20)
+		bg.position = Vector2(ix, y)
+		bg.size = Vector2(iw, row_h)
 		bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		_shop_root.add_child(bg)
 		var icon := Control.new()
-		icon.position = Vector2(52, y + 1)
+		icon.position = Vector2(ix + c_icon, y + 1.0)
 		icon.size = Vector2(24, 18)
 		icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		_shop_root.add_child(icon)
 		icon.draw.connect(_draw_icon.bind(icon, str(MENU[i].id)))
-		_lbl(_shop_root, str(MENU[i].name), Vector2(84, y), Vector2(110, 20), 9, Color.WHITE)
-		_lbl(_shop_root, _fmt(int(MENU[i].price)), Vector2(194, y), Vector2(64, 20), 9, Color("ffe28a"), HORIZONTAL_ALIGNMENT_RIGHT)
-		_btn(_shop_root, "-", Rect2(264, y + 2, 14, 16), _on_qty.bind(i, -1))
-		var q := _lbl(_shop_root, "1", Vector2(278, y + 2), Vector2(24, 16), 9, Color.WHITE, HORIZONTAL_ALIGNMENT_CENTER)
-		_btn(_shop_root, "+", Rect2(302, y + 2, 14, 16), _on_qty.bind(i, 1))
-		_btn(_shop_root, "Mua", Rect2(322, y + 1, 46, 18), _on_buy.bind(i))
-		var o := _lbl(_shop_root, "", Vector2(372, y), Vector2(60, 20), 8, Color("9fe3a8"), HORIZONTAL_ALIGNMENT_RIGHT)
+		_lblr(_shop_root, str(MENU[i].name), Rect2(ix + c_name, y, 100, row_h), 9, Color.WHITE)
+		_lblr(_shop_root, _fmt(int(MENU[i].price)), Rect2(ix + c_price_r - 60.0, y, 60, row_h), 9, Color("ffe28a"), HORIZONTAL_ALIGNMENT_RIGHT)
+		_btn_in(_shop_root, "-", ix + c_minus, y, 16, row_h, _on_qty.bind(i, -1))
+		var q := _lblr(_shop_root, "1", Rect2(ix + c_qty, y, 24, row_h), 9, Color.WHITE, HORIZONTAL_ALIGNMENT_CENTER)
+		_btn_in(_shop_root, "+", ix + c_plus, y, 16, row_h, _on_qty.bind(i, 1))
+		_btn_in(_shop_root, "Mua", ix + c_buy, y, 44, row_h, _on_buy.bind(i))
+		var o := _lblr(_shop_root, "", Rect2(ix + c_own_r - 58.0, y, 58, row_h), 8, Color("9fe3a8"), HORIZONTAL_ALIGNMENT_RIGHT)
 		_rows.append({"bg": bg, "qty": q, "owned": o})
-	_panel(_shop_root, Rect2(48, 214, 384, 28), Color(0.03, 0.05, 0.1, 0.9), Color("2d4a7a"))
-	_shop_note = _lbl(_shop_root, "", Vector2(52, 215), Vector2(376, 13), 8, Color.WHITE, HORIZONTAL_ALIGNMENT_CENTER)
-	_shop_money = _lbl(_shop_root, "", Vector2(52, 228), Vector2(376, 12), 7, Color("9fd3f0"), HORIZONTAL_ALIGNMENT_CENTER)
-	_lbl(_shop_root, "W S chọn món   A D số lượng   E mua   Q đóng", Vector2(48, 246), Vector2(300, 12), 7, Color("9fd3f0"))
-	_btn(_shop_root, "Đóng (Q)", Rect2(360, 244, 72, 16), _close_shop, 8)
+	# vùng ghi chú: dòng thông báo / dòng giá (trái) + túi đồ (phải)
+	_panel(_shop_root, Rect2(ix, zone_y, iw, zone_h), UI_ZONE, Color("2d4a7a"))
+	_shop_note = _lblr(_shop_root, "", Rect2(ix + 4.0, zone_y + 2.0, iw - 8.0, 13), 8, Color.WHITE, HORIZONTAL_ALIGNMENT_CENTER)
+	_shop_money = _lblr(_shop_root, "", Rect2(ix + 4.0, zone_y + 16.0, iw - 8.0 - 84.0, 12), 7, Color("9fd3f0"))
+	_shop_bag = _lblr(_shop_root, "", Rect2(ix + iw - 4.0 - 80.0, zone_y + 16.0, 80, 12), 7, Color("ffe28a"), HORIZONTAL_ALIGNMENT_RIGHT)
+	# dải dưới: hướng dẫn (trái) / nút đóng (phải), không chồng nhau
+	_lblr(_shop_root, "W S chọn món   A D số lượng   E mua   Q đóng", Rect2(ix, bar_y, iw - UI_BTN_CLOSE_W - UI_GAP, UI_BTN_H), 7, Color("9fd3f0"))
+	_btn(_shop_root, "Đóng (Q)", Rect2(ix + iw - UI_BTN_CLOSE_W, bar_y, UI_BTN_CLOSE_W, UI_BTN_H), _close_shop, 8)
 
 # ======================= PHÍM E: MỘT LẦN BẤM = MỘT VIỆC =======================
 
@@ -2091,23 +2173,142 @@ func _on_buy(i: int) -> void:
 	if not _shop_open or i < 0 or i >= MENU.size():
 		return
 	_sel = i
+	if _buy_lock > 0.0:
+		return   # vừa mua xong: bỏ qua lần bấm lặp
+	_buy_lock = BUY_LOCK
 	var item: Dictionary = MENU[i]
+	var id := str(item.id)
 	var q := clampi(int(_qty[i]), 1, MAX_QTY)
 	var cost: int = int(item.price) * q
-	if _inv_total() + q > BAG_CAP:
-		_say_shop("Túi đồ không đủ chỗ cho %d %s (còn %d chỗ)." % [q, str(item.name), BAG_CAP - _inv_total()], false)
-	elif PAYMENT and money < cost:
+	# kiểm tra đủ mọi điều kiện TRƯỚC khi đổi bất cứ thứ gì
+	if not ITEMS.has(id):
+		_say_shop("Giao dịch thất bại, bạn chưa bị trừ tiền.", false)
+	elif _inv_total() + q > BAG_CAP:
+		_say_shop("Túi đồ không đủ chỗ cho %d %s (còn %d chỗ). Bạn chưa bị trừ tiền." % [q, str(item.name), BAG_CAP - _inv_total()], false)
+	elif money < cost:
 		_say_shop("Không đủ tiền! Cần " + _fmt(cost) + ", bạn có " + _fmt(money) + ".", false)
+	elif not _inv_add(id, q):
+		_say_shop("Giao dịch thất bại, bạn chưa bị trừ tiền.", false)
+	elif not _money_spend(cost):
+		_inv_remove(id, q)   # hoàn tác: không có vật phẩm nào được giữ lại nếu không trừ được tiền
+		_say_shop("Giao dịch thất bại, bạn chưa bị trừ tiền.", false)
 	else:
-		_inv_add(str(item.id), q)
-		if PAYMENT:
-			money -= cost
-			_say_shop("Đã mua %d %s (-%s). Chúc ngon miệng!" % [q, str(item.name), _fmt(cost)], true)
-			_toast_msg("Mua %d %s  -%s" % [q, str(item.name), _fmt(cost)])
-		else:
-			_say_shop("Đã nhận %d %s. Chúc ngon miệng!" % [q, str(item.name)], true)
-			_toast_msg("Đã nhận %d %s" % [q, str(item.name)])
+		_say_shop("Đã mua %d %s (-%s). Số dư: %s" % [q, str(item.name), _fmt(cost), _fmt(money)], true)
+		_toast_msg("Mua %d %s  -%s" % [q, str(item.name), _fmt(cost)])
+		_eco_save()
 	_refresh_shop()
+
+# ---------- giai đoạn 5: tiền, tiền sinh hoạt tuần, lưu / tải ----------
+
+func _money_refresh() -> void:
+	if _wallet != null:
+		_wallet.text = "Tiền: " + _fmt(money)
+
+func _money_add(n: int) -> void:
+	if n <= 0:
+		return
+	money += n
+	_money_refresh()
+
+# trả về false (và không đổi gì) nếu số tiền không hợp lệ hoặc không đủ
+func _money_spend(n: int) -> bool:
+	if n <= 0 or n > money:
+		return false
+	money -= n
+	_money_refresh()
+	return true
+
+func _week_now() -> int:
+	return Schedule.week_no(int(game.day))
+
+func _eco_init() -> void:
+	var cfg := ConfigFile.new()
+	if FileAccess.file_exists(SAVE_PATH) and cfg.load(SAVE_PATH) == OK:
+		_eco_load(cfg)
+	else:
+		# chưa có bản lưu = game mới: cấp tiền đầu và đồ ban đầu đúng một lần; tuần hiện tại tính là đã nhận
+		money = START_MONEY
+		for sid in START_ITEMS:
+			_inv[sid] = 1
+		_paid_weeks = [_week_now()]
+	_eco_ready = true
+	_money_refresh()
+	_eco_save()
+
+func _eco_load(cfg: ConfigFile) -> void:
+	var m: Variant = cfg.get_value("eco", "money", null)
+	if m == null:
+		money = START_MONEY   # bản lưu cũ chưa có dữ liệu tiền: cấp một lần rồi lưu lại
+	else:
+		money = maxi(int(m), 0)
+	_paid_weeks = []
+	var pw: Variant = cfg.get_value("eco", "paid_weeks", [])
+	if pw is Array:
+		for w in pw:
+			if not _paid_weeks.has(int(w)):
+				_paid_weeks.append(int(w))
+	if _paid_weeks.is_empty():
+		_paid_weeks.append(_week_now())   # không rõ đã nhận tuần nào: không trả bù, tránh nhận trùng
+	_trash = maxi(int(cfg.get_value("eco", "trash", 0)), 0)
+	var inv: Variant = cfg.get_value("eco", "inv", null)
+	if inv is Dictionary:
+		for k in inv:
+			var id := str(k)
+			var c := int(inv[k])
+			if ITEMS.has(id) and c > 0 and _inv_total() + c <= BAG_CAP:
+				_inv[id] = c
+	else:
+		for sid in START_ITEMS:
+			_inv[sid] = 1
+	var tops: Variant = cfg.get_value("eco", "tops", null)
+	if tops is Array:
+		for ti in mini(tops.size(), _tops.size()):
+			var row: Variant = tops[ti]
+			if row is Array:
+				for j in mini(row.size(), TABLE_MAX):
+					var tid := str(row[j])
+					_tops[ti][j] = tid if ITEMS.has(tid) else ""
+
+func _eco_signature() -> String:
+	return "%d|%s|%s|%s|%d" % [money, str(_paid_weeks), str(_inv), str(_tops), _trash]
+
+func _eco_save() -> void:
+	if not _eco_ready:
+		return
+	var cfg := ConfigFile.new()
+	cfg.set_value("eco", "version", 1)
+	cfg.set_value("eco", "money", money)
+	cfg.set_value("eco", "paid_weeks", _paid_weeks.duplicate())
+	cfg.set_value("eco", "inv", _inv.duplicate())
+	cfg.set_value("eco", "tops", _tops.duplicate(true))
+	cfg.set_value("eco", "trash", _trash)
+	if cfg.save(SAVE_PATH) == OK:
+		_eco_sig = _eco_signature()
+	else:
+		push_warning("canteen: không ghi được " + SAVE_PATH)
+
+# mỗi khung hình: khoá mua, kiểm tra tuần mới; mỗi 0,5 giây ghi file nếu dữ liệu có thay đổi
+func _eco_tick(delta: float) -> void:
+	_buy_lock = maxf(_buy_lock - delta, 0.0)
+	var w := _week_now()
+	if not _paid_weeks.has(w):
+		_paid_weeks.append(w)
+		_money_add(WEEKLY_MONEY)
+		if _toast != null:
+			_toast_msg("Bạn đã nhận " + _fmt(WEEKLY_MONEY) + " tiền sinh hoạt tuần mới!")
+		_eco_save()
+	_eco_t += delta
+	if _eco_t >= 0.5:
+		_eco_t = 0.0
+		if _eco_signature() != _eco_sig:
+			_eco_save()
+
+func _exit_tree() -> void:
+	_eco_save()
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_WM_CLOSE_REQUEST:
+		_eco_save()
 
 func _say_shop(t: String, ok: bool) -> void:
 	_shop_msg = t
@@ -2121,10 +2322,10 @@ func _toast_msg(t: String) -> void:
 	_toast_t = 2.5
 
 func _refresh_shop() -> void:
-	if _wallet != null:
-		_wallet.text = "Tiền: " + _fmt(money)
-	var info := ("Số dư: " + _fmt(money)) if PAYMENT else "Giá chỉ để tham khảo, chưa tính tiền"
-	_shop_money.text = "%s   -   Túi đồ: %d/%d" % [info, _inv_total(), BAG_CAP]
+	_money_refresh()
+	var total: int = int(MENU[_sel].price) * int(_qty[_sel])
+	_shop_money.text = "Số dư: %s   Tổng: %s" % [_fmt(money), _fmt(total)]
+	_shop_bag.text = "Túi đồ: %d/%d" % [_inv_total(), BAG_CAP]
 	_shop_note.text = _shop_msg
 	for i in _rows.size():
 		var r: Dictionary = _rows[i]
@@ -2182,6 +2383,7 @@ func _draw_icon(c, id: String) -> void:
 
 func _process(delta: float) -> void:
 	_clock += delta
+	_eco_tick(delta)
 	if _toast_t > 0.0:
 		_toast_t -= delta
 		if _toast_t <= 0.0:
@@ -2254,7 +2456,7 @@ func _seat_sort_y(s: Dictionary) -> float:
 		"N":
 			return c.y - 2.0
 		"S":
-			return c.y + 12.0
+			return c.y + 8.0   # đáy vùng chân ghế là c.y + 7; người đứng phía trước (chân y >= c.y + 11) phải vẽ sau ghế
 	return c.y + 4.0
 
 func _draw_table(g, t: Dictionary, ti: int) -> void:
@@ -3040,9 +3242,9 @@ func _paint_ceiling_fans(p: Node2D) -> void:
 		p.rc(q.x - 1.0, CEIL_H, 2, 3, Color("2a2a2e"))
 		p.rc(q.x - 4.0, CEIL_H + 2.0, 8, 3, Color("17181b"))
 		p.rc(q.x - 3.0, CEIL_H + 2.0, 6, 1, Color("3a3d45"))
-		var ang: float = float(_clock) * 5.0 + q.x
+		var ang: float = float(_clock) * 5.0 + float(q.x)
 		for k in 4:
-			var a := ang + k * PI / 2.0
+			var a: float = ang + float(k) * PI / 2.0
 			var e := Vector2(q.x + cos(a) * 20.0, CEIL_H + 4.0 + sin(a) * 3.0)
 			p.draw_line(Vector2(q.x, CEIL_H + 4.0), e, Color("17181b"), 3.0)
 			p.draw_line(Vector2(q.x, CEIL_H + 3.0), Vector2(e.x, e.y - 1.0), Color(0.35, 0.37, 0.42, 0.6), 1.0)
@@ -3671,46 +3873,59 @@ func _build_table_ui() -> void:
 	dim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	dim.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_tbl_root.add_child(dim)
-	# dải: tiêu đề / tên 2 cột / 5 hàng / thông báo / hướng dẫn / (túi đồ + nút đóng)
-	_panel(_tbl_root, Rect2(40, 12, 400, 246), Color(0.06, 0.09, 0.16, 0.98), Color("e0b020"))
-	_panel(_tbl_root, Rect2(40, 12, 400, 18), Color("1b2f6e"), Color("e0b020"))
-	_tbl_title = _lbl(_tbl_root, "", Vector2(40, 12), Vector2(400, 18), 10, Color("ffe28a"), HORIZONTAL_ALIGNMENT_CENTER)
-	_lbl(_tbl_root, "MANG THEO", Vector2(48, 34), Vector2(190, 12), 8, Color("9fd3f0"))
-	_lbl(_tbl_root, "TRÊN BÀN", Vector2(246, 34), Vector2(186, 12), 8, Color("9fd3f0"))
+	# vùng từ trên xuống: tiêu đề / tên 2 cột / 5 hàng / thông báo / hướng dẫn / (túi đồ + nút đóng)
+	var py := 8.0
+	var ix := UI_X + UI_PAD
+	var iw := UI_W - 2.0 * UI_PAD
+	var col_w := (iw - UI_GAP) / 2.0
+	var row_pitch := TBL_ROW_H + 2.0
+	var head_y := py + UI_BAR + 4.0
+	var rows_y := head_y + 12.0 + 2.0
+	var note_y := rows_y + 5.0 * row_pitch - 2.0 + UI_GAP
+	var info_y := note_y + 18.0 + UI_GAP
+	var bar_y := info_y + 32.0 + UI_GAP
+	var frame_h := bar_y + UI_BTN_H + 2.0 + UI_PAD - py
+	_tbl_title = _ui_frame(_tbl_root, py, frame_h, 10)
+	_lblr(_tbl_root, "MANG THEO", Rect2(ix + 3.0, head_y, col_w - 6.0, 12), 8, Color("9fd3f0"))
+	_lblr(_tbl_root, "TRÊN BÀN", Rect2(ix + col_w + UI_GAP + 3.0, head_y, col_w - 6.0, 12), 8, Color("9fd3f0"))
 	_tbl_l.clear()
 	_tbl_r.clear()
 	for i in 5:
-		_tbl_l.append(_tbl_make_row(48.0, 48.0 + i * 26.0, 190.0, 0, i, "Đặt"))
-		_tbl_r.append(_tbl_make_row(246.0, 48.0 + i * 26.0, 186.0, 1, i, "Lấy"))
-	_panel(_tbl_root, Rect2(48, 180, 384, 16), Color(0.03, 0.05, 0.1, 0.9), Color("2d4a7a"))
-	_tbl_note = _lbl(_tbl_root, "", Vector2(52, 180), Vector2(376, 16), 8, Color.WHITE, HORIZONTAL_ALIGNMENT_CENTER)
-	_panel(_tbl_root, Rect2(48, 200, 384, 30), Color(0.03, 0.05, 0.1, 0.9), Color("2d4a7a"))
-	_lbl(_tbl_root, "W S chọn   A D đổi cột   E đặt / lấy   R ăn uống   Q đóng", Vector2(52, 201), Vector2(376, 13), 7, Color("9fd3f0"), HORIZONTAL_ALIGNMENT_CENTER)
-	_lbl(_tbl_root, "Mỗi bàn tối đa %d món. Món chưa dùng vẫn nằm trên bàn khi bạn rời đi." % TABLE_MAX, Vector2(52, 215), Vector2(376, 13), 7, Color("cfe8ff"), HORIZONTAL_ALIGNMENT_CENTER)
-	_tbl_bag = _lbl(_tbl_root, "", Vector2(48, 238), Vector2(300, 16), 8, Color("ffe28a"))
-	_btn(_tbl_root, "Đóng (Q)", Rect2(364, 236, 68, 18), _close_table, 8)
+		var y := rows_y + float(i) * row_pitch
+		_tbl_l.append(_tbl_make_row(ix, y, col_w, 0, i, "Đặt"))
+		_tbl_r.append(_tbl_make_row(ix + col_w + UI_GAP, y, col_w, 1, i, "Lấy"))
+	_panel(_tbl_root, Rect2(ix, note_y, iw, 18), UI_ZONE, Color("2d4a7a"))
+	_tbl_note = _lblr(_tbl_root, "", Rect2(ix + 4.0, note_y, iw - 8.0, 18), 8, Color.WHITE, HORIZONTAL_ALIGNMENT_CENTER)
+	_panel(_tbl_root, Rect2(ix, info_y, iw, 32), UI_ZONE, Color("2d4a7a"))
+	_lblr(_tbl_root, "W S chọn   A D đổi cột   E đặt / lấy   R ăn uống   Q đóng", Rect2(ix + 4.0, info_y + 2.0, iw - 8.0, 13), 7, Color("9fd3f0"), HORIZONTAL_ALIGNMENT_CENTER)
+	_lblr(_tbl_root, "Mỗi bàn tối đa %d món. Món chưa dùng vẫn nằm trên bàn khi bạn rời đi." % TABLE_MAX, Rect2(ix + 4.0, info_y + 17.0, iw - 8.0, 13), 7, Color("cfe8ff"), HORIZONTAL_ALIGNMENT_CENTER)
+	_tbl_bag = _lblr(_tbl_root, "", Rect2(ix, bar_y, iw - UI_BTN_CLOSE_W - UI_GAP, UI_BTN_H + 2.0), 8, Color("ffe28a"))
+	_btn(_tbl_root, "Đóng (Q)", Rect2(ix + iw - UI_BTN_CLOSE_W, bar_y + 1.0, UI_BTN_CLOSE_W, UI_BTN_H), _close_table, 8)
 
-# kind 0 = hàng trong túi, 1 = ô trên bàn; idx = số hàng nhìn thấy
-
-# kind 0 = hàng danh mục, 1 = ô trên bàn; idx = số hàng nhìn thấy
+# kind 0 = hàng danh mục trong túi, 1 = ô trên bàn; idx = số hàng nhìn thấy
+# hàng: [icon] [tên / loại] ........ [Đặt|Lấy] [Dùng]; vùng chữ tự co theo bề rộng cột
 func _tbl_make_row(x: float, y: float, w: float, kind: int, idx: int, btn_text: String) -> Dictionary:
 	var bg := ColorRect.new()
 	bg.position = Vector2(x, y)
-	bg.size = Vector2(w, 24)
+	bg.size = Vector2(w, TBL_ROW_H)
 	bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_tbl_root.add_child(bg)
 	var icon := Control.new()
-	icon.position = Vector2(x + 2.0, y + 1.0)
-	icon.size = Vector2(24, 22)
+	icon.position = Vector2(x + 3.0, y + 1.0)
+	icon.size = Vector2(24, TBL_ROW_H - 2.0)
 	icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_tbl_root.add_child(icon)
 	icon.draw.connect(_tbl_icon_draw.bind(icon, kind, idx))
-	var nm := _lbl(_tbl_root, "", Vector2(x + 30.0, y + 1.0), Vector2(w - 110.0, 12), 8, Color.WHITE)
-	var tag := _lbl(_tbl_root, "", Vector2(x + 30.0, y + 12.0), Vector2(w - 110.0, 10), 6, Color("8fa6c8"))
+	var use_x := x + w - 3.0 - UI_BTN_W
+	var act_x := use_x - 3.0 - UI_BTN_W
+	var tx := x + 31.0
+	var tw := act_x - 3.0 - tx
+	var nm := _lblr(_tbl_root, "", Rect2(tx, y + 1.0, tw, 13), 8, Color.WHITE)
+	var tag := _lblr(_tbl_root, "", Rect2(tx, y + 13.0, tw, 10), 6, Color("8fa6c8"))
 	var cb: Callable = _tbl_click_place.bind(idx) if kind == 0 else _tbl_click_take.bind(idx)
 	var ucb: Callable = _tbl_click_use.bind(kind, idx)
-	var b := _btn(_tbl_root, btn_text, Rect2(x + w - 76.0, y + 4.0, 34, 16), cb, 7)
-	var u := _btn(_tbl_root, "Dùng", Rect2(x + w - 38.0, y + 4.0, 34, 16), ucb, 7)
+	var b := _btn_in(_tbl_root, btn_text, act_x, y, UI_BTN_W, TBL_ROW_H, cb, 7)
+	var u := _btn_in(_tbl_root, "Dùng", use_x, y, UI_BTN_W, TBL_ROW_H, ucb, 7)
 	return {"bg": bg, "icon": icon, "name": nm, "tag": tag, "btn": b, "use": u}
 
 func _tbl_row_id(kind: int, idx: int) -> String:
