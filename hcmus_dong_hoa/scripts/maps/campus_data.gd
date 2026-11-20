@@ -22,7 +22,7 @@ var ROOF := Color("c0453a")
 var BUILDINGS := [
 	["A", 152, 157, 120, 260, WALL, ROOF, "Tòa A - giảng đường."],
 	["B", 240, 440, 182, 110, WALL, ROOF, "Hội trường B - hội trường lớn, có nhiều cửa vào."],
-	["C", 432, 240, 105, 213, WALL, ROOF, "Tòa C - có Thư viện, Quầy giáo trình và ATM."],
+	["C", 432, 240, 105, 213, WALL, ROOF, "Tòa C - có Thư viện, Phòng học C301, Quầy giáo trình và ATM."],
 	["D", 576, 240, 100, 213, WALL, ROOF, "Tòa D - giảng đường, gần nhà ăn và khu tự học."],
 	["E", 712, 278, 105, 286, WALL, ROOF, "Tòa E - giảng đường lớn."],
 	["F", 1056, 278, 112, 286, WALL, ROOF, "Tòa F - giảng đường."],

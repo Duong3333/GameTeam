@@ -47,11 +47,11 @@ Branch -> **Update from main** (hoặc "Merge into current branch" -> chọn `ma
 Xảy ra khi 2 người cùng sửa **cùng vị trí** của 1 file, thường là cùng thêm dòng vào một registry.
 Git không tự quyết nên đánh dấu trong file như sau:
 ```
-<<<<<<< HEAD
+[marker-dau-nhanh-hien-tai]
 	"res://scripts/features/diem_danh.gd",
-=======
+[marker-dau-nhanh-main]
 	"res://scripts/features/thu_vien.gd",
->>>>>>> main
+[ket-thuc-marker]
 ```
 Cách sửa: nếu hai đường dẫn là hai module khác nhau, **giữ cả hai dòng và xóa 3 dòng đánh dấu** (`<<<<<<<`, `=======`, `>>>>>>>`):
 ```
