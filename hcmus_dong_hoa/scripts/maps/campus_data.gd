@@ -13,6 +13,8 @@ const QUIZ_NPC_POS := Vector2(1180, 580) # Vị trí NPC Cô Toán cạnh Tòa F
 const DIEUHANH := Rect2(860, 680, 260, 170)
 # Tốc độ thời gian: 1 giây thật = TIME_SCALE phút trong game (3.0 -> 1 ngày game dài khoảng 3 phút 20 giây)
 const TIME_SCALE := 3.0
+# Nền cũ của Nhà Thể Dục (đã xóa). Chỉ dùng để giữ nguyên vị trí cây/hoa sinh ngẫu nhiên.
+const OLD_GYM_RECT := Rect2(872, 166, 192, 120)
 const LAKE := Rect2(886, 379, 84, 84)   # Hồ nước của đài phun nước
 const LINES := ["Thi chưa?", "Deadline!", "Đi ăn không?", "Đến giờ học rồi!", "Mượn tui cây bút", "Nhà ăn đông quá", "Sáng nay có kiểm tra!", "Ngủ quên mất...", "Lên thư viện không?"]
 
@@ -27,7 +29,6 @@ var BUILDINGS := [
 	["E", 712, 278, 105, 286, WALL, ROOF, "Tòa E - giảng đường lớn."],
 	["F", 1056, 278, 112, 286, WALL, ROOF, "Tòa F - giảng đường."],
 	["G", 1256, 278, 120, 286, Color("dfe3e8"), Color("5d7c99"), "Tòa G - phòng học và phòng thí nghiệm."],
-	["NHÀ THỂ DỤC", 872, 166, 192, 120, Color("e9efe9"), Color("5f9c6a"), "Nhà Thể Dục - sân tập trong nhà."],
 ]
 # [tên, x, y, màu mái, mô tả] : quầy, kiosk nhỏ
 var KIOSKS := [

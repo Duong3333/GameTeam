@@ -51,6 +51,8 @@ func setup_trees() -> void:
 		if p.y > 560 and p.y < 700:
 			continue
 		var ok := true
+		if OLD_GYM_RECT.grow(16).has_point(p):
+			ok = false   # giữ nguyên chuỗi random cũ -> các cây/hoa khác không đổi chỗ
 		for s in solids:
 			if s.grow(16).has_point(p):
 				ok = false
