@@ -22,6 +22,8 @@ func draw_building(b: Array) -> void:
 	rc(x + 8, y + 10, r.size.x, r.size.y, Color(0, 0, 0, 0.14))
 	rc(x + 4, y + 5, r.size.x, r.size.y, Color(0, 0, 0, 0.14))
 	var cx := x + r.size.x / 2.0
+	if str(b[0]) == "NHÀ THỂ DỤC":
+		return
 	if b[0] == "NHÀ THỂ DỤC":
 		rc(x, y, r.size.x, r.size.y, wall)
 		rc(x, y, r.size.x, 56, roof)

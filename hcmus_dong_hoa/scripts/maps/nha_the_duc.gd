@@ -11,6 +11,8 @@ extends "res://scripts/features/feature.gd"
 #              Bóng (rổ, chuyền, đá) nằm rải rác trong sảnh: bấm E gần bóng để nhặt, E để đặt xuống; F ném (bóng rổ/chuyền) hoặc
 #              sút (bóng đá) theo hướng đang quay mặt, giữ F lâu hơn thì mạnh hơn. Bóng bay theo đường cong, nảy khi chạm sàn,
 #              va vào tường/ghế/NPC và bị lưới chặn nếu bay thấp; bay cao hơn lưới thì qua lưới (thứ tự vẽ theo vị trí thật so với lưới).
+#              Giá bóng (góc phải): 3 ngăn bóng rổ / bóng chuyền / bóng đá, mỗi ngăn chứa 2 quả; đứng trước ngăn nào thì E lấy / cất bóng của ngăn đó.
+#              Bình nước (góc trái dưới) có giá cốc giấy ngay bên phải: E ở giá cốc để lấy cốc, E ở bình để rót đầy, E lần nữa để uống.
 #
 # ĐĂNG KÝ: 1 dòng ở cuối danh sách trong scripts/maps/registry.gd:
 #     "res://scripts/maps/nha_the_duc.gd", # Nhà tập luyện Thể dục Thể thao
@@ -44,8 +46,9 @@ const EXIT_RANGE := 26.0
 const WALK_SPEED := 70.0                 # giống người chơi ngoài trời
 const NET_RECT := Rect2(204, 160, 232, 6)       # lưới bóng chuyền (vùng chắn ở mặt sàn)
 const GOAL_RECT := Rect2(526, 229, 64, 5)       # khung thành mini
-const RACK_RECT := Rect2(598, 142, 24, 10)      # xe đựng bóng
+const RACK_RECT := Rect2(586, 142, 39, 10)      # giá bóng: 3 ngăn rộng RACK_BIN px (vùng chạm ở chân giá, thân giá vẽ cao 27 px)
 const COOLER_RECT := Rect2(112, 238, 12, 8)     # bình nước
+const CUP_RECT := Rect2(126, 240, 8, 6)         # giá cốc giấy ngay bên phải bình nước
 const BENCH_RECTS := [Rect2(176, 244, 64, 7), Rect2(404, 244, 64, 7)]
 const BENCH_SEATS := 3                   # số chỗ ngồi trên mỗi ghế dài (cách nhau SEAT_GAP px, bắt đầu từ mép ghế + SEAT_GAP)
 const SEAT_GAP := 16.0
@@ -78,6 +81,36 @@ const BALL_KINDS := {
 # Vị trí ban đầu của các quả bóng (bốn quả đầu là bóng sàn cũ, hai quả sau thêm cho phía sau lưới và gần rổ phải)
 const BALL_SPOTS := [[Vector2(468, 204), "foot"], [Vector2(555, 214), "foot"], [Vector2(322, 214), "volley"],
 	[Vector2(110, 134), "basket"], [Vector2(300, 128), "volley"], [Vector2(505, 120), "basket"]]
+
+# ---------- Giá bóng và bình nước ----------
+const RACK_KINDS := ["basket", "volley", "foot"]   # loại bóng của từng ngăn trên giá, từ trái sang phải
+const RACK_BIN := 13.0                   # bề rộng mỗi ngăn (px)
+const RACK_CAP := 2                      # mỗi ngăn chứa tối đa 2 quả (ô trước + ô sau)
+const RACK_RANGE := 22.0                 # đứng cách giá tối đa bấm E mới lấy / cất bóng được
+const WATER_RANGE := 18.0                # đứng cách bình nước / giá cốc tối đa
+const CUPS_MAX := 8                      # tổng số cốc giấy (trên giá + trên tay), được giữ nguyên, không sinh thêm hay mất đi
+
+# ---------- Hình bóng pixel-art 11x11 (theo ảnh tham khảo): k viền, o/h/s cam, B/b xanh, Y/y vàng, W/w trắng, F/f/g/K bóng đá ----------
+const BALL_PAL := {
+	"k": Color("1b1216"), "o": Color("e8742a"), "h": Color("f7a64f"), "s": Color("bb5319"),
+	"B": Color("2f55c4"), "b": Color("1f3a8a"), "Y": Color("f5d63a"), "y": Color("cfae1c"),
+	"W": Color("f4f6f8"), "w": Color("c3cad8"), "F": Color("f4f6f8"), "f": Color("c3c9d4"),
+	"K": Color("262a33"), "g": Color("aab3c6"),
+}
+const BALL_SPRITES := {
+	"basket": [
+		"....kkk....", "..kkhkokk..", ".kkhhkookk.", ".kkhokookk.", "khkookookok", "kkkkkkkkkkk",
+		"kokookooksk", ".kkookookk.", ".kkookoskk.", "..kkokskk..", "....kkk....",
+	],
+	"volley": [
+		"....kkk....", "..kkBBBkk..", ".kYWWWBBBk.", ".kYWWWBBBk.", "kYYWWYYYBBk", "kYWWWYYYYYk",
+		"kYWWWYYYYyk", ".kWWWBBBbk.", ".kWWWBBbbk.", "..kkWBbkk..", "....kkk....",
+	],
+	"foot": [
+		"....kkk....", "..kkKKKkk..", ".kFFFgFFFk.", ".kKFFKFFKk.", "kKgFKKKFgKk", "kFFKKKKKFFk",
+		"kFgFKKKFgfk", ".kFFFgFFfk.", ".kKFFgFfKk.", "..kkFgfkk..", "....kkk....",
+	],
+}
 const MAT_RECT := Rect2(26, 154, 120, 72)       # thảm võ (đi qua được)
 const HOOP_XS := [162.0, 478.0]                 # tâm rổ bóng rổ trên tường phía bắc
 const COL_XS := [18.0, 210.0, 430.0, 622.0]     # tâm 4 cột thép xanh
@@ -142,6 +175,12 @@ var _charge := 0.0
 var _act_kind := ""            # tư thế hành động: "throw", "kick", "pick"
 var _act_t := 0.0
 var _act_dur := 0.3
+var _rack: Array = []          # giá bóng: mỗi ngăn là một mảng chỉ số bóng (vị trí 0 = ô trước, 1 = ô sau)
+var _cup := -1                 # cốc đang cầm: -1 không có, 0 cốc rỗng, 1 cốc đầy nước
+var _cups_left := CUPS_MAX     # số cốc còn trên giá cốc
+var _toast := ""               # dòng phản hồi ngắn phía trên đầu người chơi
+var _toast_t := 0.0
+var _ball_runs: Dictionary = {} # hình bóng đã gộp thành các đoạn ngang để vẽ nhanh
 var _dlg := false              # đang mở hộp thoại (khi đó người chơi đứng yên)
 var _dlg_i := -1               # chỉ số NPC đang nói chuyện (chỉ một cuộc hội thoại tại một thời điểm)
 var _dlg_line := 0             # câu thoại hiện tại
@@ -199,8 +238,9 @@ func _build_hall() -> void:
 	_seats.clear()
 	_add_solid(NET_RECT, BALL_NET_H)
 	_add_solid(GOAL_RECT, BALL_HIT_H)
-	_add_solid(RACK_RECT, 18.0)
+	_add_solid(RACK_RECT, 26.0)
 	_add_solid(COOLER_RECT, BALL_HIT_H)
+	_add_solid(CUP_RECT, 14.0)
 	for r in BENCH_RECTS:
 		_add_solid(r, 12.0)
 		for k in BENCH_SEATS:
@@ -295,6 +335,17 @@ func _unhandled_input(event: InputEvent) -> void:
 				_open_dialogue(i)
 			elif _pos.distance_to(EXIT_POS) < EXIT_RANGE:
 				_closing = true   # mờ dần rồi ra ngoài (xem _process)
+			elif _water_active():
+				_use_water()   # bình nước / giá cốc: lấy cốc, rót nước, uống, trả cốc
+			elif _rack_col() >= 0:
+				if _cup >= 0:
+					_say("Tay đang cầm cốc: hãy uống hoặc trả cốc trước")
+				elif _held >= 0:
+					_rack_return()   # cất bóng đang cầm vào đúng ngăn của nó (nếu ngăn còn chỗ)
+				else:
+					_rack_take(_rack_col())   # lấy bóng của ngăn đang đứng trước
+			elif _cup >= 0:
+				_say("Đang cầm cốc: uống nước ở bình hoặc trả cốc ở giá cốc")
 			elif _held >= 0:
 				_put_down_ball()   # đang cầm bóng: E để đặt xuống (không ngồi khi đang cầm bóng)
 			else:
@@ -321,6 +372,7 @@ func _process(delta: float) -> void:
 	_act_t = maxf(_act_t - delta, 0.0)
 	if _act_t <= 0.0:
 		_act_kind = ""
+	_toast_t = maxf(_toast_t - delta, 0.0)
 	_update_balls(delta)
 	if _charging:
 		if not _can_act_ball():
@@ -348,10 +400,18 @@ func _process(delta: float) -> void:
 
 func _init_balls() -> void:
 	_balls.clear()
+	_rack.clear()
+	for k in RACK_KINDS.size():
+		_rack.append([])
 	for spot in BALL_SPOTS:
 		var bp: Vector2 = spot[0]
 		# pos là điểm bóng chạm sàn (tâm bóng vẽ cao hơn BALL_R), nên cộng BALL_R để giữ nguyên chỗ nhìn thấy của bóng sàn cũ
-		_balls.append({"kind": str(spot[1]), "pos": Vector2(bp.x, bp.y + BALL_R), "z": 0.0, "vel": Vector2.ZERO, "vz": 0.0, "moving": false})
+		_balls.append({"kind": str(spot[1]), "pos": Vector2(bp.x, bp.y + BALL_R), "z": 0.0, "vel": Vector2.ZERO, "vz": 0.0, "moving": false, "racked": false})
+	# mỗi ngăn của giá có sẵn một quả; bóng nào nằm trên giá thì có racked = true và nằm trong đúng một ngăn của _rack
+	for k in RACK_KINDS.size():
+		_balls.append({"kind": str(RACK_KINDS[k]), "pos": Vector2.ZERO, "z": 0.0, "vel": Vector2.ZERO, "vz": 0.0, "moving": false, "racked": true})
+		var column: Array = _rack[k]
+		column.append(_balls.size() - 1)
 
 func _ball_dir() -> Vector2:
 	if _face == 0:
@@ -371,14 +431,17 @@ func _start_act(kind: String, dur: float) -> void:
 	_act_dur = dur
 	_act_t = dur
 
-# Rời nhà tập / vào lại: thả quả bóng đang cầm xuống sàn và hủy lấy lực
 func _reset_ball_state() -> void:
 	if _held >= 0:
 		_put_down_ball()
+	if _cup >= 0:
+		_cups_left = mini(_cups_left + 1, CUPS_MAX)   # ra khỏi nhà tập: trả cốc về giá cốc (không để mất cốc)
+		_cup = -1
 	_charging = false
 	_charge = 0.0
 	_act_kind = ""
 	_act_t = 0.0
+	_toast_t = 0.0
 
 # Vị trí bóng (điểm chạm sàn) bị chặn ở độ cao z? Chỉ vật cản thấp hơn z mới chặn; ngoài biên sảnh luôn chặn
 func _ball_blocked(bp: Vector2, z: float) -> bool:
@@ -399,6 +462,8 @@ func _ball_near() -> int:
 		if i == _held:
 			continue
 		var b: Dictionary = _balls[i]
+		if bool(b.racked):
+			continue   # bóng đang nằm trên giá thì lấy bằng giá, không nhặt như bóng sàn
 		var v: Vector2 = b.vel
 		if float(b.z) > 8.0 or v.length() > 40.0:
 			continue
@@ -583,37 +648,36 @@ func _step_ball(b: Dictionary, dt: float) -> void:
 
 # ---- vẽ bóng, tư thế và gợi ý ----
 
-# Bóng trên sàn / đang bay: bóng đổ nằm trên sàn (nhỏ và nhạt dần khi bóng lên cao), thân bóng vẽ cao hơn điểm chạm sàn z + BALL_R.
-# Bóng được sắp cùng người và vật dụng theo y của điểm chạm sàn nên tự đứng trước / sau lưới theo vị trí thật.
 func _paint_ball_obj(p: Node2D, i: int) -> void:
 	var b: Dictionary = _balls[i]
 	var bp: Vector2 = b.pos
 	var z: float = b.z
-	var sw := maxf(1.5, 3.5 - z / 25.0)
+	var sw := maxf(2.5, 5.0 - z / 20.0)
 	var sa := clampf(0.28 - z / 400.0, 0.1, 0.28)
 	p.rc(roundf(bp.x - sw), roundf(bp.y) - 1.0, roundf(sw * 2.0), 2, Color(0, 0, 0, sa))
 	_paint_ball_body(p, Vector2(roundf(bp.x), roundf(bp.y - BALL_R - z)), BALL_R, str(b.kind))
 
-# Tâm quả bóng đang cầm: bóng rổ / bóng chuyền ôm trước ngực (giơ cao dần khi lấy lực), bóng đá để dưới chân phía trước
 func _held_ball_center(kind: String, base: Vector2) -> Vector2:
 	var x := base.x
 	var y := base.y
 	if kind == "foot":
 		if _face == 0:
-			return Vector2(x + 3.0, y + 1.0)
+			return Vector2(x + 5.0, y + 2.0)
 		if _face == 1:
-			return Vector2(x + 6.0, y - 3.0)
+			return Vector2(x, y - 8.0)   # quay lưng: bóng ở phía trước người chơi = phía sau thân trên màn hình (vẽ trước người chơi), thân và chân che hết
 		if _face == 2:
-			return Vector2(x - 8.0, y - 1.0)
-		return Vector2(x + 8.0, y - 1.0)
+			return Vector2(x - 10.0, y - 3.0)
+		return Vector2(x + 10.0, y - 3.0)
 	var lift := 0.0
 	if _charging:
 		lift = lerpf(0.0, 18.0, clampf(_charge / CHARGE_TIME, 0.0, 1.0))
 	if _face == 0:
-		return Vector2(x, y - 8.0 - lift)
+		return Vector2(x, y - 6.0 - lift)
+	if _face == 1:
+		return Vector2(x, y - 10.0 - lift)   # quay lưng: nằm gọn sau đầu và thân (che hết khi chưa giơ cao)
 	if _face == 2:
-		return Vector2(x - 7.0, y - 9.0 - lift)
-	return Vector2(x + 7.0, y - 9.0 - lift)
+		return Vector2(x - 8.0, y - 7.0 - lift)
+	return Vector2(x + 8.0, y - 7.0 - lift)
 
 func _paint_held_ball(p: Node2D, base: Vector2) -> void:
 	var b: Dictionary = _balls[_held]
@@ -663,9 +727,19 @@ func _paint_charge_bar(p: Node2D) -> void:
 	p.rc(bx, by, 26, 4, Color("3a3f4a"))
 	p.rc(bx, by, roundf(26.0 * pw), 4, Color("ffd23f") if pw < 0.95 else Color("ff7a3a"))
 
-# Gợi ý phím: nhặt bóng khi đứng gần bóng, hoặc cách ném / sút khi đang cầm bóng
 func _paint_ball_prompt(p: Node2D) -> void:
 	if _closing or _dlg or _seat >= 0 or _npc_near() >= 0 or _pos.distance_to(EXIT_POS) < EXIT_RANGE:
+		return
+	var wt := _water_target()
+	if _water_active():
+		p.ctext(_water_prompt(wt), _pos.x - 110.0, _pos.y - 44.0, 220, 8, Color.WHITE)
+		return
+	var rcol := _rack_col()
+	if rcol >= 0:
+		p.ctext(_rack_prompt(rcol), _pos.x - 110.0, _pos.y - 44.0, 220, 8, Color.WHITE)
+		return
+	if _cup >= 0:
+		p.ctext("Đang cầm cốc: [E] gần bình để rót / uống, gần giá cốc để trả", _pos.x - 140.0, _pos.y - 44.0, 280, 8, Color.WHITE)
 		return
 	if _held >= 0:
 		var act := "Sút" if str(_balls[_held].kind) == "foot" else "Ném"
@@ -675,6 +749,193 @@ func _paint_ball_prompt(p: Node2D) -> void:
 	if bi >= 0:
 		var kd: Dictionary = BALL_KINDS[str(_balls[bi].kind)]
 		p.ctext("[E] Nhặt " + str(kd.name), _pos.x - 60.0, _pos.y - 44.0, 120, 8, Color.WHITE)
+
+# ======================= GIÁ BÓNG, BÌNH NƯỚC, CỐC GIẤY =======================
+
+# Khoảng cách từ một điểm tới hình chữ nhật (0 nếu nằm trong)
+func _dist_to_rect(pt: Vector2, r: Rect2) -> float:
+	var dx := maxf(maxf(r.position.x - pt.x, 0.0), pt.x - r.end.x)
+	var dy := maxf(maxf(r.position.y - pt.y, 0.0), pt.y - r.end.y)
+	return sqrt(dx * dx + dy * dy)
+
+# Ngăn của giá bóng mà người chơi đang đứng trước (theo vị trí đứng: trái / giữa / phải), -1 nếu quá xa hoặc đứng sau giá
+func _rack_col() -> int:
+	if _pos.y < RACK_RECT.position.y + 2.0:
+		return -1
+	if _dist_to_rect(_pos, RACK_RECT) > RACK_RANGE:
+		return -1
+	return clampi(int((_pos.x - RACK_RECT.position.x) / RACK_BIN), 0, RACK_KINDS.size() - 1)
+
+# Tâm bóng ở ô slot (0 = trước, 1 = sau) của ngăn col
+func _rack_slot_center(col: int, slot: int) -> Vector2:
+	return Vector2(RACK_RECT.position.x + RACK_BIN * col + 6.0, RACK_RECT.end.y - 9.0 - 5.0 * slot)
+
+# Lấy quả ngoài cùng của ngăn col; bóng bay từ ô trên giá lên tay. Ngăn trống thì chỉ báo.
+func _rack_take(col: int) -> void:
+	var column: Array = _rack[col]
+	var bname := str(BALL_KINDS[str(RACK_KINDS[col])].name)
+	if column.is_empty():
+		_say("Ngăn %s đã hết bóng" % bname)
+		return
+	var slot := column.size() - 1
+	var idx: int = column.pop_back()
+	var b: Dictionary = _balls[idx]
+	var sc := _rack_slot_center(col, slot)
+	b.racked = false
+	b.pos = Vector2(sc.x, sc.y + BALL_R)
+	b.z = 0.0
+	b.vel = Vector2.ZERO
+	b.vz = 0.0
+	b.moving = false
+	_held = idx
+	_start_act("pick", 0.22)
+	_say("Lấy %s từ giá" % bname)
+
+# Cất quả đang cầm vào đúng ngăn của loại bóng đó; ngăn đầy thì không cất (vẫn cầm bóng)
+func _rack_return() -> void:
+	var b: Dictionary = _balls[_held]
+	var kind := str(b.kind)
+	var bname := str(BALL_KINDS[kind].name)
+	var col := RACK_KINDS.find(kind)
+	var column: Array = _rack[col]
+	if column.size() >= RACK_CAP:
+		_say("Ngăn %s đã đầy, không cất thêm được" % bname)
+		return
+	b.racked = true
+	b.vel = Vector2.ZERO
+	b.vz = 0.0
+	b.z = 0.0
+	b.moving = false
+	column.append(_held)
+	_held = -1
+	_charging = false
+	_charge = 0.0
+	_say("Đã cất %s vào giá" % bname)
+
+func _rack_prompt(col: int) -> String:
+	if _cup >= 0:
+		return "Đang cầm cốc: chưa lấy bóng được"
+	if _held >= 0:
+		var hk := str(_balls[_held].kind)
+		var hname := str(BALL_KINDS[hk].name)
+		var hcol: Array = _rack[RACK_KINDS.find(hk)]
+		if hcol.size() >= RACK_CAP:
+			return "Ngăn %s đã đầy" % hname
+		return "[E] Cất %s vào giá" % hname
+	var column: Array = _rack[col]
+	var bname := str(BALL_KINDS[str(RACK_KINDS[col])].name)
+	if column.is_empty():
+		return "Ngăn %s đã hết bóng" % bname
+	return "[E] Lấy %s (%d/%d)" % [bname, column.size(), RACK_CAP]
+
+# 0 = xa, 1 = gần bình nước, 2 = gần giá cốc (chọn cái gần hơn, trong tầm WATER_RANGE)
+func _water_target() -> int:
+	var dd := _dist_to_rect(_pos, COOLER_RECT)
+	var dc := _dist_to_rect(_pos, CUP_RECT)
+	if minf(dd, dc) > WATER_RANGE:
+		return 0
+	return 1 if dd <= dc else 2
+
+# E có dùng cho bình / giá cốc không: đang cầm cốc thì luôn có; tay đang cầm bóng thì E dành cho đặt bóng (không lấy cốc)
+func _water_active() -> bool:
+	return _water_target() != 0 and (_cup >= 0 or _held < 0)
+
+# Cốc: -1 không có, 0 cốc rỗng, 1 cốc đầy. Lấy cốc ở giá cốc, rót ở bình, uống khi cầm cốc đầy, trả cốc rỗng ở giá cốc.
+# Tổng số cốc (trên giá + trên tay) luôn bằng CUPS_MAX, nên không sinh thêm hay làm mất cốc.
+func _use_water() -> void:
+	var t := _water_target()
+	if _cup == 1:
+		_cup = 0
+		_start_act("drink", 0.6)
+		_say("Ực ực... nước mát quá!")
+	elif _cup == 0:
+		if t == 1:
+			_cup = 1
+			_say("Đã rót đầy cốc nước")
+		else:
+			_cup = -1
+			_cups_left = mini(_cups_left + 1, CUPS_MAX)
+			_say("Đã trả cốc vào giá")
+	elif t == 2:
+		if _cups_left <= 0:
+			_say("Giá cốc đã hết cốc giấy")
+		else:
+			_cups_left -= 1
+			_cup = 0
+			_say("Đã lấy một cốc giấy")
+	else:
+		_say("Cần cốc giấy: lấy ở giá bên phải bình nước")
+
+func _water_prompt(t: int) -> String:
+	if _cup == 1:
+		return "[E] Uống nước"
+	if _cup == 0:
+		return "[E] Rót nước vào cốc" if t == 1 else "[E] Trả cốc vào giá"
+	if t == 2:
+		return "[E] Lấy cốc giấy (còn %d)" % _cups_left
+	return "Cần cốc giấy: lấy ở giá bên phải bình"
+
+func _say(text: String) -> void:
+	_toast = text
+	_toast_t = 2.2
+
+# Dòng phản hồi ngắn phía trên đầu người chơi (mờ dần)
+func _paint_toast(p: Node2D) -> void:
+	if _toast_t <= 0.0 or _toast == "":
+		return
+	var a := clampf(_toast_t / 0.4, 0.0, 1.0)
+	var w: float = p.font.get_string_size(_toast, HORIZONTAL_ALIGNMENT_LEFT, -1, 8).x + 10.0
+	var tx := roundf(clampf(_pos.x - w / 2.0, _cam_x + 4.0, maxf(_cam_x + VIEW.x - w - 4.0, _cam_x + 4.0)))
+	var ty := roundf(_pos.y - 62.0)
+	p.rc(tx - 1.0, ty - 10.0, w + 2.0, 14, Color(0.2, 0.2, 0.2, a))
+	p.rc(tx, ty - 9.0, w, 12, Color(0.08, 0.1, 0.18, 0.92 * a))
+	p.ctext(_toast, tx, ty, w, 8, Color(1.0, 0.95, 0.7, a))
+
+# Cốc giấy đang cầm: ở tay cạnh người (đưa lên miệng khi uống); quay lưng thì nằm sau thân (vẽ trước người chơi)
+func _paint_held_cup(p: Node2D, base: Vector2) -> void:
+	var ox := base.x + 4.0
+	var oy := base.y - 12.0
+	if _face == 1:
+		ox = base.x - 2.0
+		oy = base.y - 13.0
+	elif _face == 2:
+		ox = base.x - 9.0
+	elif _face == 3:
+		ox = base.x + 6.0
+	if _act_kind == "drink" and _act_t > 0.0 and _act_dur > 0.0:
+		var u := 1.0 - _act_t / _act_dur
+		oy -= roundf(sin(PI * u) * 8.0)
+	_paint_cup(p, roundf(ox), roundf(oy), _cup == 1)
+
+# Cốc giấy 5x7: viền, thân trắng có sọc xanh, cốc đầy thì có mặt nước xanh ở miệng
+func _paint_cup(p: Node2D, ox: float, oy: float, full: bool) -> void:
+	p.rc(ox, oy, 5, 1, C_OUTLINE)
+	p.rc(ox, oy + 1.0, 1, 5, C_OUTLINE)
+	p.rc(ox + 4.0, oy + 1.0, 1, 5, C_OUTLINE)
+	p.rc(ox + 1.0, oy + 6.0, 3, 1, C_OUTLINE)
+	p.rc(ox + 1.0, oy + 1.0, 3, 5, Color("f4f6f8"))
+	p.rc(ox + 1.0, oy + 3.0, 3, 1, Color("3a7bd5"))
+	if full:
+		p.rc(ox + 1.0, oy + 1.0, 3, 2, Color("8fd3f0"))
+		p.rc(ox + 1.0, oy + 1.0, 3, 1, Color("c8ecf8"))
+
+# Giá cốc giấy: ống trong suốt trên đế, số cốc xếp chồng theo _cups_left (tối đa 6 cốc hiển thị)
+func _paint_cup_holder(p: Node2D) -> void:
+	var r := CUP_RECT
+	var x := roundf(r.position.x)
+	var y := roundf(r.end.y)
+	p.rc(x - 1.0, y - 1.0, r.size.x + 2.0, 3, Color(0, 0, 0, 0.18))
+	p.rc(x + 1.0, y - 16.0, 6, 13, Color(0.8, 0.9, 1.0, 0.28))
+	for i in mini(_cups_left, 6):
+		p.rc(x + 1.0, y - 5.0 - i * 2.0, 6, 2, Color("f4f6f8"))
+		p.rc(x + 1.0, y - 5.0 - i * 2.0, 6, 1, Color("c9ced6"))
+	if _cups_left > 0:
+		p.rc(x + 1.0, y - 3.0 - mini(_cups_left, 6) * 2.0, 6, 1, Color("3a7bd5"))
+	p.rc(x, y - 16.0, 1, 13, Color("5a606c"))
+	p.rc(x + 7.0, y - 16.0, 1, 13, Color("5a606c"))
+	p.rc(x, y - 17.0, 8, 1, Color("8f9aa6"))
+	p.rc(x, y - 3.0, 8, 3, Color("8f9aa6"))
+	p.rc(x, y - 3.0, 8, 1, Color("c6ced6"))
 
 # ======================= GHẾ DÀI: NGỒI / ĐỨNG DẬY =======================
 
@@ -735,13 +996,12 @@ func _release_seat() -> void:
 		_seats[_seat].taken = false
 	_seat = -1
 
-# Gợi ý phím khi đứng gần ghế hoặc đang ngồi
 func _paint_seat_prompt(p: Node2D) -> void:
 	if _closing or _dlg:
 		return
 	if _seat >= 0:
 		p.ctext("[E] Đứng dậy", _pos.x - 40.0, _pos.y - 44.0, 80, 8, Color.WHITE)
-	elif _held < 0 and _npc_near() < 0 and _ball_near() < 0 and _seat_near() >= 0:
+	elif _held < 0 and _cup < 0 and _npc_near() < 0 and _ball_near() < 0 and _rack_col() < 0 and _water_target() == 0 and _seat_near() >= 0:
 		p.ctext("[E] Ngồi", _pos.x - 40.0, _pos.y - 44.0, 80, 8, Color.WHITE)
 
 # ======================= NPC VÀ HỘP THOẠI =======================
@@ -886,12 +1146,13 @@ func _paint_world() -> void:
 	items.append([GOAL_RECT.end.y, 1, null])
 	items.append([RACK_RECT.end.y, 2, null])
 	items.append([COOLER_RECT.end.y, 3, null])
+	items.append([CUP_RECT.end.y, 8, null])
 	for r in BENCH_RECTS:
 		items.append([r.end.y, 4, r])
 	for i in _npcs.size():
 		items.append([_npcs[i].pos.y, 5, i])
 	for i in _balls.size():
-		if i != _held:
+		if i != _held and not bool(_balls[i].racked):
 			items.append([_balls[i].pos.y, 7, i])
 	items.append([_pos.y, 6, null])
 	items.sort_custom(func(a, b): return a[0] < b[0])
@@ -911,6 +1172,8 @@ func _paint_world() -> void:
 				_paint_npc(p, it[2])
 			7:
 				_paint_ball_obj(p, it[2])
+			8:
+				_paint_cup_holder(p)
 			_:
 				_paint_player(p)
 	_paint_motes(p)
@@ -920,6 +1183,7 @@ func _paint_world() -> void:
 		p.ctext("[E] Ra ngoài", _pos.x - 40.0, _pos.y - 44.0, 80, 8, Color.WHITE)
 	_paint_seat_prompt(p)
 	_paint_ball_prompt(p)
+	_paint_toast(p)
 
 # Lớp cố định trên màn hình: biển tên khi mới vào và mờ dần
 func _paint_ui() -> void:
@@ -1317,20 +1581,48 @@ func _paint_goal(p: Node2D) -> void:
 	p.rc(x0, yt, x1 - x0, 4, Color("f4f6f8"))
 	p.rc(x0, yt + 3.0, x1 - x0, 1, Color("b4bac2"))
 
+# Giá bóng: 3 ngăn (rổ / chuyền / đá), mỗi ngăn 2 ô (ô trước + ô sau). Bóng vẽ đúng theo _rack nên giá luôn khớp kho thật.
 func _paint_rack(p: Node2D) -> void:
 	var r := RACK_RECT
-	var x := r.position.x
-	var y := r.end.y
-	p.rc(x, y - 1.0, r.size.x, 3, Color(0, 0, 0, 0.18))
-	p.rc(x, y - 16.0, 2, 16, Color("5a606c"))
-	p.rc(x + r.size.x - 2.0, y - 16.0, 2, 16, Color("5a606c"))
-	p.rc(x, y - 4.0, r.size.x, 2, Color("8f9aa6"))
-	p.rc(x, y - 10.0, r.size.x, 2, Color("8f9aa6"))
-	for i in 3:
-		p.draw_circle(Vector2(x + 6.0 + i * 6.0, y - 14.0), 3.0, Color("e86a1f"))
-		p.draw_circle(Vector2(x + 6.0 + i * 6.0, y - 7.0), 3.0, Color("f4f6f8") if i % 2 == 0 else Color("ffd23f"))
-	p.rc(x + 2, y - 3.0, 3, 3, Color("1a1a2e"))
-	p.rc(x + r.size.x - 5.0, y - 3.0, 3, 3, Color("1a1a2e"))
+	var x := roundf(r.position.x)
+	var y := roundf(r.end.y)
+	var w := roundf(r.size.x)
+	var steel := Color("8f9aa6")
+	var dark := Color("5a606c")
+	var light := Color("c6ced6")
+	p.rc(x, y - 1.0, w, 3, Color(0, 0, 0, 0.18))
+	p.rc(x + 1.0, y - 25.0, w - 2.0, 19, Color("3a4152"))   # tấm lưng tối phía sau các quả bóng
+	for col in RACK_KINDS.size():
+		var column: Array = _rack[col]
+		for slot in [1, 0]:   # ô sau vẽ trước, ô trước vẽ sau (che một phần ô sau)
+			var sc := _rack_slot_center(col, slot)
+			if slot < column.size():
+				_paint_ball_body(p, sc, BALL_R, str(_balls[column[slot]].kind))
+			elif column.is_empty() and slot == 0:
+				_paint_ball_body(p, sc, BALL_R, str(RACK_KINDS[col]), 0.22)   # ngăn trống: bóng mờ gợi ý loại bóng
+	# khung: hai trụ, hai thanh ngăn, thanh trên có vạch màu loại bóng, khay đáy và bánh xe
+	p.rc(x, y - 27.0, 2, 24, dark)
+	p.rc(x + w - 2.0, y - 27.0, 2, 24, dark)
+	for k in range(1, RACK_KINDS.size()):
+		p.rc(x + RACK_BIN * k, y - 25.0, 1, 19, steel)
+	p.rc(x, y - 27.0, w, 3, steel)
+	p.rc(x, y - 27.0, w, 1, light)
+	var chips := [Color("e8742a"), Color("2f55c4"), Color("f4f6f8")]
+	for col in RACK_KINDS.size():
+		p.rc(x + RACK_BIN * col + 4.0, y - 26.0, 5, 1, chips[col])
+	p.rc(x, y - 6.0, w, 1, light)
+	p.rc(x, y - 5.0, w, 2, steel)
+	p.rc(x, y - 3.0, w, 1, dark)
+	p.rc(x + 3.0, y - 3.0, 4, 3, C_OUTLINE)
+	p.rc(x + w - 7.0, y - 3.0, 4, 3, C_OUTLINE)
+	# đứng trước ngăn nào thì ngăn đó được viền vàng (đúng ngăn sẽ lấy / cất bóng khi bấm E)
+	var sel := _rack_col()
+	if sel >= 0 and _seat < 0 and not _dlg:
+		var bx := x + RACK_BIN * sel
+		p.rc(bx, y - 25.0, RACK_BIN + 1.0, 1, C_GOLD)
+		p.rc(bx, y - 7.0, RACK_BIN + 1.0, 1, C_GOLD)
+		p.rc(bx, y - 25.0, 1, 19, C_GOLD)
+		p.rc(bx + RACK_BIN, y - 25.0, 1, 19, C_GOLD)
 
 func _paint_cooler(p: Node2D) -> void:
 	var r := COOLER_RECT
@@ -1356,28 +1648,38 @@ func _paint_cone(p: Node2D, c: Vector2) -> void:
 	p.draw_colored_polygon(PackedVector2Array([Vector2(c.x - 3, c.y - 1), Vector2(c.x + 3, c.y - 1), Vector2(c.x, c.y - 9)]), Color("f07a1e"))
 	p.rc(c.x - 1, c.y - 5.0, 2, 1, Color.WHITE)
 
-# Vài quả bóng nằm trên sàn (trang trí)
-# Vài quả bóng nằm trên sàn (trang trí) dùng chung hàm này
-func _paint_ball(p: Node2D, c: Vector2, r: float, kind: String) -> void:
-	p.rc(c.x - r, c.y + r - 1.0, r * 2.0, 2, Color(0, 0, 0, 0.22))
-	_paint_ball_body(p, c, r, kind)
 
-# Thân quả bóng không kèm bóng đổ (bóng đang bay thì bóng đổ nằm riêng trên sàn)
-func _paint_ball_body(p: Node2D, c: Vector2, r: float, kind: String) -> void:
-	match kind:
-		"basket":
-			p.draw_circle(c, r, Color("e86a1f"))
-			p.rc(c.x - r, c.y - 0.5, r * 2.0, 1, Color("5a2a0a"))
-			p.rc(c.x - 0.5, c.y - r, 1, r * 2.0, Color("5a2a0a"))
-		"volley":
-			p.draw_circle(c, r, Color("f4f6f8"))
-			p.rc(c.x - r, c.y - 1.0, r * 2.0, 1, Color("2f6bd0"))
-			p.rc(c.x - r + 1.0, c.y + 1.0, r * 2.0 - 2.0, 1, Color("ffd23f"))
-		_:
-			p.draw_circle(c, r, Color("f4f6f8"))
-			p.rc(c.x - 1.0, c.y - 1.0, 2, 2, Color("1a1a2e"))
-			p.rc(c.x - r, c.y - 0.5, 1, 1, Color("1a1a2e"))
-			p.rc(c.x + r - 1.0, c.y - 0.5, 1, 1, Color("1a1a2e"))
+func _paint_ball_body(p: Node2D, c: Vector2, _r: float, kind: String, a: float = 1.0) -> void:
+	# c là tâm quả bóng (cao hơn điểm chạm sàn BALL_R); hình 11x11, hàng đáy cách điểm chạm sàn 1 px
+	var ox := roundf(c.x) - 5.0
+	var oy := roundf(c.y) - 8.0
+	for run in _ball_runs_for(kind):
+		var col: Color = run[3]
+		if a < 1.0:
+			col.a *= a
+		p.rc(ox + run[0], oy + run[1], run[2], 1, col)
+
+# Hình bóng được gộp thành các đoạn ngang cùng màu một lần rồi dùng lại: [x, y, rộng, màu]
+func _ball_runs_for(kind: String) -> Array:
+	if _ball_runs.has(kind):
+		return _ball_runs[kind]
+	var rows: Array = BALL_SPRITES[kind]
+	var runs: Array = []
+	for y in rows.size():
+		var row: String = rows[y]
+		var x := 0
+		while x < row.length():
+			var ch := row[x]
+			if ch == ".":
+				x += 1
+				continue
+			var x2 := x
+			while x2 + 1 < row.length() and row[x2 + 1] == ch:
+				x2 += 1
+			runs.append([x, y, x2 - x + 1, BALL_PAL[ch]])
+			x = x2 + 1
+	_ball_runs[kind] = runs
+	return runs
 # Nhân vật dùng đúng hàm draw_person() của game (áo polo trường, animation đi bộ)
 func _paint_player(p: Node2D) -> void:
 	var u := 0.0
@@ -1388,14 +1690,26 @@ func _paint_player(p: Node2D) -> void:
 		dpos.y -= roundf(sin(PI * u) * 3.0)   # nhảy nhẹ khi ném
 	elif _act_kind == "pick" and u < 0.6:
 		dpos.y += 1.0   # cúi xuống nhặt
+	var carrying := _seat < 0 and (_held >= 0 or _cup >= 0)
+	# Quay lưng (đi lên): vật đang cầm ở phía trước người chơi = phía sau thân trên màn hình, nên vẽ TRƯỚC người chơi để thân che nó;
+	# các hướng khác vẽ sau người chơi (trước ngực / bên cạnh / dưới chân)
+	var behind := _face == 1
+	if carrying and behind:
+		_paint_carried(p, dpos)
 	# đang ngồi thì dùng nhịp bước 0 (không để chân/thân dừng lệch giữa bước đi)
 	p.draw_person(dpos, Color.WHITE, Color("1b1b1b"), _face, 0.0 if _seat >= 0 else _anim, true, false, true)
 	if _act_kind == "kick":
 		_paint_kick_leg(p, u)
-	if _held >= 0 and _seat < 0:
-		_paint_held_ball(p, dpos)
+	if carrying and not behind:
+		_paint_carried(p, dpos)
 	p.ctext("Bạn", _pos.x - 15.0, _pos.y - 28.0, 30, 8, C_GOLD)
 	_paint_charge_bar(p)
+
+func _paint_carried(p: Node2D, base: Vector2) -> void:
+	if _held >= 0:
+		_paint_held_ball(p, base)
+	elif _cup >= 0:
+		_paint_held_cup(p, base)
 
 # Biển tên hiện ra vài giây khi mới bước vào
 func _paint_banner(p: Node2D) -> void:
