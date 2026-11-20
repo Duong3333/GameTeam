@@ -1,23 +1,7 @@
 extends "res://scripts/features/feature.gd"
-# HỆ THỐNG PHÒNG HỌC DÃY A - G & NHÀ ĐIỀU HÀNH (Redesign theo bản vẽ giảng đường chuẩn).
-#
-# Bố cục nội thất giảng đường (480x270):
-#   - Tường vàng kem, bảng trắng dài viền xám kèm khay bút (đỏ, xanh) & giẻ lau, đồng hồ treo tường.
-#   - 2 máy lạnh treo góc trên tường + 2 máy lạnh đặt góc dưới sàn, 2 loa treo tường trái & phải.
-#   - Bục giảng gỗ chạy ngang + bàn giảng viên góc trái bục giảng.
-#   - Sàn gạch caro sáng + 4 cột bàn dãy ghế dài (mỗi cột 5 hàng = 20 dãy bàn).
-#
-# Chức năng theo từng tòa nhà:
-#   - Tòa A, B, G: Phòng học giảng đường chung.
-#   - Tòa C: Đã tích hợp chọn [1] Thư viện / [2] Phòng học trong thu_vien.gd (gọi open_classroom("C")).
-#   - Tòa D: Bấm [E] trước cửa chọn:
-#       [1] Thực hành Cơ sở lập trình (mở phòng máy tính b42_lab.gd preset "D_CSLT")
-#       [2] Toán rời rạc (phòng học giảng đường)
-#   - Tòa E: Phòng học Nhập môn Công nghệ thông tin.
-#   - Tòa F: Bấm [E] trước cửa chọn:
-#       [1] Vi tích phân (phòng học giảng đường)
-#       [2] Cơ sở lập trình lý thuyết (phòng học giảng đường)
-#   - Nhà Điều hành: Bấm [E] trước cửa để vào Thực hành Toán rời rạc (hoặc gọi open_classroom("NDH")).
+# HỆ THỐNG PHÒNG HỌC DÃY A - G & NHÀ ĐIỀU HÀNH
+# - Đông đảo sinh viên NPC (14-20 NPC/phòng) ngồi rải đều các dãy bàn (không hiển thị tên riêng của NPC).
+# - Chừa sẵn các ghế trống cạnh bạn cùng bàn để tương tác (mượn vở, rủ trốn tiết).
 
 const VIEW := Vector2(480, 270)
 const WALL_H := 56.0
@@ -31,14 +15,12 @@ const WALK_SPEED := 70.0
 const SEAT_RANGE := 16.0
 const DOOR_RANGE := 26.0
 
-# 4 cột bàn x 5 hàng = 20 dãy bàn (khớp ảnh tham chiếu)
 const COL_XS := [18.0, 134.0, 250.0, 366.0]
 const COL_W := 96.0
 const ROW_YS := [100.0, 128.0, 156.0, 184.0, 212.0]
 const BENCH_H := 13.0
 const TEACHER_DESK := Rect2(40, 52, 64, 16)
 
-# Bảng màu kiến trúc giảng đường (theo ảnh tham chiếu)
 const C_WALL := Color("f3e5c2")
 const C_WALL_SHADE := Color("e2cfa4")
 const C_STAGE := Color("d69d5c")
@@ -51,18 +33,31 @@ const C_TILE_B := Color("efe5cf")
 const C_TILE_LINE := Color("dfd2b8")
 const C_FRAME := Color("231f1d")
 
-# Cấu hình từng phòng học (tiêu đề bảng, nội dung bảng, danh sách NPC sinh viên & giảng viên)
 const ROOM_CONFIGS := {
 	"A": {
 		"title": "GIẢNG ĐƯỜNG TÒA A · PHÒNG A101",
 		"sub": "Đại số tuyến tính & Giải tích cơ bản",
 		"teacher": {"shirt": "2f5f6a", "hair": "2a1d14", "long": true, "name": "Giảng viên"},
 		"npcs": [
-			{"col": 0, "row": 0, "frac": 0.25, "shirt": "3d5a80", "hair": "1b1b1b", "uni": true,  "long": false, "pack": true},
-			{"col": 0, "row": 2, "frac": 0.72, "shirt": "e07a5f", "hair": "2a1d14", "uni": false, "long": true,  "pack": false},
-			{"col": 1, "row": 1, "frac": 0.30, "shirt": "81b29a", "hair": "5a3a22", "uni": true,  "long": false, "pack": true},
-			{"col": 2, "row": 0, "frac": 0.65, "shirt": "f2cc8f", "hair": "1b1b1b", "uni": false, "long": true,  "pack": true},
-			{"col": 3, "row": 3, "frac": 0.45, "shirt": "3d5a80", "hair": "2a1d14", "uni": true,  "long": false, "pack": false},
+			{"col": 0, "row": 0, "frac": 0.22, "shirt": "3d5a80", "hair": "1b1b1b", "uni": true,  "long": false, "pack": true},
+			{"col": 0, "row": 0, "frac": 0.78, "shirt": "e07a5f", "hair": "2a1d14", "uni": false, "long": true,  "pack": false},
+			{"col": 0, "row": 1, "frac": 0.50, "shirt": "81b29a", "hair": "5a3a22", "uni": true,  "long": false, "pack": true},
+			{"col": 0, "row": 2, "frac": 0.22, "shirt": "f2cc8f", "hair": "1b1b1b", "uni": false, "long": true,  "pack": true},
+			{"col": 0, "row": 3, "frac": 0.78, "shirt": "457b9d", "hair": "2a1d14", "uni": true,  "long": false, "pack": false},
+			{"col": 1, "row": 0, "frac": 0.22, "shirt": "81b29a", "hair": "1b1b1b", "uni": true,  "long": true,  "pack": true},
+			{"col": 1, "row": 0, "frac": 0.50, "shirt": "3d5a80", "hair": "2a1d14", "uni": true,  "long": false, "pack": true},
+			{"col": 1, "row": 1, "frac": 0.78, "shirt": "d96b43", "hair": "1b1b1b", "uni": false, "long": true,  "pack": false},
+			{"col": 1, "row": 2, "frac": 0.22, "shirt": "3d5a80", "hair": "5a3a22", "uni": true,  "long": false, "pack": true},
+			{"col": 1, "row": 4, "frac": 0.50, "shirt": "e07a5f", "hair": "2a1d14", "uni": true,  "long": true,  "pack": true},
+			{"col": 2, "row": 0, "frac": 0.50, "shirt": "f2cc8f", "hair": "1b1b1b", "uni": false, "long": true,  "pack": true},
+			{"col": 2, "row": 0, "frac": 0.78, "shirt": "3d5a80", "hair": "2a1d14", "uni": true,  "long": false, "pack": true},
+			{"col": 2, "row": 1, "frac": 0.22, "shirt": "81b29a", "hair": "1b1b1b", "uni": true,  "long": false, "pack": false},
+			{"col": 2, "row": 2, "frac": 0.78, "shirt": "e07a5f", "hair": "5a3a22", "uni": false, "long": true,  "pack": true},
+			{"col": 2, "row": 3, "frac": 0.22, "shirt": "457b9d", "hair": "1b1b1b", "uni": true,  "long": false, "pack": true},
+			{"col": 3, "row": 0, "frac": 0.22, "shirt": "3d5a80", "hair": "2a1d14", "uni": true,  "long": true,  "pack": true},
+			{"col": 3, "row": 1, "frac": 0.50, "shirt": "f2cc8f", "hair": "1b1b1b", "uni": false, "long": false, "pack": true},
+			{"col": 3, "row": 2, "frac": 0.78, "shirt": "81b29a", "hair": "2a1d14", "uni": true,  "long": true,  "pack": false},
+			{"col": 3, "row": 3, "frac": 0.50, "shirt": "3d5a80", "hair": "1b1b1b", "uni": true,  "long": false, "pack": true}
 		]
 	},
 	"B": {
@@ -70,10 +65,22 @@ const ROOM_CONFIGS := {
 		"sub": "Vật lý đại cương & Kỹ năng mềm",
 		"teacher": {"shirt": "4a5568", "hair": "1b1b1b", "long": false, "name": "Giảng viên"},
 		"npcs": [
-			{"col": 0, "row": 1, "frac": 0.60, "shirt": "81b29a", "hair": "1b1b1b", "uni": true,  "long": true,  "pack": true},
-			{"col": 1, "row": 0, "frac": 0.25, "shirt": "3d5a80", "hair": "2a1d14", "uni": true,  "long": false, "pack": true},
-			{"col": 2, "row": 2, "frac": 0.70, "shirt": "e07a5f", "hair": "5a3a22", "uni": false, "long": true,  "pack": false},
-			{"col": 3, "row": 1, "frac": 0.35, "shirt": "f2cc8f", "hair": "1b1b1b", "uni": true,  "long": false, "pack": true},
+			{"col": 0, "row": 0, "frac": 0.22, "shirt": "81b29a", "hair": "1b1b1b", "uni": true,  "long": true,  "pack": true},
+			{"col": 0, "row": 1, "frac": 0.78, "shirt": "3d5a80", "hair": "2a1d14", "uni": true,  "long": false, "pack": true},
+			{"col": 0, "row": 2, "frac": 0.50, "shirt": "e07a5f", "hair": "5a3a22", "uni": false, "long": true,  "pack": false},
+			{"col": 0, "row": 3, "frac": 0.22, "shirt": "f2cc8f", "hair": "1b1b1b", "uni": true,  "long": false, "pack": true},
+			{"col": 1, "row": 0, "frac": 0.22, "shirt": "3d5a80", "hair": "2a1d14", "uni": true,  "long": false, "pack": true},
+			{"col": 1, "row": 0, "frac": 0.78, "shirt": "81b29a", "hair": "1b1b1b", "uni": false, "long": true,  "pack": true},
+			{"col": 1, "row": 1, "frac": 0.50, "shirt": "457b9d", "hair": "2a1d14", "uni": true,  "long": false, "pack": false},
+			{"col": 1, "row": 3, "frac": 0.78, "shirt": "d96b43", "hair": "1b1b1b", "uni": true,  "long": true,  "pack": true},
+			{"col": 2, "row": 0, "frac": 0.50, "shirt": "e07a5f", "hair": "5a3a22", "uni": false, "long": true,  "pack": false},
+			{"col": 2, "row": 1, "frac": 0.22, "shirt": "3d5a80", "hair": "1b1b1b", "uni": true,  "long": false, "pack": true},
+			{"col": 2, "row": 2, "frac": 0.78, "shirt": "81b29a", "hair": "2a1d14", "uni": true,  "long": true,  "pack": true},
+			{"col": 2, "row": 4, "frac": 0.22, "shirt": "f2cc8f", "hair": "1b1b1b", "uni": true,  "long": false, "pack": false},
+			{"col": 3, "row": 0, "frac": 0.78, "shirt": "3d5a80", "hair": "2a1d14", "uni": true,  "long": false, "pack": true},
+			{"col": 3, "row": 1, "frac": 0.22, "shirt": "f2cc8f", "hair": "1b1b1b", "uni": true,  "long": true,  "pack": true},
+			{"col": 3, "row": 2, "frac": 0.50, "shirt": "e07a5f", "hair": "2a1d14", "uni": false, "long": false, "pack": true},
+			{"col": 3, "row": 3, "frac": 0.78, "shirt": "81b29a", "hair": "1b1b1b", "uni": true,  "long": true,  "pack": false}
 		]
 	},
 	"C": {
@@ -81,10 +88,20 @@ const ROOM_CONFIGS := {
 		"sub": "Pháp luật đại cương & Triết học Mác - Lênin",
 		"teacher": {"shirt": "5a3a22", "hair": "3b3b3b", "long": false, "name": "Giảng viên"},
 		"npcs": [
-			{"col": 0, "row": 0, "frac": 0.70, "shirt": "f2cc8f", "hair": "1b1b1b", "uni": false, "long": true,  "pack": true},
-			{"col": 1, "row": 2, "frac": 0.28, "shirt": "3d5a80", "hair": "2a1d14", "uni": true,  "long": false, "pack": true},
-			{"col": 2, "row": 1, "frac": 0.55, "shirt": "81b29a", "hair": "5a3a22", "uni": true,  "long": true,  "pack": false},
-			{"col": 3, "row": 0, "frac": 0.30, "shirt": "e07a5f", "hair": "1b1b1b", "uni": true,  "long": false, "pack": true},
+			{"col": 0, "row": 0, "frac": 0.78, "shirt": "f2cc8f", "hair": "1b1b1b", "uni": false, "long": true,  "pack": true},
+			{"col": 0, "row": 1, "frac": 0.22, "shirt": "3d5a80", "hair": "2a1d14", "uni": true,  "long": false, "pack": true},
+			{"col": 0, "row": 2, "frac": 0.50, "shirt": "81b29a", "hair": "5a3a22", "uni": true,  "long": true,  "pack": false},
+			{"col": 0, "row": 4, "frac": 0.78, "shirt": "e07a5f", "hair": "1b1b1b", "uni": true,  "long": false, "pack": true},
+			{"col": 1, "row": 0, "frac": 0.50, "shirt": "457b9d", "hair": "2a1d14", "uni": true,  "long": false, "pack": true},
+			{"col": 1, "row": 1, "frac": 0.78, "shirt": "d96b43", "hair": "1b1b1b", "uni": false, "long": true,  "pack": false},
+			{"col": 1, "row": 2, "frac": 0.22, "shirt": "3d5a80", "hair": "2a1d14", "uni": true,  "long": false, "pack": true},
+			{"col": 1, "row": 3, "frac": 0.50, "shirt": "81b29a", "hair": "1b1b1b", "uni": true,  "long": true,  "pack": true},
+			{"col": 2, "row": 0, "frac": 0.22, "shirt": "3d5a80", "hair": "2a1d14", "uni": true,  "long": false, "pack": true},
+			{"col": 2, "row": 1, "frac": 0.50, "shirt": "81b29a", "hair": "5a3a22", "uni": true,  "long": true,  "pack": false},
+			{"col": 2, "row": 2, "frac": 0.78, "shirt": "f2cc8f", "hair": "1b1b1b", "uni": false, "long": false, "pack": true},
+			{"col": 3, "row": 0, "frac": 0.22, "shirt": "e07a5f", "hair": "1b1b1b", "uni": true,  "long": false, "pack": true},
+			{"col": 3, "row": 1, "frac": 0.78, "shirt": "3d5a80", "hair": "2a1d14", "uni": true,  "long": true,  "pack": true},
+			{"col": 3, "row": 3, "frac": 0.22, "shirt": "81b29a", "hair": "2a1d14", "uni": true,  "long": false, "pack": false}
 		]
 	},
 	"D_TRR": {
@@ -93,12 +110,24 @@ const ROOM_CONFIGS := {
 		"teacher": {"shirt": "1f4e78", "hair": "1b1b1b", "long": false, "name": "GV. Toán rời rạc"},
 		"npcs": [
 			{"col": 0, "row": 0, "frac": 0.22, "shirt": "3d5a80", "hair": "1b1b1b", "uni": true,  "long": false, "pack": true},
-			{"col": 0, "row": 1, "frac": 0.72, "shirt": "e07a5f", "hair": "2a1d14", "uni": true,  "long": true,  "pack": true},
-			{"col": 1, "row": 0, "frac": 0.65, "shirt": "81b29a", "hair": "5a3a22", "uni": false, "long": false, "pack": false},
-			{"col": 1, "row": 3, "frac": 0.30, "shirt": "f2cc8f", "hair": "1b1b1b", "uni": true,  "long": true,  "pack": true},
-			{"col": 2, "row": 1, "frac": 0.25, "shirt": "457b9d", "hair": "2a1d14", "uni": true,  "long": false, "pack": true},
-			{"col": 2, "row": 2, "frac": 0.75, "shirt": "d96b43", "hair": "1b1b1b", "uni": false, "long": true,  "pack": false},
-			{"col": 3, "row": 0, "frac": 0.40, "shirt": "3d5a80", "hair": "5a3a22", "uni": true,  "long": false, "pack": true},
+			{"col": 0, "row": 0, "frac": 0.50, "shirt": "81b29a", "hair": "2a1d14", "uni": true,  "long": true,  "pack": true},
+			{"col": 0, "row": 1, "frac": 0.78, "shirt": "e07a5f", "hair": "2a1d14", "uni": true,  "long": true,  "pack": true},
+			{"col": 0, "row": 2, "frac": 0.22, "shirt": "f2cc8f", "hair": "1b1b1b", "uni": false, "long": false, "pack": false},
+			{"col": 0, "row": 3, "frac": 0.50, "shirt": "457b9d", "hair": "5a3a22", "uni": true,  "long": false, "pack": true},
+			{"col": 1, "row": 0, "frac": 0.50, "shirt": "81b29a", "hair": "5a3a22", "uni": false, "long": false, "pack": false},
+			{"col": 1, "row": 0, "frac": 0.78, "shirt": "3d5a80", "hair": "1b1b1b", "uni": true,  "long": true,  "pack": true},
+			{"col": 1, "row": 1, "frac": 0.22, "shirt": "d96b43", "hair": "2a1d14", "uni": true,  "long": false, "pack": true},
+			{"col": 1, "row": 2, "frac": 0.78, "shirt": "3d5a80", "hair": "1b1b1b", "uni": true,  "long": true,  "pack": false},
+			{"col": 1, "row": 3, "frac": 0.22, "shirt": "f2cc8f", "hair": "1b1b1b", "uni": true,  "long": true,  "pack": true},
+			{"col": 2, "row": 0, "frac": 0.22, "shirt": "3d5a80", "hair": "2a1d14", "uni": true,  "long": false, "pack": true},
+			{"col": 2, "row": 1, "frac": 0.50, "shirt": "457b9d", "hair": "2a1d14", "uni": true,  "long": false, "pack": true},
+			{"col": 2, "row": 1, "frac": 0.78, "shirt": "e07a5f", "hair": "1b1b1b", "uni": false, "long": true,  "pack": true},
+			{"col": 2, "row": 2, "frac": 0.78, "shirt": "d96b43", "hair": "1b1b1b", "uni": false, "long": true,  "pack": false},
+			{"col": 2, "row": 4, "frac": 0.50, "shirt": "81b29a", "hair": "2a1d14", "uni": true,  "long": false, "pack": true},
+			{"col": 3, "row": 0, "frac": 0.50, "shirt": "3d5a80", "hair": "5a3a22", "uni": true,  "long": false, "pack": true},
+			{"col": 3, "row": 1, "frac": 0.78, "shirt": "f2cc8f", "hair": "1b1b1b", "uni": true,  "long": true,  "pack": true},
+			{"col": 3, "row": 2, "frac": 0.22, "shirt": "81b29a", "hair": "1b1b1b", "uni": true,  "long": false, "pack": false},
+			{"col": 3, "row": 3, "frac": 0.78, "shirt": "3d5a80", "hair": "2a1d14", "uni": true,  "long": true,  "pack": true}
 		]
 	},
 	"E": {
@@ -106,14 +135,24 @@ const ROOM_CONFIGS := {
 		"sub": "Tổng quan ngành CNTT · Kiến trúc máy tính · Hướng nghiệp",
 		"teacher": {"shirt": "2f7d4c", "hair": "1b1b1b", "long": true, "name": "GV. Nhập môn CNTT"},
 		"npcs": [
-			{"col": 0, "row": 0, "frac": 0.30, "shirt": "3d5a80", "hair": "1b1b1b", "uni": true,  "long": false, "pack": true},
-			{"col": 0, "row": 2, "frac": 0.68, "shirt": "f2cc8f", "hair": "2a1d14", "uni": true,  "long": true,  "pack": true},
-			{"col": 1, "row": 0, "frac": 0.75, "shirt": "e07a5f", "hair": "1b1b1b", "uni": false, "long": true,  "pack": false},
-			{"col": 1, "row": 1, "frac": 0.25, "shirt": "81b29a", "hair": "5a3a22", "uni": true,  "long": false, "pack": true},
-			{"col": 2, "row": 0, "frac": 0.35, "shirt": "3d5a80", "hair": "2a1d14", "uni": true,  "long": true,  "pack": true},
-			{"col": 2, "row": 3, "frac": 0.70, "shirt": "e07a5f", "hair": "1b1b1b", "uni": false, "long": false, "pack": true},
-			{"col": 3, "row": 1, "frac": 0.60, "shirt": "81b29a", "hair": "2a1d14", "uni": true,  "long": true,  "pack": false},
-			{"col": 3, "row": 2, "frac": 0.25, "shirt": "f2cc8f", "hair": "1b1b1b", "uni": true,  "long": false, "pack": true},
+			{"col": 0, "row": 0, "frac": 0.22, "shirt": "3d5a80", "hair": "1b1b1b", "uni": true,  "long": false, "pack": true},
+			{"col": 0, "row": 0, "frac": 0.78, "shirt": "81b29a", "hair": "2a1d14", "uni": true,  "long": true,  "pack": true},
+			{"col": 0, "row": 1, "frac": 0.50, "shirt": "e07a5f", "hair": "1b1b1b", "uni": false, "long": false, "pack": true},
+			{"col": 0, "row": 2, "frac": 0.78, "shirt": "f2cc8f", "hair": "2a1d14", "uni": true,  "long": true,  "pack": true},
+			{"col": 0, "row": 3, "frac": 0.22, "shirt": "457b9d", "hair": "5a3a22", "uni": true,  "long": false, "pack": false},
+			{"col": 1, "row": 0, "frac": 0.22, "shirt": "3d5a80", "hair": "2a1d14", "uni": true,  "long": false, "pack": true},
+			{"col": 1, "row": 0, "frac": 0.78, "shirt": "e07a5f", "hair": "1b1b1b", "uni": false, "long": true,  "pack": false},
+			{"col": 1, "row": 1, "frac": 0.22, "shirt": "81b29a", "hair": "5a3a22", "uni": true,  "long": false, "pack": true},
+			{"col": 1, "row": 2, "frac": 0.50, "shirt": "d96b43", "hair": "1b1b1b", "uni": true,  "long": true,  "pack": true},
+			{"col": 1, "row": 4, "frac": 0.78, "shirt": "3d5a80", "hair": "2a1d14", "uni": true,  "long": false, "pack": false},
+			{"col": 2, "row": 0, "frac": 0.22, "shirt": "3d5a80", "hair": "2a1d14", "uni": true,  "long": true,  "pack": true},
+			{"col": 2, "row": 0, "frac": 0.50, "shirt": "f2cc8f", "hair": "1b1b1b", "uni": false, "long": false, "pack": true},
+			{"col": 2, "row": 1, "frac": 0.78, "shirt": "81b29a", "hair": "2a1d14", "uni": true,  "long": true,  "pack": false},
+			{"col": 2, "row": 3, "frac": 0.78, "shirt": "e07a5f", "hair": "1b1b1b", "uni": false, "long": false, "pack": true},
+			{"col": 3, "row": 0, "frac": 0.50, "shirt": "457b9d", "hair": "1b1b1b", "uni": true,  "long": false, "pack": true},
+			{"col": 3, "row": 1, "frac": 0.78, "shirt": "81b29a", "hair": "2a1d14", "uni": true,  "long": true,  "pack": false},
+			{"col": 3, "row": 2, "frac": 0.22, "shirt": "f2cc8f", "hair": "1b1b1b", "uni": true,  "long": false, "pack": true},
+			{"col": 3, "row": 3, "frac": 0.50, "shirt": "3d5a80", "hair": "2a1d14", "uni": true,  "long": true,  "pack": true}
 		]
 	},
 	"F_VTP": {
@@ -121,13 +160,25 @@ const ROOM_CONFIGS := {
 		"sub": "Giới hạn · Đạo hàm · Xấp xỉ tuyến tính & Tích phân",
 		"teacher": {"shirt": "6b4226", "hair": "2a1d14", "long": false, "name": "GV. Vi tích phân"},
 		"npcs": [
-			{"col": 0, "row": 0, "frac": 0.25, "shirt": "3d5a80", "hair": "1b1b1b", "uni": true,  "long": false, "pack": true},
-			{"col": 0, "row": 1, "frac": 0.75, "shirt": "e07a5f", "hair": "2a1d14", "uni": true,  "long": true,  "pack": true},
-			{"col": 1, "row": 0, "frac": 0.30, "shirt": "81b29a", "hair": "5a3a22", "uni": false, "long": false, "pack": true},
-			{"col": 1, "row": 2, "frac": 0.70, "shirt": "f2cc8f", "hair": "1b1b1b", "uni": true,  "long": true,  "pack": false},
-			{"col": 2, "row": 0, "frac": 0.65, "shirt": "3d5a80", "hair": "2a1d14", "uni": true,  "long": false, "pack": true},
-			{"col": 2, "row": 1, "frac": 0.25, "shirt": "e07a5f", "hair": "1b1b1b", "uni": false, "long": true,  "pack": true},
+			{"col": 0, "row": 0, "frac": 0.22, "shirt": "3d5a80", "hair": "1b1b1b", "uni": true,  "long": false, "pack": true},
+			{"col": 0, "row": 0, "frac": 0.50, "shirt": "81b29a", "hair": "2a1d14", "uni": true,  "long": true,  "pack": true},
+			{"col": 0, "row": 1, "frac": 0.78, "shirt": "e07a5f", "hair": "2a1d14", "uni": true,  "long": true,  "pack": true},
+			{"col": 0, "row": 2, "frac": 0.22, "shirt": "f2cc8f", "hair": "1b1b1b", "uni": false, "long": false, "pack": false},
+			{"col": 0, "row": 4, "frac": 0.50, "shirt": "457b9d", "hair": "5a3a22", "uni": true,  "long": false, "pack": true},
+			{"col": 1, "row": 0, "frac": 0.22, "shirt": "81b29a", "hair": "5a3a22", "uni": false, "long": false, "pack": true},
+			{"col": 1, "row": 0, "frac": 0.78, "shirt": "3d5a80", "hair": "1b1b1b", "uni": true,  "long": true,  "pack": true},
+			{"col": 1, "row": 1, "frac": 0.50, "shirt": "d96b43", "hair": "2a1d14", "uni": true,  "long": false, "pack": true},
+			{"col": 1, "row": 2, "frac": 0.78, "shirt": "f2cc8f", "hair": "1b1b1b", "uni": true,  "long": true,  "pack": false},
+			{"col": 1, "row": 3, "frac": 0.22, "shirt": "3d5a80", "hair": "2a1d14", "uni": true,  "long": false, "pack": true},
+			{"col": 2, "row": 0, "frac": 0.50, "shirt": "3d5a80", "hair": "2a1d14", "uni": true,  "long": false, "pack": true},
+			{"col": 2, "row": 0, "frac": 0.78, "shirt": "81b29a", "hair": "1b1b1b", "uni": true,  "long": true,  "pack": true},
+			{"col": 2, "row": 1, "frac": 0.22, "shirt": "e07a5f", "hair": "1b1b1b", "uni": false, "long": true,  "pack": true},
+			{"col": 2, "row": 2, "frac": 0.50, "shirt": "457b9d", "hair": "2a1d14", "uni": true,  "long": false, "pack": false},
+			{"col": 2, "row": 3, "frac": 0.78, "shirt": "f2cc8f", "hair": "1b1b1b", "uni": true,  "long": true,  "pack": true},
 			{"col": 3, "row": 0, "frac": 0.50, "shirt": "81b29a", "hair": "5a3a22", "uni": true,  "long": false, "pack": false},
+			{"col": 3, "row": 1, "frac": 0.22, "shirt": "3d5a80", "hair": "1b1b1b", "uni": true,  "long": true,  "pack": true},
+			{"col": 3, "row": 2, "frac": 0.78, "shirt": "e07a5f", "hair": "2a1d14", "uni": false, "long": false, "pack": true},
+			{"col": 3, "row": 4, "frac": 0.22, "shirt": "3d5a80", "hair": "1b1b1b", "uni": true,  "long": true,  "pack": true}
 		]
 	},
 	"F_CSLT": {
@@ -135,24 +186,43 @@ const ROOM_CONFIGS := {
 		"sub": "C++ · Mảng · Hàm · Đệ quy & Con trỏ",
 		"teacher": {"shirt": "1f2f5a", "hair": "1b1b1b", "long": true, "name": "GV. Cơ sở lập trình"},
 		"npcs": [
-			{"col": 0, "row": 0, "frac": 0.70, "shirt": "81b29a", "hair": "1b1b1b", "uni": true,  "long": false, "pack": true},
-			{"col": 0, "row": 2, "frac": 0.25, "shirt": "3d5a80", "hair": "2a1d14", "uni": true,  "long": true,  "pack": true},
+			{"col": 0, "row": 0, "frac": 0.22, "shirt": "3d5a80", "hair": "2a1d14", "uni": true,  "long": false, "pack": true},
+			{"col": 0, "row": 0, "frac": 0.78, "shirt": "81b29a", "hair": "1b1b1b", "uni": true,  "long": false, "pack": true},
+			{"col": 0, "row": 1, "frac": 0.50, "shirt": "e07a5f", "hair": "1b1b1b", "uni": false, "long": true,  "pack": true},
+			{"col": 0, "row": 2, "frac": 0.22, "shirt": "3d5a80", "hair": "2a1d14", "uni": true,  "long": true,  "pack": true},
+			{"col": 0, "row": 3, "frac": 0.78, "shirt": "f2cc8f", "hair": "5a3a22", "uni": true,  "long": false, "pack": false},
 			{"col": 1, "row": 0, "frac": 0.22, "shirt": "e07a5f", "hair": "5a3a22", "uni": false, "long": false, "pack": false},
-			{"col": 1, "row": 1, "frac": 0.68, "shirt": "f2cc8f", "hair": "1b1b1b", "uni": true,  "long": true,  "pack": true},
-			{"col": 2, "row": 0, "frac": 0.30, "shirt": "457b9d", "hair": "2a1d14", "uni": true,  "long": false, "pack": true},
-			{"col": 2, "row": 3, "frac": 0.75, "shirt": "d96b43", "hair": "1b1b1b", "uni": false, "long": true,  "pack": false},
-			{"col": 3, "row": 1, "frac": 0.35, "shirt": "3d5a80", "hair": "2a1d14", "uni": true,  "long": false, "pack": true},
+			{"col": 1, "row": 0, "frac": 0.50, "shirt": "457b9d", "hair": "1b1b1b", "uni": true,  "long": true,  "pack": true},
+			{"col": 1, "row": 1, "frac": 0.78, "shirt": "f2cc8f", "hair": "1b1b1b", "uni": true,  "long": true,  "pack": true},
+			{"col": 1, "row": 2, "frac": 0.22, "shirt": "81b29a", "hair": "2a1d14", "uni": true,  "long": false, "pack": true},
+			{"col": 1, "row": 4, "frac": 0.50, "shirt": "3d5a80", "hair": "1b1b1b", "uni": true,  "long": false, "pack": false},
+			{"col": 2, "row": 0, "frac": 0.22, "shirt": "457b9d", "hair": "2a1d14", "uni": true,  "long": false, "pack": true},
+			{"col": 2, "row": 0, "frac": 0.78, "shirt": "81b29a", "hair": "1b1b1b", "uni": true,  "long": true,  "pack": true},
+			{"col": 2, "row": 1, "frac": 0.50, "shirt": "3d5a80", "hair": "2a1d14", "uni": true,  "long": false, "pack": true},
+			{"col": 2, "row": 3, "frac": 0.78, "shirt": "d96b43", "hair": "1b1b1b", "uni": false, "long": true,  "pack": false},
+			{"col": 3, "row": 0, "frac": 0.50, "shirt": "f2cc8f", "hair": "1b1b1b", "uni": true,  "long": true,  "pack": true},
+			{"col": 3, "row": 1, "frac": 0.22, "shirt": "3d5a80", "hair": "2a1d14", "uni": true,  "long": false, "pack": true},
+			{"col": 3, "row": 2, "frac": 0.78, "shirt": "81b29a", "hair": "1b1b1b", "uni": true,  "long": true,  "pack": false},
+			{"col": 3, "row": 3, "frac": 0.22, "shirt": "e07a5f", "hair": "2a1d14", "uni": false, "long": false, "pack": true}
 		]
 	},
 	"G": {
 		"title": "GIẢNG ĐƯỜNG TÒA G · PHÒNG G101",
 		"sub": "Anh văn chuyên ngành & Giáo dục quốc phòng",
-		"teacher": {"shirt": "7c3aed", "hair": "2a1d14", "long": true, "name": "Giảng viên"},
+		"teacher": {"shirt": "7c3aed", "hair": "2a1d14", "long": true, "name": "GV. Ngoại ngữ"},
 		"npcs": [
-			{"col": 0, "row": 1, "frac": 0.30, "shirt": "3d5a80", "hair": "1b1b1b", "uni": true,  "long": false, "pack": true},
-			{"col": 1, "row": 0, "frac": 0.65, "shirt": "e07a5f", "hair": "2a1d14", "uni": false, "long": true,  "pack": false},
-			{"col": 2, "row": 2, "frac": 0.40, "shirt": "81b29a", "hair": "5a3a22", "uni": true,  "long": false, "pack": true},
-			{"col": 3, "row": 0, "frac": 0.72, "shirt": "f2cc8f", "hair": "1b1b1b", "uni": true,  "long": true,  "pack": true},
+			{"col": 0, "row": 0, "frac": 0.50, "shirt": "3d5a80", "hair": "1b1b1b", "uni": true,  "long": false, "pack": true},
+			{"col": 0, "row": 1, "frac": 0.22, "shirt": "3d5a80", "hair": "1b1b1b", "uni": true,  "long": false, "pack": true},
+			{"col": 0, "row": 2, "frac": 0.78, "shirt": "e07a5f", "hair": "2a1d14", "uni": false, "long": true,  "pack": false},
+			{"col": 1, "row": 0, "frac": 0.78, "shirt": "e07a5f", "hair": "2a1d14", "uni": false, "long": true,  "pack": false},
+			{"col": 1, "row": 1, "frac": 0.50, "shirt": "81b29a", "hair": "5a3a22", "uni": true,  "long": false, "pack": true},
+			{"col": 1, "row": 3, "frac": 0.22, "shirt": "f2cc8f", "hair": "1b1b1b", "uni": true,  "long": true,  "pack": true},
+			{"col": 2, "row": 0, "frac": 0.22, "shirt": "457b9d", "hair": "2a1d14", "uni": true,  "long": false, "pack": true},
+			{"col": 2, "row": 2, "frac": 0.50, "shirt": "81b29a", "hair": "5a3a22", "uni": true,  "long": false, "pack": true},
+			{"col": 2, "row": 3, "frac": 0.78, "shirt": "d96b43", "hair": "1b1b1b", "uni": false, "long": true,  "pack": false},
+			{"col": 3, "row": 0, "frac": 0.78, "shirt": "f2cc8f", "hair": "1b1b1b", "uni": true,  "long": true,  "pack": true},
+			{"col": 3, "row": 1, "frac": 0.22, "shirt": "3d5a80", "hair": "2a1d14", "uni": true,  "long": false, "pack": true},
+			{"col": 3, "row": 2, "frac": 0.50, "shirt": "81b29a", "hair": "1b1b1b", "uni": true,  "long": true,  "pack": false}
 		]
 	},
 	"NDH": {
@@ -160,25 +230,32 @@ const ROOM_CONFIGS := {
 		"sub": "Thuật toán trên đồ thị · Cây khung · Đường đi ngắn nhất",
 		"teacher": {"shirt": "1e3a5f", "hair": "1b1b1b", "long": false, "name": "GV. TH Toán rời rạc"},
 		"npcs": [
-			{"col": 0, "row": 0, "frac": 0.25, "shirt": "3d5a80", "hair": "1b1b1b", "uni": true,  "long": false, "pack": true},
-			{"col": 0, "row": 1, "frac": 0.70, "shirt": "81b29a", "hair": "2a1d14", "uni": true,  "long": true,  "pack": true},
-			{"col": 1, "row": 0, "frac": 0.30, "shirt": "e07a5f", "hair": "5a3a22", "uni": false, "long": false, "pack": false},
-			{"col": 1, "row": 2, "frac": 0.75, "shirt": "f2cc8f", "hair": "1b1b1b", "uni": true,  "long": true,  "pack": true},
-			{"col": 2, "row": 1, "frac": 0.35, "shirt": "457b9d", "hair": "2a1d14", "uni": true,  "long": false, "pack": true},
-			{"col": 3, "row": 0, "frac": 0.65, "shirt": "d96b43", "hair": "1b1b1b", "uni": true,  "long": true,  "pack": false},
+			{"col": 0, "row": 0, "frac": 0.22, "shirt": "3d5a80", "hair": "1b1b1b", "uni": true,  "long": false, "pack": true},
+			{"col": 0, "row": 0, "frac": 0.50, "shirt": "81b29a", "hair": "2a1d14", "uni": true,  "long": true,  "pack": true},
+			{"col": 0, "row": 1, "frac": 0.78, "shirt": "81b29a", "hair": "2a1d14", "uni": true,  "long": true,  "pack": true},
+			{"col": 0, "row": 2, "frac": 0.22, "shirt": "f2cc8f", "hair": "1b1b1b", "uni": false, "long": false, "pack": false},
+			{"col": 1, "row": 0, "frac": 0.22, "shirt": "e07a5f", "hair": "5a3a22", "uni": false, "long": false, "pack": false},
+			{"col": 1, "row": 0, "frac": 0.78, "shirt": "3d5a80", "hair": "1b1b1b", "uni": true,  "long": true,  "pack": true},
+			{"col": 1, "row": 1, "frac": 0.50, "shirt": "457b9d", "hair": "2a1d14", "uni": true,  "long": false, "pack": true},
+			{"col": 1, "row": 2, "frac": 0.78, "shirt": "f2cc8f", "hair": "1b1b1b", "uni": true,  "long": true,  "pack": true},
+			{"col": 2, "row": 0, "frac": 0.50, "shirt": "3d5a80", "hair": "2a1d14", "uni": true,  "long": false, "pack": true},
+			{"col": 2, "row": 1, "frac": 0.22, "shirt": "457b9d", "hair": "2a1d14", "uni": true,  "long": false, "pack": true},
+			{"col": 2, "row": 2, "frac": 0.78, "shirt": "e07a5f", "hair": "1b1b1b", "uni": false, "long": true,  "pack": false},
+			{"col": 3, "row": 0, "frac": 0.78, "shirt": "d96b43", "hair": "1b1b1b", "uni": true,  "long": true,  "pack": false},
+			{"col": 3, "row": 1, "frac": 0.50, "shirt": "3d5a80", "hair": "2a1d14", "uni": true,  "long": false, "pack": true},
+			{"col": 3, "row": 2, "frac": 0.22, "shirt": "81b29a", "hair": "1b1b1b", "uni": true,  "long": true,  "pack": true}
 		]
 	}
 }
 
-# Các tòa cho phép bấm [E] trực tiếp tại cửa ngoài trời (Tòa C do thu_vien.gd quản lý menu chọn)
 const DIRECT_DOORS := ["A", "B", "D", "E", "F", "G"]
 
 var inside := false
-var _choice_building := ""    # "" | "D" | "F"
+var _choice_building := ""
 var _layer: CanvasLayer
 var _painter: Node2D
 var _pos := START_POS
-var _face := 1                # 0 xuống, 1 lên, 2 trái, 3 phải
+var _face := 1
 var _anim := 0.0
 var _clock := 0.0
 var _seated := -1
@@ -191,10 +268,11 @@ var _room_sub := ""
 var _teacher_npc: Dictionary = {}
 var _active_npcs: Array = []
 
-var _desks: Array = []        # danh sách 20 dãy bàn: {col, row, rect, y_sort}
-var _seats: Array = []        # danh sách ghế ngồi (3 ghế/dãy bàn = 60 ghế): {desk_idx, pos, stand, face}
-var _solid: Array = []        # vùng va chạm vật thể trong phòng
-var _lab_f: Node = null       # tham chiếu tới b42_lab.gd để mở phòng máy tính dùng chung
+var _desks: Array = []
+var _seats: Array = []
+var _solid: Array = []
+var _lab_f: Node = null
+var _di_hoc_f: Node = null
 var _looked := false
 
 func _ready() -> void:
@@ -219,21 +297,18 @@ func _lookup() -> void:
 			continue
 		if f.has_method("open_lab"):
 			_lab_f = f
-
-# ======================= DỰNG GIẢNG ĐƯỜNG & GHẾ NGỒI =======================
+		if f.has_method("notify_seat_entered"):
+			_di_hoc_f = f
 
 func _build_room() -> void:
 	_desks.clear()
 	_seats.clear()
 	_solid.clear()
-	# Bàn giảng viên trên bục giảng góc trái
 	_solid.append(TEACHER_DESK)
-	# 2 máy lạnh đặt góc dưới sàn (trái & phải)
 	_solid.append(Rect2(8, 240, 52, 16))
 	_solid.append(Rect2(420, 240, 52, 16))
 
 	var seat_fracs: Array[float] = [0.22, 0.50, 0.78]
-	# 4 cột x 5 hàng = 20 dãy bàn sinh viên
 	for r in ROW_YS.size():
 		var ry: float = float(ROW_YS[r])
 		for c in COL_XS.size():
@@ -242,7 +317,6 @@ func _build_room() -> void:
 			var rect := Rect2(cx, ry, COL_W, BENCH_H)
 			_desks.append({"id": di, "col": c, "row": r, "rect": rect, "y_sort": ry + BENCH_H})
 			_solid.append(Rect2(cx + 1.0, ry + 1.0, COL_W - 2.0, BENCH_H - 1.0))
-			# Mỗi dãy bàn có 3 vị trí ghế ngồi dọc theo chiều ngang bàn
 			for frac: float in seat_fracs:
 				var sx: float = cx + COL_W * frac
 				_seats.append({
@@ -251,8 +325,6 @@ func _build_room() -> void:
 					"stand": Vector2(sx, ry + BENCH_H + 11.0),
 					"face": 1
 				})
-
-# ======================= CỬA TÒA NHÀ & TƯƠNG THÍCH HỆ THỐNG =======================
 
 func _building_door(b_name: String) -> Vector2:
 	for b in game.BUILDINGS:
@@ -275,7 +347,6 @@ func _near_ndh_door() -> bool:
 				return true
 	return false
 
-# Hàm mở phòng học theo mã cấu hình (dùng được từ cả thu_vien.gd cho Tòa C và nhà điều hành)
 func open_classroom(room_key: String = "A") -> void:
 	_lookup()
 	var key: String = room_key if ROOM_CONFIGS.has(room_key) else "A"
@@ -307,7 +378,6 @@ func open_classroom(room_key: String = "A") -> void:
 	game.hud.visible = false
 	_painter.queue_redraw()
 
-# Tương thích nếu doors feature gọi enter_room(d)
 func enter_room(d: Dictionary) -> void:
 	var title: String = str(d.get("title", ""))
 	if title.find("Tòa C") >= 0:
@@ -330,6 +400,8 @@ func begin() -> void:
 
 func finish() -> void:
 	super()
+	if _di_hoc_f != null:
+		_di_hoc_f.notify_seat_exited()
 	inside = false
 	_choice_building = ""
 	_closing = false
@@ -337,7 +409,8 @@ func finish() -> void:
 	_layer.visible = false
 	game.hud.visible = true
 
-# ======================= XỬ LÝ PHÍM =======================
+func _class_session_busy() -> bool:
+	return _di_hoc_f != null and _di_hoc_f.has_method("is_session_modal_open") and bool(_di_hoc_f.is_session_modal_open())
 
 func _input(event: InputEvent) -> void:
 	if not (event is InputEventKey):
@@ -349,6 +422,8 @@ func _input(event: InputEvent) -> void:
 		_handle_choice_key(k)
 		return
 	if inside:
+		if _class_session_busy():
+			return
 		_handle_room_key(k)
 		return
 	if k.physical_keycode == KEY_E and not game.is_busy():
@@ -395,6 +470,12 @@ func _handle_room_key(k: InputEventKey) -> void:
 		return
 	var pk := k.physical_keycode
 	if _seated >= 0:
+		var in_active_lesson: bool = _di_hoc_f != null and _di_hoc_f.has_method("is_in_active_lesson") and bool(_di_hoc_f.is_in_active_lesson())
+		if in_active_lesson:
+			if k.keycode == KEY_ESCAPE:
+				_stand_up()
+				get_viewport().set_input_as_handled()
+			return
 		if pk == KEY_E or k.keycode == KEY_ESCAPE or pk == KEY_W or pk == KEY_A or pk == KEY_S or pk == KEY_D:
 			_stand_up()
 			get_viewport().set_input_as_handled()
@@ -408,8 +489,6 @@ func _handle_room_key(k: InputEventKey) -> void:
 		if s >= 0:
 			_sit(s)
 	get_viewport().set_input_as_handled()
-
-# ======================= DI CHUYỂN & NGỒI TRONG PHÒNG =======================
 
 func _process(delta: float) -> void:
 	if _choice_building != "":
@@ -427,6 +506,8 @@ func _process(delta: float) -> void:
 		_fade = maxf(_fade - delta * 3.0, 0.0)
 		if _seated < 0:
 			_walk(delta)
+		elif _di_hoc_f != null:
+			_di_hoc_f.process_classroom_sitting(delta)
 	_painter.queue_redraw()
 
 func _walk(delta: float) -> void:
@@ -482,10 +563,24 @@ func _nearest_seat() -> int:
 			best = i
 	return best
 
+func _adjacent_friend_label(seat_idx: int) -> String:
+	if seat_idx < 0 or seat_idx >= _seats.size():
+		return ""
+	var my_pos: Vector2 = _seats[seat_idx].pos
+	for npc in _active_npcs:
+		var np: Vector2 = npc.pos
+		if absf(np.y - my_pos.y) < 4.0 and absf(np.x - my_pos.x) <= 36.0:
+			return "bạn cùng bàn"
+	return ""
+
 func _sit(i: int) -> void:
+	_lookup()
 	_seated = i
 	_pos = _seats[i].pos
 	_face = int(_seats[i].face)
+	var friend_lbl: String = _adjacent_friend_label(i)
+	if _di_hoc_f != null:
+		_di_hoc_f.notify_seat_entered(_room_key, _room_title, friend_lbl)
 
 func _stand_up() -> void:
 	if _seated < 0:
@@ -493,8 +588,8 @@ func _stand_up() -> void:
 	_pos = _seats[_seated].stand
 	_face = 0
 	_seated = -1
-
-# ======================= VẼ GIẢNG ĐƯỜNG (THEO ẢNH THAM CHIẾU) =======================
+	if _di_hoc_f != null:
+		_di_hoc_f.notify_seat_exited()
 
 func _paint() -> void:
 	var p := _painter
@@ -506,7 +601,6 @@ func _paint() -> void:
 	_paint_floor_tiles(p)
 	_paint_teacher_area(p)
 
-	# Y-sort cho 20 dãy bàn, sinh viên NPC và người chơi
 	var items: Array = []
 	for d in _desks:
 		items.append([float(d.y_sort), 0, d])
@@ -540,21 +634,16 @@ func _paint() -> void:
 		p.rc(0, 0, VIEW.x, VIEW.y, Color(0, 0, 0, _fade))
 
 func _paint_wall_and_stage(p: Node2D) -> void:
-	# Tường vàng kem phía trên
 	p.rc(4, 3, VIEW.x - 8.0, WALL_H - 3.0, C_WALL)
 	p.rc(4, 3, VIEW.x - 8.0, 3, C_WALL_SHADE)
-
-	# 2 máy lạnh treo góc trên (trái & phải)
 	_paint_wall_ac(p, 10.0, 9.0)
 	_paint_wall_ac(p, 424.0, 9.0)
 
-	# Đồng hồ treo tường tròn cạnh máy lạnh trái
 	p.draw_circle(Vector2(104, 19), 9.5, Color("2e3440"))
 	p.draw_circle(Vector2(104, 19), 8.0, Color("f8fafc"))
 	p.rc(103.5, 13, 1, 6, Color("1e293b"))
 	p.rc(104, 18.5, 5, 1, Color("1e293b"))
 
-	# Bảng trắng dài viền xám ở trung tâm tường
 	p.rc(118, 16, 294, 38, Color("6e747c"))
 	p.rc(120, 18, 290, 34, Color("9aa0a8"))
 	p.rc(122, 20, 286, 30, Color("f4f6f9"))
@@ -562,21 +651,19 @@ func _paint_wall_and_stage(p: Node2D) -> void:
 	p.draw_string(p.font, Vector2(122, 33), _room_title, HORIZONTAL_ALIGNMENT_CENTER, 286, 8, Color("1e40af"))
 	if _room_sub != "":
 		p.draw_string(p.font, Vector2(122, 44), _room_sub, HORIZONTAL_ALIGNMENT_CENTER, 286, 7, Color("334155"))
-	# Khay phấn/bút & giẻ lau dưới mép bảng
+
 	p.rc(117, 53, 296, 3, Color("5a6068"))
 	p.rc(146, 51, 8, 2, Color("ffffff"))
-	p.rc(162, 50, 16, 4, Color("2b2d34"))   # giẻ lau bảng đen
+	p.rc(162, 50, 16, 4, Color("2b2d34"))
 	p.rc(186, 51, 8, 2, Color("ffffff"))
-	p.rc(320, 51, 9, 2, Color("dc2626"))     # bút đỏ
-	p.rc(332, 51, 9, 2, Color("e2e8f0"))     # bút trắng
-	p.rc(344, 51, 9, 2, Color("2563eb"))     # bút xanh
+	p.rc(320, 51, 9, 2, Color("dc2626"))
+	p.rc(332, 51, 9, 2, Color("e2e8f0"))
+	p.rc(344, 51, 9, 2, Color("2563eb"))
 
-	# 2 loa hộp đen treo tường trái & phải
 	_paint_speaker(p, 4.0, 29.0, 8.0, 16.0)
 	_paint_speaker(p, 8.0, 52.0, 15.0, 22.0)
 	_paint_speaker(p, 471.0, 29.0, 6.0, 16.0)
 
-	# Bục giảng gỗ chạy ngang phòng
 	p.rc(4, STAGE_Y, VIEW.x - 8.0, STAGE_H - 3.0, C_STAGE)
 	p.rc(4, STAGE_Y, VIEW.x - 8.0, 2, C_STAGE.lightened(0.18))
 	p.rc(4, STAGE_Y + STAGE_H - 3.0, VIEW.x - 8.0, 3, C_STAGE_EDGE)
@@ -609,7 +696,6 @@ func _paint_floor_tiles(p: Node2D) -> void:
 			p.rc(tx, ty, 1, h, C_TILE_LINE)
 
 func _paint_teacher_area(p: Node2D) -> void:
-	# Giảng viên đứng sau bàn giảng viên
 	if not _teacher_npc.is_empty():
 		var tpos := Vector2(72.0, 56.0)
 		p.draw_person(
@@ -626,7 +712,6 @@ func _paint_teacher_area(p: Node2D) -> void:
 		var w: float = p.font.get_string_size(tname, HORIZONTAL_ALIGNMENT_LEFT, -1, 7).x + 6.0
 		p.ctext(tname, tpos.x - w / 2.0, tpos.y - 30.0, w, 7, Color("1e3a8a"))
 
-	# Bàn giảng viên gỗ góc trái bục giảng
 	var d: Rect2 = TEACHER_DESK
 	p.rc(d.position.x - 1, d.position.y - 1, d.size.x + 2, d.size.y + 11, C_WOOD_DARK)
 	p.rc(d.position.x, d.position.y, d.size.x, 9, C_WOOD_TOP)
@@ -640,24 +725,20 @@ func _paint_bench_desk(p: Node2D, d: Dictionary) -> void:
 	var x: float = r.position.x
 	var y: float = r.position.y
 	var w: float = r.size.x
-	# Chân sắt xám 2 bên + băng ghế dài phía sau bàn
 	p.rc(x + 2, y + 10, 3, 12, Color("64748b"))
 	p.rc(x + w - 5, y + 10, 3, 12, Color("64748b"))
 	p.rc(x + 3, y + 15, w - 6, 4, C_WOOD_FRONT)
 	p.rc(x + 3, y + 15, w - 6, 1, C_WOOD_TOP)
-	# Mặt bàn gỗ & yếm bàn
 	p.rc(x - 1, y - 1, w + 2, 14, C_WOOD_DARK)
 	p.rc(x, y, w, 8, C_WOOD_TOP)
 	p.rc(x, y, w, 1, C_WOOD_TOP.lightened(0.22))
 	p.rc(x, y + 8, w, 4, C_WOOD_FRONT)
 
 func _paint_bottom_aircons_and_door(p: Node2D) -> void:
-	# Tường viền dưới & 2 máy lạnh đặt góc dưới trái/phải như ảnh tham chiếu
 	p.rc(0, FLOOR_BOTTOM, VIEW.x, VIEW.y - FLOOR_BOTTOM, Color("8a5a32"))
 	p.rc(0, FLOOR_BOTTOM, VIEW.x, 2, Color("4a2e16"))
 	_paint_floor_ac(p, 8.0, 244.0)
 	_paint_floor_ac(p, 422.0, 244.0)
-	# Cửa ra vào ở lối đi giữa phía dưới
 	p.rc(220, FLOOR_BOTTOM, 40, 12, Color("2b2b2b"))
 	p.rc(222, FLOOR_BOTTOM + 1, 36, 11, Color("b8834a"))
 	p.rc(239, FLOOR_BOTTOM + 1, 2, 11, Color("4a2e16"))
@@ -674,13 +755,19 @@ func _paint_player(p: Node2D) -> void:
 func _paint_prompt(p: Node2D) -> void:
 	if _closing:
 		return
+	var in_active_lesson: bool = _di_hoc_f != null and _di_hoc_f.has_method("is_in_active_lesson") and bool(_di_hoc_f.is_in_active_lesson())
+	if in_active_lesson:
+		return
 	var text: String = ""
 	if _seated >= 0:
-		text = "[E] Đứng dậy"
+		text = "[E] Đứng dậy (Đang tự học · thời gian x4)"
 	elif _pos.distance_to(DOOR_POS) < 26.0:
 		text = "[E] Ra ngoài"
-	elif _nearest_seat() >= 0:
-		text = "[E] Ngồi học"
+	else:
+		var si: int = _nearest_seat()
+		if si >= 0:
+			var fn: String = _adjacent_friend_label(si)
+			text = "[E] Ngồi cạnh %s" % fn if fn != "" else "[E] Ngồi vào ghế học"
 	if text != "":
 		var w: float = p.font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, 8).x + 10.0
 		var x: float = clampf(_pos.x - w / 2.0, 4.0, VIEW.x - w - 4.0)
@@ -703,8 +790,6 @@ func _paint_choice_menu(p: Node2D) -> void:
 		p.draw_string(p.font, Vector2(100, 124), "[1] Vi tích phân 1 (Phòng học 1)", HORIZONTAL_ALIGNMENT_LEFT, -1, 9, Color.WHITE)
 		p.draw_string(p.font, Vector2(100, 141), "[2] Cơ sở lập trình lý thuyết (Phòng học 2)", HORIZONTAL_ALIGNMENT_LEFT, -1, 9, Color.WHITE)
 		p.draw_string(p.font, Vector2(100, 159), "[Esc] Hủy", HORIZONTAL_ALIGNMENT_LEFT, -1, 8, Color(1, 1, 1, 0.65))
-
-# ======================= GỢI Ý BẤM [E] NGOÀI TRỜI =======================
 
 func draw_front_layer() -> void:
 	if inside or _choice_building != "" or game.is_busy():

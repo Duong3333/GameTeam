@@ -1,28 +1,20 @@
 extends "res://scripts/features/feature.gd"
-# TÒA B4.2 + PHÒNG LAB MÁY TÍNH DÙNG CHUNG (B4.2 Thực hành Vi tích phân, Tòa D Thực hành Cơ sở lập trình).
-#
-# Ngoài trời : tòa tháp kính xanh (B4.2) đặt phía sau (phía bắc) Tòa E.
-# Bên trong  : phòng lab máy tính có 18 máy sinh viên + 1 máy giáo viên, bảng trắng, 2 máy lạnh,
-#              kèm theo sinh viên NPC & giảng viên thực hành ngồi học theo môn.
-# Dùng chung : Gọi hàm open_lab(title, subject_code) từ các tòa khác (ví dụ Tòa D) để mở phòng máy tính
-#              với tiêu đề bảng và danh sách NPC riêng của môn đó.
+# TÒA B4.2 + PHÒNG LAB MÁY TÍNH DÙNG CHUNG (Không hiển thị tên sinh viên NPC).
 
-# ---------- Tòa nhà ngoài trời ----------
-const RECT := Rect2(722, 40, 116, 212)   # khối tòa nhà (cũng là vùng va chạm); nằm phía bắc Tòa E
-const DOOR_RANGE := 44.0                 # đứng cách cửa tối đa bấm E mới vào được (px)
+const RECT := Rect2(722, 40, 116, 212)
+const DOOR_RANGE := 44.0
 
-# ---------- Phòng lab (khung 480x270 như màn hình game) ----------
 const VIEW := Vector2(480, 270)
-const WALL_H := 56.0                     # tường phía trên
-const FLOOR_BOTTOM := 258.0              # mép dưới sàn
-const DOOR_POS := Vector2(412, 252)      # điểm đứng để ra ngoài (cửa ở góc phải phía dưới)
-const START_POS := Vector2(412, 240)     # chỗ xuất hiện khi vừa vào phòng
-const WALK_SPEED := 70.0                 # giống người chơi ngoài trời
-const SEAT_RANGE := 18.0                 # đứng cách chỗ ngồi tối đa bấm E mới ngồi được
-const ROW_TOPS := [116.0, 162.0, 208.0]  # mép trên của 3 hàng bàn sinh viên
-const DESK_XS := [110.0, 240.0, 370.0]   # tâm 3 bàn trong mỗi hàng
+const WALL_H := 56.0
+const FLOOR_BOTTOM := 258.0
+const DOOR_POS := Vector2(412, 252)
+const START_POS := Vector2(412, 240)
+const WALK_SPEED := 70.0
+const SEAT_RANGE := 18.0
+const ROW_TOPS := [116.0, 162.0, 208.0]
+const DESK_XS := [110.0, 240.0, 370.0]
 const DESK_W := 84.0
-const PC_OFFSET := 21.0                  # mỗi bàn có 2 máy, lệch trái/phải so với tâm bàn
+const PC_OFFSET := 21.0
 const TEACHER_DESK := Rect2(200, 66, 80, 14)
 
 const C_FLOOR_A := Color("b4bdc7")
@@ -31,60 +23,65 @@ const C_WALL := Color("cfd8df")
 const C_WOOD_TOP := Color("c19660")
 const C_WOOD_FRONT := Color("8a6238")
 
-# Cấu hình NPC theo từng phòng máy tính: seat_idx 0 là ghế giảng viên, 1..18 là ghế sinh viên
 const LAB_PRESETS := {
 	"B42_VTP": {
 		"title": "PHÒNG LAB B4.2 · THỰC HÀNH VI TÍCH PHÂN",
 		"npcs": [
 			{"seat": 0,  "shirt": "2c3e50", "hair": "2a1d14", "uni": false, "long": false, "pack": false, "label": "GV. Vi tích phân"},
 			{"seat": 1,  "shirt": "3d5a80", "hair": "1b1b1b", "uni": true,  "long": false, "pack": true},
-			{"seat": 4,  "shirt": "e07a5f", "hair": "2a1d14", "uni": false, "long": true,  "pack": true},
-			{"seat": 6,  "shirt": "81b29a", "hair": "5a3a22", "uni": true,  "long": false, "pack": false},
+			{"seat": 3,  "shirt": "81b29a", "hair": "2a1d14", "uni": true,  "long": true,  "pack": true},
+			{"seat": 5,  "shirt": "e07a5f", "hair": "2a1d14", "uni": false, "long": true,  "pack": true},
+			{"seat": 7,  "shirt": "81b29a", "hair": "5a3a22", "uni": true,  "long": false, "pack": false},
 			{"seat": 9,  "shirt": "f2cc8f", "hair": "1b1b1b", "uni": false, "long": true,  "pack": true},
-			{"seat": 12, "shirt": "457b9d", "hair": "2a1d14", "uni": true,  "long": false, "pack": true},
-			{"seat": 15, "shirt": "d96b43", "hair": "1b1b1b", "uni": false, "long": true,  "pack": false},
+			{"seat": 11, "shirt": "457b9d", "hair": "2a1d14", "uni": true,  "long": false, "pack": true},
+			{"seat": 13, "shirt": "d96b43", "hair": "1b1b1b", "uni": false, "long": true,  "pack": false},
+			{"seat": 15, "shirt": "3d5a80", "hair": "5a3a22", "uni": true,  "long": false, "pack": true},
+			{"seat": 17, "shirt": "f2cc8f", "hair": "1b1b1b", "uni": true,  "long": true,  "pack": true}
 		]
 	},
 	"D_CSLT": {
 		"title": "PHÒNG MÁY TÒA D · THỰC HÀNH CƠ SỞ LẬP TRÌNH",
 		"npcs": [
 			{"seat": 0,  "shirt": "1f4e78", "hair": "1b1b1b", "uni": false, "long": true,  "pack": false, "label": "GV. Cơ sở lập trình"},
-			{"seat": 2,  "shirt": "3d5a80", "hair": "1b1b1b", "uni": true,  "long": false, "pack": true},
+			{"seat": 1,  "shirt": "3d5a80", "hair": "1b1b1b", "uni": true,  "long": false, "pack": true},
 			{"seat": 3,  "shirt": "81b29a", "hair": "2a1d14", "uni": true,  "long": true,  "pack": true},
-			{"seat": 7,  "shirt": "e07a5f", "hair": "5a3a22", "uni": false, "long": false, "pack": true},
-			{"seat": 10, "shirt": "f2cc8f", "hair": "1b1b1b", "uni": true,  "long": true,  "pack": false},
-			{"seat": 13, "shirt": "3d5a80", "hair": "2a1d14", "uni": false, "long": false, "pack": true},
-			{"seat": 16, "shirt": "81b29a", "hair": "1b1b1b", "uni": true,  "long": true,  "pack": true},
-			{"seat": 18, "shirt": "e07a5f", "hair": "2a1d14", "uni": true,  "long": false, "pack": false},
+			{"seat": 5,  "shirt": "e07a5f", "hair": "5a3a22", "uni": false, "long": false, "pack": true},
+			{"seat": 7,  "shirt": "f2cc8f", "hair": "1b1b1b", "uni": true,  "long": true,  "pack": false},
+			{"seat": 9,  "shirt": "3d5a80", "hair": "2a1d14", "uni": false, "long": false, "pack": true},
+			{"seat": 11, "shirt": "81b29a", "hair": "1b1b1b", "uni": true,  "long": true,  "pack": true},
+			{"seat": 13, "shirt": "457b9d", "hair": "2a1d14", "uni": true,  "long": false, "pack": true},
+			{"seat": 15, "shirt": "d96b43", "hair": "1b1b1b", "uni": false, "long": true,  "pack": false},
+			{"seat": 17, "shirt": "e07a5f", "hair": "2a1d14", "uni": true,  "long": false, "pack": false}
 		]
 	}
 }
 
 var inside := false
 var _layer: CanvasLayer
-var _painter: Node2D          # Node2D dùng script vẽ của game (characters.gd) để vẽ nhân vật trong phòng
-var _pos := START_POS         # vị trí nhân vật trong phòng (bàn chân)
-var _face := 1                # 0 xuống, 1 lên, 2 trái, 3 phải (giống game.facing)
+var _painter: Node2D
+var _pos := START_POS
+var _face := 1
 var _anim := 0.0
 var _clock := 0.0
-var _seated := -1             # chỉ số chỗ ngồi đang ngồi, -1 = đang đứng
+var _seated := -1
 var _fade := 0.0
 var _closing := false
-var _groups: Array = []       # mỗi nhóm: 1 bàn + các ghế/máy (3 hàng sinh viên + bàn giáo viên)
+var _groups: Array = []
 var _seats: Array = []
-var _solid: Array = []        # vật cản trong phòng
+var _solid: Array = []
 
 var _board_title := "PHÒNG LAB B4.2 · THỰC HÀNH VI TÍCH PHÂN"
-var _seat_npcs: Dictionary = {}   # seat_idx -> Dictionary thông tin NPC ngồi tại ghế đó
+var _seat_npcs: Dictionary = {}
+var _di_hoc_f: Node = null
+var _looked: bool = false
+var _active_preset: String = "B42_VTP"
 
 func _ready() -> void:
-	# Đăng ký trước setup_collision(): bản đồ dùng chung tự thêm va chạm từ BUILDINGS.
-	# Minimap và dòng tên khu vực cũng tự nhận tòa nhà.
 	game.BUILDINGS.append(["B4.2", RECT.position.x, RECT.position.y, RECT.size.x, RECT.size.y, Color("8e959f"), Color("1f4a8c"), "Tòa B4.2 - Phòng Lab Thực hành Vi tích phân."])
 	_build_room()
 	_apply_preset("B42_VTP")
 	_layer = CanvasLayer.new()
-	_layer.layer = 5   # trên thế giới (kể cả mưa, ánh sáng), dưới các thanh HUD và sổ tay (6-8)
+	_layer.layer = 5
 	_layer.visible = false
 	add_child(_layer)
 	var script: Script = load("res://scripts/draw/characters.gd")
@@ -94,49 +91,51 @@ func _ready() -> void:
 	_layer.add_child(_painter)
 	_painter.draw.connect(_paint)
 
-# ======================= DỰNG PHÒNG LAB & PRESET DÙNG CHUNG =======================
+func _lookup() -> void:
+	if _looked:
+		return
+	_looked = true
+	for f in game.features:
+		if f != self and f.has_method("notify_seat_entered"):
+			_di_hoc_f = f
 
 func _build_room() -> void:
 	_groups.clear()
 	_seats.clear()
 	_solid.clear()
-	# bàn giáo viên (1 máy, 1 ghế). Ghế ở phía sau bàn (sát tường), đứng dậy thì bước ra bên trái bàn.
 	_add_group(TEACHER_DESK, [240.0], true, Vector2(176, 78))
-	# 3 hàng x 3 bàn x 2 máy = 18 máy tính sinh viên, mỗi máy 1 ghế
 	for top in ROW_TOPS:
 		for cx in DESK_XS:
 			_add_group(Rect2(cx - DESK_W / 2.0, top, DESK_W, 14.0), [cx - PC_OFFSET, cx + PC_OFFSET], false, Vector2.ZERO)
 
 func _add_group(desk: Rect2, xs: Array, teacher: bool, stand_override: Vector2) -> void:
-	var gi := _groups.size()
+	var gi: int = _groups.size()
 	_groups.append({"id": gi, "desk": desk, "xs": xs, "teacher": teacher})
 	_solid.append(desk)
 	for x in xs:
-		var top := desk.position.y
-		if teacher:   # ghế giáo viên: phía sau (trên) bàn, quay mặt xuống
+		var top: float = desk.position.y
+		if teacher:
 			_seats.append({"g": gi, "x": x, "top": top, "pos": Vector2(x, top + 4.0), "stand": stand_override, "face": 0})
 			_solid.append(Rect2(x - 7.0, top - 14.0, 14.0, 18.0))
-		else:         # ghế sinh viên: phía dưới bàn, quay mặt lên màn hình
+		else:
 			_seats.append({"g": gi, "x": x, "top": top, "pos": Vector2(x, top + 26.0), "stand": Vector2(x, top + 34.0), "face": 1})
-			_solid.append(Rect2(x - 7.0, top + 16.0, 14.0, 11.0))   # ghế là vật cản (trừ khi đang ngồi)
+			_solid.append(Rect2(x - 7.0, top + 16.0, 14.0, 11.0))
 
 func _apply_preset(preset_key: String, custom_title: String = "") -> void:
+	_active_preset = preset_key
 	_seat_npcs.clear()
 	var cfg: Dictionary = LAB_PRESETS.get(preset_key, LAB_PRESETS["B42_VTP"])
 	_board_title = custom_title if custom_title != "" else str(cfg.get("title", "PHÒNG LAB MÁY TÍNH"))
 	var list: Array = cfg.get("npcs", [])
 	for n in list:
 		if n is Dictionary:
-			var si := int(n.get("seat", -1))
+			var si: int = int(n.get("seat", -1))
 			if si >= 0 and si < _seats.size():
 				_seat_npcs[si] = n
 
-# Hàm public để các tòa nhà khác (như Tòa D) mở dùng chung map phòng máy tính này
 func open_lab(preset_key: String = "B42_VTP", custom_title: String = "") -> void:
 	_apply_preset(preset_key, custom_title)
 	begin()
-
-# ======================= VÀO / RA =======================
 
 func _door_outside() -> Vector2:
 	return Vector2(RECT.get_center().x, RECT.end.y + 8.0)
@@ -153,39 +152,53 @@ func begin() -> void:
 	_seated = -1
 	_fade = 1.0
 	_layer.visible = true
-	game.hud.visible = false   # ẩn dòng tên khu vực của thế giới ngoài trời khi đang ở trong phòng
+	game.hud.visible = false
 
 func finish() -> void:
 	super()
+	if _di_hoc_f != null:
+		_di_hoc_f.notify_seat_exited()
 	inside = false
 	_closing = false
 	_seated = -1
 	_layer.visible = false
 	game.hud.visible = true
 
+func _class_session_busy() -> bool:
+	return _di_hoc_f != null and _di_hoc_f.has_method("is_session_modal_open") and bool(_di_hoc_f.is_session_modal_open())
+
 func _unhandled_input(event: InputEvent) -> void:
 	if not (event is InputEventKey):
 		return
 	var k := event as InputEventKey
-	if not k.pressed or k.echo or k.physical_keycode != KEY_E:
+	if not k.pressed or k.echo:
 		return
 	if inside:
-		if _closing:
+		if _closing or _class_session_busy():
 			return
+		var in_active_lesson: bool = _di_hoc_f != null and _di_hoc_f.has_method("is_in_active_lesson") and bool(_di_hoc_f.is_in_active_lesson())
 		if _seated >= 0:
-			_stand_up()
-		elif _pos.distance_to(DOOR_POS) < 24.0:
-			_closing = true   # mờ dần rồi ra ngoài (xem _process)
+			if in_active_lesson:
+				if k.keycode == KEY_ESCAPE:
+					_stand_up()
+					get_viewport().set_input_as_handled()
+				return
+			if k.physical_keycode == KEY_E or k.keycode == KEY_ESCAPE:
+				_stand_up()
+				get_viewport().set_input_as_handled()
+			return
+		if k.physical_keycode != KEY_E:
+			return
+		if _pos.distance_to(DOOR_POS) < 24.0:
+			_closing = true
 		else:
-			var s := _nearest_seat()
+			var s: int = _nearest_seat()
 			if s >= 0:
 				_sit(s)
 		get_viewport().set_input_as_handled()
-	elif not game.is_busy() and _near_door_outside():
+	elif k.physical_keycode == KEY_E and not game.is_busy() and _near_door_outside():
 		open_lab("B42_VTP")
 		get_viewport().set_input_as_handled()
-
-# ======================= TRONG PHÒNG: DI CHUYỂN, NGỒI =======================
 
 func _process(delta: float) -> void:
 	if not inside:
@@ -200,6 +213,8 @@ func _process(delta: float) -> void:
 		_fade = maxf(_fade - delta * 3.0, 0.0)
 		if _seated < 0:
 			_walk(delta)
+		elif _di_hoc_f != null:
+			_di_hoc_f.process_classroom_sitting(delta)
 	_painter.queue_redraw()
 
 func _walk(delta: float) -> void:
@@ -228,7 +243,6 @@ func _walk(delta: float) -> void:
 		b = a
 	_pos = b
 
-# cùng cách tính với game.blocked(): chân nhân vật là hộp 8x4
 func _blocked(p: Vector2) -> bool:
 	if p.x < 14.0 or p.x > VIEW.x - 14.0 or p.y < 62.0 or p.y > FLOOR_BOTTOM - 2.0:
 		return true
@@ -239,10 +253,10 @@ func _blocked(p: Vector2) -> bool:
 	return false
 
 func _nearest_seat() -> int:
-	var best := -1
-	var bd := SEAT_RANGE
+	var best: int = -1
+	var bd: float = SEAT_RANGE
 	for i in _seats.size():
-		if _seat_npcs.has(i):   # ghế đã có NPC ngồi thì bỏ qua
+		if _seat_npcs.has(i):
 			continue
 		var d: float = _pos.distance_to(_seats[i].stand)
 		if d < bd:
@@ -250,17 +264,30 @@ func _nearest_seat() -> int:
 			best = i
 	return best
 
+func _adjacent_lab_friend(seat_idx: int) -> String:
+	if seat_idx <= 0:
+		return ""
+	var gi: int = int(_seats[seat_idx].g)
+	for i in _seats.size():
+		if i != seat_idx and int(_seats[i].g) == gi and _seat_npcs.has(i):
+			return "bạn cùng bàn"
+	return ""
+
 func _sit(i: int) -> void:
+	_lookup()
 	_seated = i
 	_pos = _seats[i].pos
-	_face = _seats[i].face
+	_face = int(_seats[i].face)
+	var fn: String = _adjacent_lab_friend(i)
+	if _di_hoc_f != null:
+		_di_hoc_f.notify_seat_entered(_active_preset, _board_title, fn)
 
 func _stand_up() -> void:
 	_pos = _seats[_seated].stand
 	_face = 0
 	_seated = -1
-
-# ======================= VẼ PHÒNG LAB =======================
+	if _di_hoc_f != null:
+		_di_hoc_f.notify_seat_exited()
 
 func _paint() -> void:
 	var p := _painter
@@ -281,10 +308,9 @@ func _paint() -> void:
 	if _fade > 0.0:
 		p.rc(0, 0, VIEW.x, VIEW.y, Color(0, 0, 0, _fade))
 
-# Tường, sàn, bảng, máy lạnh, cửa
 func _paint_shell(p: Node2D) -> void:
 	p.rc(0, 0, VIEW.x, WALL_H, C_WALL)
-	p.rc(0, WALL_H - 4.0, VIEW.x, 4, C_WALL.darkened(0.15))   # chân tường
+	p.rc(0, WALL_H - 4.0, VIEW.x, 4, C_WALL.darkened(0.15))
 	p.rc(0, 0, VIEW.x, 3, C_WALL.lightened(0.2))
 	for ty in range(int(WALL_H), int(FLOOR_BOTTOM), 16):
 		for tx in range(0, int(VIEW.x), 16):
@@ -295,13 +321,11 @@ func _paint_shell(p: Node2D) -> void:
 	p.rc(VIEW.x - 8.0, 0, 8, VIEW.y, Color("4a4f5b"))
 	_paint_board(p)
 	_paint_aircon(p)
-	# cửa ra (góc phải phía dưới)
 	p.rc(394, FLOOR_BOTTOM, 36, 12, Color("2b2b2b"))
 	p.rc(396, FLOOR_BOTTOM + 1.0, 32, 11, Color("8a5a32"))
 	p.rc(410, FLOOR_BOTTOM + 1.0, 2, 11, Color("3a2412"))
 	p.rc(424, FLOOR_BOTTOM + 5.0, 2, 2, Color("e8d28a"))
 
-# Bảng trắng viết bút lông: khung bạc, tiêu đề môn học, vài dòng chữ viết tay, khay bút và giẻ lau
 func _paint_board(p: Node2D) -> void:
 	p.rc(140, 6, 200, 38, Color("7d848d"))
 	p.rc(142, 8, 196, 34, Color("f4f6f8"))
@@ -309,21 +333,20 @@ func _paint_board(p: Node2D) -> void:
 	p.draw_string(p.font, Vector2(142, 21), _board_title, HORIZONTAL_ALIGNMENT_CENTER, 196, 7, Color("2457c5"))
 	var inks := [Color("c0392b"), Color("1f7a3a"), Color("222222")]
 	for line in 3:
-		var yy := 26 + line * 5
+		var yy: int = 26 + line * 5
 		var ink: Color = inks[line]
-		var n := 21 if line < 2 else 13
+		var n: int = 21 if line < 2 else 13
 		for i in n:
-			var w := 3 + ((i * 7 + line * 3) % 4)
+			var w: int = 3 + ((i * 7 + line * 3) % 4)
 			p.rc(150 + i * 8 + (line % 2) * 2, yy + (i % 2), w, 1, ink)
-	p.rc(148, 38, 184, 3, Color("e8ecef"))   # vệt bút đã lau mờ
-	p.rc(192, 42, 96, 3, Color("6a7078"))    # khay bút
+	p.rc(148, 38, 184, 3, Color("e8ecef"))
+	p.rc(192, 42, 96, 3, Color("6a7078"))
 	p.rc(198, 40, 9, 2, Color("2457c5"))
 	p.rc(210, 40, 9, 2, Color("c0392b"))
 	p.rc(222, 40, 9, 2, Color("222222"))
-	p.rc(266, 39, 12, 4, Color("3a3f4a"))    # giẻ lau bảng
+	p.rc(266, 39, 12, 4, Color("3a3f4a"))
 	p.rc(266, 39, 12, 1, Color("5a606c"))
 
-# Máy lạnh treo tường, gió mát nhẹ thổi xuống
 func _paint_aircon(p: Node2D) -> void:
 	p.rc(356, 10, 58, 20, Color("b8bec6"))
 	p.rc(357, 11, 56, 18, Color("eef1f4"))
@@ -333,7 +356,7 @@ func _paint_aircon(p: Node2D) -> void:
 		p.rc(360 + i * 6, 23, 4, 1, Color("9aa1ab"))
 	p.rc(402, 15, 4, 2, Color("46d07a"))
 	p.rc(396, 15, 4, 2, Color("9aa1ab"))
-	var f := int(_clock * 3.0) % 4
+	var f: int = int(_clock * 3.0) % 4
 	for i in 4:
 		p.rc(364 + i * 13, 31 + ((i + f) % 4) * 4, 2, 3, Color(0.75, 0.92, 1.0, 0.45))
 
@@ -356,17 +379,16 @@ func _paint_seat_occupants(p: Node2D, group_id: int) -> void:
 				bool(npc.get("long", false)),
 				bool(npc.get("pack", false))
 			)
-			var lbl := str(npc.get("label", ""))
+			var lbl: String = str(npc.get("label", ""))
 			if lbl != "":
 				var w: float = p.font.get_string_size(lbl, HORIZONTAL_ALIGNMENT_LEFT, -1, 7).x + 6.0
 				p.ctext(lbl, float(s.pos.x) - w / 2.0, float(s.pos.y) - 29.0, w, 7, Color("ffe9a8"))
 
 func _paint_group(p: Node2D, g: Dictionary) -> void:
 	var desk: Rect2 = g.desk
-	var top := desk.position.y
+	var top: float = desk.position.y
 	var xs: Array = g.xs
 	var teacher: bool = g.teacher
-	# ghế giáo viên nằm phía sau (trên) bàn nên vẽ trước
 	if teacher:
 		for x in xs:
 			p.rc(x - 12, top - 21, 24, 18, Color("2b3550"))
@@ -376,16 +398,13 @@ func _paint_group(p: Node2D, g: Dictionary) -> void:
 			p.rc(x - 6, top - 4, 12, 2, Color("4b5d86"))
 			p.rc(x - 1, top + 2, 2, 3, Color("1e2027"))
 		_paint_seat_occupants(p, int(g.id))
-	# mặt bàn và thành bàn
 	p.rc(desk.position.x - 1, top - 1, desk.size.x + 2, 16, Color("5c4126"))
 	p.rc(desk.position.x, top, desk.size.x, 8, C_WOOD_TOP)
 	p.rc(desk.position.x, top, desk.size.x, 1, C_WOOD_TOP.lightened(0.2))
 	p.rc(desk.position.x, top + 8.0, desk.size.x, 6, C_WOOD_FRONT)
 	p.rc(desk.position.x, top + 13.0, desk.size.x, 1, C_WOOD_FRONT.darkened(0.3))
-	# máy tính: bàn giáo viên thấy màn hình, bàn sinh viên thấy mặt lưng màn hình (sinh viên ngồi phía dưới nhìn lên)
 	for x in xs:
 		_paint_computer(p, x, top, teacher)
-	# ghế sinh viên ở phía dưới bàn (người ngồi vẽ trước, lưng ghế che phần lưng)
 	if not teacher:
 		_paint_seat_occupants(p, int(g.id))
 		for x in xs:
@@ -396,9 +415,9 @@ func _paint_group(p: Node2D, g: Dictionary) -> void:
 			p.rc(x - 6, top + 17, 12, 2, Color("56688f"))
 
 func _paint_computer(p: Node2D, x: float, top: float, big: bool) -> void:
-	var hw := 11.0 if big else 9.0
-	var hh := 13.0 if big else 11.0
-	if not big:   # bàn sinh viên: mặt lưng màn hình + bàn phím, chuột phía người ngồi
+	var hw: float = 11.0 if big else 9.0
+	var hh: float = 13.0 if big else 11.0
+	if not big:
 		p.rc(x - hw, top - hh, hw * 2.0, hh + 3.0, Color("23262e"))
 		p.rc(x - hw + 1.0, top - hh + 1.0, hw * 2.0 - 2.0, hh + 1.0, Color("3a3e48"))
 		p.rc(x - hw + 1.0, top - hh + 1.0, hw * 2.0 - 2.0, 2, Color("565b68"))
@@ -414,7 +433,7 @@ func _paint_computer(p: Node2D, x: float, top: float, big: bool) -> void:
 	p.rc(x - hw, top - hh, hw * 2.0, hh + 3.0, Color("2a2d36"))
 	p.rc(x - hw + 1.0, top - hh + 1.0, hw * 2.0 - 2.0, hh - 2.0, Color("3b86e0"))
 	p.rc(x - hw + 1.0, top - hh + 1.0, hw * 2.0 - 2.0, 2, Color("6aa8f0"))
-	var scroll := int(_clock * 3.0 + x) % 4
+	var scroll: int = int(_clock * 3.0 + x) % 4
 	for i in 3:
 		p.rc(x - hw + 3.0, top - hh + 4.0 + i * 2.0, 5.0 + ((i + scroll) % 3) * 3.0, 1, Color("d6eaff"))
 	p.rc(x - 2, top + 2, 4, 2, Color("1e2027"))
@@ -423,7 +442,6 @@ func _paint_computer(p: Node2D, x: float, top: float, big: bool) -> void:
 		p.rc(x - hw + 2.0 + i * 3.0, top + 5.0, 2, 1, Color("8d949c"))
 	p.rc(x + hw + 2.0, top + 5.0, 3, 2, Color("f2f2f2"))
 
-# Nhân vật dùng đúng hàm draw_person() của game (áo polo trường, animation đi bộ)
 func _paint_player(p: Node2D) -> void:
 	p.draw_person(_pos, Color.WHITE, Color("1b1b1b"), _face, _anim, true, false, true)
 	p.ctext("Bạn", _pos.x - 15.0, _pos.y - 28.0, 30, 8, Color("ffd23f"))
@@ -431,28 +449,29 @@ func _paint_player(p: Node2D) -> void:
 func _paint_prompt(p: Node2D) -> void:
 	if _closing:
 		return
-	var text := ""
+	var in_active_lesson: bool = _di_hoc_f != null and _di_hoc_f.has_method("is_in_active_lesson") and bool(_di_hoc_f.is_in_active_lesson())
+	if in_active_lesson:
+		return
+	var text: String = ""
 	if _seated >= 0:
-		text = "[E] Đứng dậy"
-	elif _pos.distance_to(DOOR_POS) < 24.0:
+		text = "[E] Đứng dậy (Đang tự học · thời gian x4)"
+	elif _pos.distance_to(DOOR_POS) < 26.0:
 		text = "[E] Ra ngoài"
-	elif _nearest_seat() >= 0:
-		text = "[E] Ngồi vào máy"
+	else:
+		var si: int = _nearest_seat()
+		if si >= 0:
+			var fn: String = _adjacent_lab_friend(si)
+			text = "[E] Ngồi máy cạnh %s" % fn if fn != "" else "[E] Ngồi vào máy"
 	if text != "":
-		p.ctext(text, _pos.x - 40.0, _pos.y - 44.0, 80, 8, Color.WHITE)
+		p.ctext(text, _pos.x - 65.0, _pos.y - 44.0, 130, 8, Color.WHITE)
 
-# ======================= VẼ TÒA NHÀ NGOÀI TRỜI =======================
-
-# Vẽ sau khi game đã vẽ cây/người. Để nhân vật và cây đứng TRƯỚC tòa nhà không bị mặt tiền đè lên,
-# ta vẽ lại chúng (cùng hàm vẽ của game) ngay sau mặt tiền.
 func draw_front_layer() -> void:
 	if not game.view.intersects(RECT.grow(60.0)):
 		return
 	_paint_facade()
 	_repaint_front_items()
 	if not inside and not game.is_busy() and _near_door_outside():
-		# khung chỉ dẫn phía trên đầu người chơi: "Bấm E để vào tòa B4.2"
-		var text := "Bấm [E] để vào Tòa B4.2 (TH Vi tích phân)"
+		var text: String = "Bấm [E] để vào Tòa B4.2 (TH Vi tích phân)"
 		var w: float = game.font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, 8).x + 10.0
 		var px: float = game.player.x
 		var py: float = game.player.y - 46.0
@@ -495,48 +514,43 @@ func _repaint_front_items() -> void:
 				game.draw_person(game.player, Color.WHITE, Color("1b1b1b"), game.facing, game.anim, true, false, true)
 				game.ctext("Bạn", game.player.x - 15.0, game.player.y - 28.0, 30, 8, Color("ffd23f"))
 
-# Mặt tiền: lõi kính xanh cao, 3 mảng tường trắng xám có cửa sổ nhỏ chìa ra phía trước, đỉnh xám có biển B4.2
 func _paint_facade() -> void:
 	var r := RECT
-	var x := r.position.x
-	var y := r.position.y
-	var w := r.size.x
-	var end_y := r.end.y
-	var cx := x + w / 2.0
+	var x: float = r.position.x
+	var y: float = r.position.y
+	var w: float = r.size.x
+	var end_y: float = r.end.y
+	var cx: float = x + w / 2.0
 	var frame := Color("8e959f")
 	var frame_dark := Color("5f6671")
 	var panel := Color("d4d8dd")
 	var panel_shade := Color("9aa1ab")
 	game.rc(x, y, w, r.size.y, frame)
-	# đỉnh tòa: gờ xám, bậc cao ở góc phải mang biển "B4.2"
 	game.rc(x, y, w, 4, frame.lightened(0.25))
 	game.rc(x + w - 52, y - 4, 40, 4, frame)
 	game.rc(x + w - 46, y - 8, 28, 4, frame)
 	game.rc(x + w - 44, y - 6, 24, 8, Color("eef1f4"))
 	game.ctext("B4.2", x + w - 44, y + 1, 24, 8, Color("1f4aa8"))
-	# lõi kính xanh
-	var gx := x + 12.0
-	var gw := w - 24.0
-	var gy := y + 12.0
-	var gh := r.size.y - 12.0 - 30.0
-	var bands := 8
+	var gx: float = x + 12.0
+	var gw: float = w - 24.0
+	var gy: float = y + 12.0
+	var gh: float = r.size.y - 12.0 - 30.0
+	var bands: int = 8
 	for i in bands:
-		var t := float(i) / (bands - 1)
-		var c := Color("4a86d0").lerp(Color("14305f"), t)
+		var t: float = float(i) / (bands - 1)
+		var c: Color = Color("4a86d0").lerp(Color("14305f"), t)
 		game.rc(gx, gy + gh * i / bands, gw, ceilf(gh / bands) + 1.0, c)
 	for i in range(1, int(gw / 11.0) + 1):
 		game.rc(gx + i * 11.0, gy, 1, gh, Color("14305f"))
 	for j in range(0, int(gh / 12.0) + 1):
 		game.rc(gx, gy + j * 12.0, gw, 1, Color("6fa3e6", 0.55))
-	for k in 5:   # ánh phản chiếu trời trên kính
+	for k in 5:
 		game.rc(gx + 6.0 + k * 17.0, gy + 8.0 + k * 22.0, 14, 2, Color(1, 1, 1, 0.18))
-	game.rc(cx - 3, gy, 6, gh, frame_dark)   # dải tường xám giữa lõi kính
+	game.rc(cx - 3, gy, 6, gh, frame_dark)
 	game.rc(cx - 3, gy, 1, gh, frame_dark.lightened(0.2))
-	# 3 mảng tường trắng xám có cửa sổ nhỏ (trái thấp, giữa cao, phải trung bình)
 	_paint_fin(x + 2.0, y + 74.0, 28.0, end_y - 30.0, panel, panel_shade)
 	_paint_fin(cx - 14.0, y + 38.0, 28.0, end_y - 30.0, panel, panel_shade)
 	_paint_fin(x + w - 30.0, y + 58.0, 28.0, end_y - 30.0, panel, panel_shade)
-	# tầng trệt: tường xám, cửa sổ tối, lối vào kính
 	game.rc(x, end_y - 30, w, 30, frame)
 	game.rc(x, end_y - 30, w, 2, frame.lightened(0.2))
 	game.rc(x, end_y - 8, w, 8, frame_dark)
@@ -555,13 +569,13 @@ func _paint_facade() -> void:
 	game.draw_rect(r, Color("2b2b2b"), false, 1.0)
 
 func _paint_fin(fx: float, fy: float, fw: float, bottom: float, panel: Color, shade: Color) -> void:
-	var fh := bottom - fy
-	game.rc(fx + fw, fy + 4, 5, fh, Color(0, 0, 0, 0.25))   # bóng đổ lên kính bên cạnh
+	var fh: float = bottom - fy
+	game.rc(fx + fw, fy + 4, 5, fh, Color(0, 0, 0, 0.25))
 	game.rc(fx - 1, fy - 3, fw + 2, 3, panel.lightened(0.2))
 	game.rc(fx, fy, fw, fh, panel)
 	game.rc(fx + fw - 5, fy, 5, fh, shade)
 	game.rc(fx, fy, 2, fh, panel.lightened(0.12))
-	var yy := fy + 7.0
+	var yy: float = fy + 7.0
 	while yy + 8.0 < bottom:
 		for wx in [fx + 4.0, fx + 14.0]:
 			game.rc(wx, yy, 9, 7, Color("f0f0f0"))
