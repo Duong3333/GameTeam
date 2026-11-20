@@ -4,12 +4,9 @@ extends RefCounted
 # Chỉ thêm entry mới trước dấu ] cuối danh sách; không xóa hoặc sắp xếp lại entry hiện có.
 
 const LIST := [
-	"res://scripts/maps/b42_lab.gd", # Tòa B4.2 và phòng lab
+	"res://scripts/maps/b42_lab.gd", # Tòa B4.2 và phòng máy tính dùng chung
 	"res://scripts/maps/nha_dieu_hanh.gd", # Nhà Điều hành và sảnh đón
-	"res://scripts/maps/canteen.gd", # Tòa căn tin
-	"res://scripts/maps/thu_vien.gd", # Tòa thư viện
-	"res://scripts/maps/thu_vien_phulam.gd", # Tòa thư viện
-	"res://scripts/maps/hoitruongB.gd", # hoitruong
-	"res://scripts/maps/nha_the_duc.gd",
-	
+	# Tòa căn tin
+	"res://scripts/maps/thu_vien.gd", # Tòa C (Thư viện + menu chọn phòng học)
+	"res://scripts/maps/phong_hoc.gd", # Giảng đường các dãy A - G & Nhà Điều hành
 ]

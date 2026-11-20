@@ -1,24 +1,14 @@
 extends "res://scripts/features/feature.gd"
-# TÒA B4.2 + PHÒNG LAB MÁY TÍNH (bên trong).
+# TÒA B4.2 + PHÒNG LAB MÁY TÍNH DÙNG CHUNG (B4.2 Thực hành Vi tích phân, Tòa D Thực hành Cơ sở lập trình).
 #
-# Ngoài trời : tòa tháp kính xanh (lõi kính, 3 mảng tường trắng xám có cửa sổ nhỏ, đỉnh xám có biển "B4.2")
-#              đặt ngay phía sau (phía bắc) Tòa E. Đứng trước cửa tòa nhà, bấm E để vào.
-# Bên trong  : phòng lab có nhiều máy tính trên bàn, ghế để ngồi dùng máy, bảng trắng viết bút lông,
-#              bàn giáo viên có máy tính và ghế, máy lạnh. Đi bằng W A S D, bấm E gần ghế để ngồi / đứng dậy,
-#              bấm E gần cửa (góc phải phía dưới) để ra ngoài.
-#
-# Module bản đồ được đăng ký tại scripts/maps/registry.gd. Gameplay dùng chung vẫn nằm trong scripts/features/.
-#
-# Dùng lại của game (không tạo hệ thống mới):
-#   game.solids      va chạm: tòa B4.2 là 1 khối cứng như các tòa khác
-#   game.BUILDINGS   bảng tòa nhà: minimap và dòng tên khu vực ở góc trái tự nhận tòa B4.2
-#   game.rc/ctext/hedge/draw_person/draw_tree/draw_lamp/draw_bench   hàm vẽ có sẵn
-#   draw_front_layer()  vẽ lên thế giới (như mọi feature); begin()/finish()/active của feature.gd
-#                       (active = true thì người chơi ngoài trời đứng yên)
-#   Nhân vật trong phòng lab được vẽ bằng chính draw_person() của game (cùng áo polo, cùng animation đi bộ).
+# Ngoài trời : tòa tháp kính xanh (B4.2) đặt phía sau (phía bắc) Tòa E.
+# Bên trong  : phòng lab máy tính có 18 máy sinh viên + 1 máy giáo viên, bảng trắng, 2 máy lạnh,
+#              kèm theo sinh viên NPC & giảng viên thực hành ngồi học theo môn.
+# Dùng chung : Gọi hàm open_lab(title, subject_code) từ các tòa khác (ví dụ Tòa D) để mở phòng máy tính
+#              với tiêu đề bảng và danh sách NPC riêng của môn đó.
 
 # ---------- Tòa nhà ngoài trời ----------
-const RECT := Rect2(722, 40, 116, 212)   # khối tòa nhà (cũng là vùng va chạm); nằm phía bắc Tòa E (E: x 712-817, y 278-564)
+const RECT := Rect2(722, 40, 116, 212)   # khối tòa nhà (cũng là vùng va chạm); nằm phía bắc Tòa E
 const DOOR_RANGE := 44.0                 # đứng cách cửa tối đa bấm E mới vào được (px)
 
 # ---------- Phòng lab (khung 480x270 như màn hình game) ----------
@@ -41,6 +31,35 @@ const C_WALL := Color("cfd8df")
 const C_WOOD_TOP := Color("c19660")
 const C_WOOD_FRONT := Color("8a6238")
 
+# Cấu hình NPC theo từng phòng máy tính: seat_idx 0 là ghế giảng viên, 1..18 là ghế sinh viên
+const LAB_PRESETS := {
+	"B42_VTP": {
+		"title": "PHÒNG LAB B4.2 · THỰC HÀNH VI TÍCH PHÂN",
+		"npcs": [
+			{"seat": 0,  "shirt": "2c3e50", "hair": "2a1d14", "uni": false, "long": false, "pack": false, "label": "GV. Vi tích phân"},
+			{"seat": 1,  "shirt": "3d5a80", "hair": "1b1b1b", "uni": true,  "long": false, "pack": true},
+			{"seat": 4,  "shirt": "e07a5f", "hair": "2a1d14", "uni": false, "long": true,  "pack": true},
+			{"seat": 6,  "shirt": "81b29a", "hair": "5a3a22", "uni": true,  "long": false, "pack": false},
+			{"seat": 9,  "shirt": "f2cc8f", "hair": "1b1b1b", "uni": false, "long": true,  "pack": true},
+			{"seat": 12, "shirt": "457b9d", "hair": "2a1d14", "uni": true,  "long": false, "pack": true},
+			{"seat": 15, "shirt": "d96b43", "hair": "1b1b1b", "uni": false, "long": true,  "pack": false},
+		]
+	},
+	"D_CSLT": {
+		"title": "PHÒNG MÁY TÒA D · THỰC HÀNH CƠ SỞ LẬP TRÌNH",
+		"npcs": [
+			{"seat": 0,  "shirt": "1f4e78", "hair": "1b1b1b", "uni": false, "long": true,  "pack": false, "label": "GV. Cơ sở lập trình"},
+			{"seat": 2,  "shirt": "3d5a80", "hair": "1b1b1b", "uni": true,  "long": false, "pack": true},
+			{"seat": 3,  "shirt": "81b29a", "hair": "2a1d14", "uni": true,  "long": true,  "pack": true},
+			{"seat": 7,  "shirt": "e07a5f", "hair": "5a3a22", "uni": false, "long": false, "pack": true},
+			{"seat": 10, "shirt": "f2cc8f", "hair": "1b1b1b", "uni": true,  "long": true,  "pack": false},
+			{"seat": 13, "shirt": "3d5a80", "hair": "2a1d14", "uni": false, "long": false, "pack": true},
+			{"seat": 16, "shirt": "81b29a", "hair": "1b1b1b", "uni": true,  "long": true,  "pack": true},
+			{"seat": 18, "shirt": "e07a5f", "hair": "2a1d14", "uni": true,  "long": false, "pack": false},
+		]
+	}
+}
+
 var inside := false
 var _layer: CanvasLayer
 var _painter: Node2D          # Node2D dùng script vẽ của game (characters.gd) để vẽ nhân vật trong phòng
@@ -55,11 +74,15 @@ var _groups: Array = []       # mỗi nhóm: 1 bàn + các ghế/máy (3 hàng s
 var _seats: Array = []
 var _solid: Array = []        # vật cản trong phòng
 
+var _board_title := "PHÒNG LAB B4.2 · THỰC HÀNH VI TÍCH PHÂN"
+var _seat_npcs: Dictionary = {}   # seat_idx -> Dictionary thông tin NPC ngồi tại ghế đó
+
 func _ready() -> void:
 	# Đăng ký trước setup_collision(): bản đồ dùng chung tự thêm va chạm từ BUILDINGS.
 	# Minimap và dòng tên khu vực cũng tự nhận tòa nhà.
-	game.BUILDINGS.append(["B4.2", RECT.position.x, RECT.position.y, RECT.size.x, RECT.size.y, Color("8e959f"), Color("1f4a8c"), "Tòa B4.2 - phòng Lab máy tính."])
+	game.BUILDINGS.append(["B4.2", RECT.position.x, RECT.position.y, RECT.size.x, RECT.size.y, Color("8e959f"), Color("1f4a8c"), "Tòa B4.2 - Phòng Lab Thực hành Vi tích phân."])
 	_build_room()
+	_apply_preset("B42_VTP")
 	_layer = CanvasLayer.new()
 	_layer.layer = 5   # trên thế giới (kể cả mưa, ánh sáng), dưới các thanh HUD và sổ tay (6-8)
 	_layer.visible = false
@@ -71,7 +94,7 @@ func _ready() -> void:
 	_layer.add_child(_painter)
 	_painter.draw.connect(_paint)
 
-# ======================= DỰNG PHÒNG LAB =======================
+# ======================= DỰNG PHÒNG LAB & PRESET DÙNG CHUNG =======================
 
 func _build_room() -> void:
 	_groups.clear()
@@ -96,6 +119,22 @@ func _add_group(desk: Rect2, xs: Array, teacher: bool, stand_override: Vector2) 
 		else:         # ghế sinh viên: phía dưới bàn, quay mặt lên màn hình
 			_seats.append({"g": gi, "x": x, "top": top, "pos": Vector2(x, top + 26.0), "stand": Vector2(x, top + 34.0), "face": 1})
 			_solid.append(Rect2(x - 7.0, top + 16.0, 14.0, 11.0))   # ghế là vật cản (trừ khi đang ngồi)
+
+func _apply_preset(preset_key: String, custom_title: String = "") -> void:
+	_seat_npcs.clear()
+	var cfg: Dictionary = LAB_PRESETS.get(preset_key, LAB_PRESETS["B42_VTP"])
+	_board_title = custom_title if custom_title != "" else str(cfg.get("title", "PHÒNG LAB MÁY TÍNH"))
+	var list: Array = cfg.get("npcs", [])
+	for n in list:
+		if n is Dictionary:
+			var si := int(n.get("seat", -1))
+			if si >= 0 and si < _seats.size():
+				_seat_npcs[si] = n
+
+# Hàm public để các tòa nhà khác (như Tòa D) mở dùng chung map phòng máy tính này
+func open_lab(preset_key: String = "B42_VTP", custom_title: String = "") -> void:
+	_apply_preset(preset_key, custom_title)
+	begin()
 
 # ======================= VÀO / RA =======================
 
@@ -143,7 +182,7 @@ func _unhandled_input(event: InputEvent) -> void:
 				_sit(s)
 		get_viewport().set_input_as_handled()
 	elif not game.is_busy() and _near_door_outside():
-		begin()
+		open_lab("B42_VTP")
 		get_viewport().set_input_as_handled()
 
 # ======================= TRONG PHÒNG: DI CHUYỂN, NGỒI =======================
@@ -203,6 +242,8 @@ func _nearest_seat() -> int:
 	var best := -1
 	var bd := SEAT_RANGE
 	for i in _seats.size():
+		if _seat_npcs.has(i):   # ghế đã có NPC ngồi thì bỏ qua
+			continue
 		var d: float = _pos.distance_to(_seats[i].stand)
 		if d < bd:
 			bd = d
@@ -260,27 +301,27 @@ func _paint_shell(p: Node2D) -> void:
 	p.rc(410, FLOOR_BOTTOM + 1.0, 2, 11, Color("3a2412"))
 	p.rc(424, FLOOR_BOTTOM + 5.0, 2, 2, Color("e8d28a"))
 
-# Bảng trắng viết bút lông: khung bạc, chữ xanh, vài dòng chữ viết tay, khay bút và giẻ lau
+# Bảng trắng viết bút lông: khung bạc, tiêu đề môn học, vài dòng chữ viết tay, khay bút và giẻ lau
 func _paint_board(p: Node2D) -> void:
-	p.rc(198, 6, 144, 38, Color("7d848d"))
-	p.rc(200, 8, 140, 34, Color("f4f6f8"))
-	p.rc(200, 8, 140, 2, Color("dfe4e8"))
-	p.draw_string(p.font, Vector2(200, 21), "PHÒNG LAB B4.2", HORIZONTAL_ALIGNMENT_CENTER, 140, 9, Color("2457c5"))
+	p.rc(140, 6, 200, 38, Color("7d848d"))
+	p.rc(142, 8, 196, 34, Color("f4f6f8"))
+	p.rc(142, 8, 196, 2, Color("dfe4e8"))
+	p.draw_string(p.font, Vector2(142, 21), _board_title, HORIZONTAL_ALIGNMENT_CENTER, 196, 7, Color("2457c5"))
 	var inks := [Color("c0392b"), Color("1f7a3a"), Color("222222")]
 	for line in 3:
 		var yy := 26 + line * 5
 		var ink: Color = inks[line]
-		var n := 15 if line < 2 else 9
+		var n := 21 if line < 2 else 13
 		for i in n:
 			var w := 3 + ((i * 7 + line * 3) % 4)
-			p.rc(208 + i * 8 + (line % 2) * 2, yy + (i % 2), w, 1, ink)
-	p.rc(206, 38, 128, 3, Color("e8ecef"))   # vệt bút đã lau mờ
-	p.rc(222, 42, 96, 3, Color("6a7078"))   # khay bút
-	p.rc(228, 40, 9, 2, Color("2457c5"))
-	p.rc(240, 40, 9, 2, Color("c0392b"))
-	p.rc(252, 40, 9, 2, Color("222222"))
-	p.rc(296, 39, 12, 4, Color("3a3f4a"))     # giẻ lau bảng
-	p.rc(296, 39, 12, 1, Color("5a606c"))
+			p.rc(150 + i * 8 + (line % 2) * 2, yy + (i % 2), w, 1, ink)
+	p.rc(148, 38, 184, 3, Color("e8ecef"))   # vệt bút đã lau mờ
+	p.rc(192, 42, 96, 3, Color("6a7078"))    # khay bút
+	p.rc(198, 40, 9, 2, Color("2457c5"))
+	p.rc(210, 40, 9, 2, Color("c0392b"))
+	p.rc(222, 40, 9, 2, Color("222222"))
+	p.rc(266, 39, 12, 4, Color("3a3f4a"))    # giẻ lau bảng
+	p.rc(266, 39, 12, 1, Color("5a606c"))
 
 # Máy lạnh treo tường, gió mát nhẹ thổi xuống
 func _paint_aircon(p: Node2D) -> void:
@@ -296,6 +337,30 @@ func _paint_aircon(p: Node2D) -> void:
 	for i in 4:
 		p.rc(364 + i * 13, 31 + ((i + f) % 4) * 4, 2, 3, Color(0.75, 0.92, 1.0, 0.45))
 
+func _paint_seat_occupants(p: Node2D, group_id: int) -> void:
+	for si in _seats.size():
+		var s: Dictionary = _seats[si]
+		if int(s.g) != group_id:
+			continue
+		if _seated == si:
+			_paint_player(p)
+		elif _seat_npcs.has(si):
+			var npc: Dictionary = _seat_npcs[si]
+			p.draw_person(
+				s.pos,
+				Color(str(npc.get("shirt", "3d5a80"))),
+				Color(str(npc.get("hair", "1b1b1b"))),
+				int(s.face),
+				0.0,
+				bool(npc.get("uni", true)),
+				bool(npc.get("long", false)),
+				bool(npc.get("pack", false))
+			)
+			var lbl := str(npc.get("label", ""))
+			if lbl != "":
+				var w: float = p.font.get_string_size(lbl, HORIZONTAL_ALIGNMENT_LEFT, -1, 7).x + 6.0
+				p.ctext(lbl, float(s.pos.x) - w / 2.0, float(s.pos.y) - 29.0, w, 7, Color("ffe9a8"))
+
 func _paint_group(p: Node2D, g: Dictionary) -> void:
 	var desk: Rect2 = g.desk
 	var top := desk.position.y
@@ -310,8 +375,7 @@ func _paint_group(p: Node2D, g: Dictionary) -> void:
 			p.rc(x - 6, top - 4, 12, 6, Color("2f3b5a"))
 			p.rc(x - 6, top - 4, 12, 2, Color("4b5d86"))
 			p.rc(x - 1, top + 2, 2, 3, Color("1e2027"))
-		if _seated >= 0 and _seats[_seated].g == g.id:
-			_paint_player(p)
+		_paint_seat_occupants(p, int(g.id))
 	# mặt bàn và thành bàn
 	p.rc(desk.position.x - 1, top - 1, desk.size.x + 2, 16, Color("5c4126"))
 	p.rc(desk.position.x, top, desk.size.x, 8, C_WOOD_TOP)
@@ -323,8 +387,7 @@ func _paint_group(p: Node2D, g: Dictionary) -> void:
 		_paint_computer(p, x, top, teacher)
 	# ghế sinh viên ở phía dưới bàn (người ngồi vẽ trước, lưng ghế che phần lưng)
 	if not teacher:
-		if _seated >= 0 and _seats[_seated].g == g.id:
-			_paint_player(p)
+		_paint_seat_occupants(p, int(g.id))
 		for x in xs:
 			p.rc(x - 1, top + 25, 2, 4, Color("1e2027"))
 			p.rc(x - 5, top + 28, 10, 1, Color("1e2027"))
@@ -389,7 +452,7 @@ func draw_front_layer() -> void:
 	_repaint_front_items()
 	if not inside and not game.is_busy() and _near_door_outside():
 		# khung chỉ dẫn phía trên đầu người chơi: "Bấm E để vào tòa B4.2"
-		var text := "Bấm [E] để vào tòa B4.2"
+		var text := "Bấm [E] để vào Tòa B4.2 (TH Vi tích phân)"
 		var w: float = game.font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, 8).x + 10.0
 		var px: float = game.player.x
 		var py: float = game.player.y - 46.0
