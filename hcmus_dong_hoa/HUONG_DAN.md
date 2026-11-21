@@ -55,6 +55,8 @@ scripts/
   features/building_doors.gd đi vào / ra tòa nhà, nhà thể dục, nhà điều hành, căn tin
   features/math_quiz.gd    quiz luyện tập và kỳ thi với NPC
   features/admin_time.gd   công cụ admin tua tuần, thứ và giờ trong game
+  features/danhnhau.gd    bấm H chọc/trêu NPC (không đối kháng)
+  features/khoc.gd         cơ chế khóc dùng chung cho người chơi và NPC
   systems/math_questions.gd ngân hàng và bộ tạo câu hỏi quiz
 assets/
   audio/                   bỏ file âm thanh vào đây
@@ -138,6 +140,24 @@ Chép ảnh logo trường (vuông, 32x32 hoặc 64x64) vào thư mục `assets`
 ## Làm việc nhóm bằng Git
 Xem `HUONG_DAN_GIT.md`.
 
+
+## Đánh trêu chọc NPC và nhân vật khóc
+- Đứng gần một NPC (sinh viên, Cô Toán, thầy cô, bác bảo vệ...) rồi bấm **H** để đánh; **giữ H** để đấm liên hoàn (hai tay đấm luân phiên). Chỉ để trêu vui: không có máu hay sát thương. Dưới chân NPC gần nhất có gợi ý `[H] Đánh`.
+- NPC bị đánh sẽ lùi một chút, quay sang nhìn bạn và phản ứng theo **một trong hai cách** (ngẫu nhiên): **khóc** (nước mắt, vũng nước, đứng khóc vài giây; đánh tiếp vẫn khóc và NPC đứng yên tại chỗ) hoặc **giận** (mặt đỏ bừng, có dấu giận, nói câu giận). Đánh NPC đang giận tới cú thứ 3-4 thì NPC nói một tràng rồi hầm hầm bỏ đi, **biến mất 5-8 giây rồi xuất hiện lại** (NPC có tên về đúng chỗ đứng của mình). Cô Toán không biến mất, chỉ nói hết tràng rồi nguôi. Nguôi hoặc nín rồi thì lần sau bị đánh tung lại giận/khóc.
+- Bấm **C** để nhân vật của bạn khóc, bấm **C** lần nữa để nín. Nhân vật cũng tự khóc vài giây khi **GPA bị tụt** (ví dụ làm sai bài thi).
+- Khi khóc: nước mắt chảy và rơi, giọt nước bắn ra, miệng mếu, chữ "hic/huhu", vũng nước dưới chân lớn dần rồi khô sau khi nín.
+- Code: `scripts/features/danhnhau.gd` (đánh, phản ứng, bảng câu thoại `REACTIONS`) và `scripts/features/khoc.gd` (khóc). Cả hai là gameplay dùng chung nên đăng ký ở `features/registry.gd`, **đặt sau** `newcharacters.gd` để hiệu ứng vẽ đè lên NPC có tên. Hai file độc lập: thiếu `khoc.gd` thì NPC luôn giận chứ không khóc.
+- Chỉnh số liệu (phím, tầm với, xác suất khóc `CRY_CHANCE`, số cú đánh làm NPC bỏ đi `LEAVE_HITS_MIN/MAX`, thời gian vắng mặt `AWAY_MIN/MAX`) ở các hằng số đầu mỗi file. Thêm câu thoại cho vai mới bằng cách thêm khóa vào `REACTIONS` (khóa là id vai trong `newcharacters.gd`, các mục `angry`, `cry`, `rant` là các tràng nói trước khi bỏ đi; thiếu mục nào thì dùng của `default`).
+- Feature khác muốn làm ai đó khóc:
+  ```gdscript
+  for f in game.features:
+  	if f.has_method("start_crying"):
+  		f.start_crying(npc)           # npc là Dictionary trong game.npcs hoặc NPC có tên
+  		f.start_crying()              # người chơi khóc
+  ```
+- Âm thanh: `assets/audio/poke.wav` (tiếng đánh) và `assets/audio/cry.wav` (tiếng nấc). Muốn đổi thì thay file cùng tên.
+- Lưu ý khi sửa nhân vật: lúc đấm, tay đang buông của nhân vật chính được ẩn đi để tay đấm thay vào (nếu không, nhìn ngang sẽ thấy dư một tay). Việc này dùng biến `hidden_arms` trong `scripts/core/game_state.gd` và 8 dòng vẽ tay trong `draw_person` (`scripts/draw/characters.gd`) có điều kiện `show_l` / `show_r`. Thêm tay hay đổi cách vẽ tay trong `draw_person` thì nhớ giữ các điều kiện này.
+- Chỉ chạy ngoài khuôn viên và khi không có chức năng nào đang bận. Chơi online: hiệu ứng chỉ hiện ở máy của bạn (NPC chưa đồng bộ).
 
 ## Quiz ôn đề
 - Đến NPC **Cô Toán** có dấu `?` cạnh Tòa F, nhấn **E** để mở quiz rồi chọn Cơ sở lập trình hoặc Vi tích phân 1.

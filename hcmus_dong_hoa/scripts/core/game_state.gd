@@ -6,9 +6,10 @@ var trees: Array = []   # [x, y, loại] 0 thường, 1 phượng, 2 cọ
 var tufts: Array = []
 var npcs: Array = []
 var bikes: Array = []
-var player := Vector2(1210, 1380)  # Spawn giữa cổng chính (giữa GATE_X và GATE_X+GATE_W)
+var player := Vector2(740, 940)
 var facing := 1
 var anim := 0.0
+var hidden_arms := 0   # bit 1 = ẩn tay trái, bit 2 = ẩn tay phải của NHÂN VẬT CHÍNH (features/danhnhau.gd dùng khi đấm, để tay đấm thay cho tay đang buông)
 var game_min := 7.0 * 60.0
 var logo: Texture2D = null
 var font: Font

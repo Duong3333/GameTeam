@@ -13,4 +13,6 @@ const LIST := [
 	"res://scripts/features/math_quiz.gd",       # NPC Cô Toán: nhấn E để làm quiz
 	"res://scripts/features/newcharacters.gd",   # NPC mới
 	"res://scripts/features/admin_time.gd",      # Chế độ admin: tua tuần, thứ và giờ từ menu Esc
+	"res://scripts/features/khoc.gd",             # Khóc cho người chơi và NPC
+	"res://scripts/features/danhnhau.gd",         # Đánh trêu chọc NPC
 ]
