@@ -1,15 +1,10 @@
 extends "res://scripts/features/feature.gd"
 # TÒA B4.2 + PHÒNG LAB MÁY TÍNH DÙNG CHUNG (Không hiển thị tên sinh viên NPC).
 
-<<<<<<< Updated upstream
-const RECT := Rect2(722, 40, 116, 212)
-const DOOR_RANGE := 44.0
-=======
 # ---------- Tòa nhà ngoài trời ----------
 # Đặt tại phía bắc dãy E theo sơ đồ mới: x=860, y=10, w=120, h=100 (dịch lên để có không gian cổng)
 const RECT := Rect2(860, 10, 120, 100)
 const DOOR_RANGE := 44.0                 # đứng cách cửa tối đa bấm E mới vào được (px)
->>>>>>> Stashed changes
 
 const VIEW := Vector2(480, 270)
 const WALL_H := 56.0

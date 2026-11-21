@@ -22,9 +22,9 @@ extends "res://scripts/features/feature.gd"
 # Cách làm giống b42_lab.gd / nha_dieu_hanh.gd: begin()/finish() của feature.gd (active = true thì người chơi ngoài trời
 # đứng yên và game.is_busy() = true), CanvasLayer 5 vẽ sảnh bằng Node2D dùng characters.gd, người chơi vẽ bằng draw_person() của game.
 
-# Khối tòa nhà: khớp với ô "NHÀ THỂ DỤC" trong campus_data.gd (x=1300, y=60, w=260, h=150)
-const RECT := Rect2(1760, 50, 240, 120)
-const ENTRANCE := Vector2(1880, 178)      # điểm đứng trước cửa (giữa đáy tòa nhà, thấp hơn 8 px)
+# Khối tòa nhà: khớp với ô "NHÀ THỂ DỤC" trong campus_data.gd
+const RECT := Rect2(1900, 50, 240, 120)
+const ENTRANCE := Vector2(2020, 178)      # điểm đứng trước cửa (giữa đáy tòa nhà, thấp hơn 8 px)
 const DOOR_RANGE := 34.0                 # đứng cách lối vào tối đa bấm E mới được (px)
 const WALL_COL := Color("efdc96")        # tường kem vàng
 const ROOF_COL := Color("5a7396")        # mái tôn xanh xám

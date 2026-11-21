@@ -221,7 +221,6 @@ func draw_ground() -> void:
 		rc(GATE_X, int(GATE_Y) - 20 + i * 7, GATE_W, 3, Color(1, 1, 1, 0.8))
 	paved(Rect2(60, 1300, 100, 60), Color("9096a0"))
 	draw_t1_strip()
-	draw_side_lane()
 	draw_school_gate()
 	# đường phố ngoài cổng
 	asphalt(Rect2(0, GATE_Y + 14, WORLD.x, 36))
@@ -332,16 +331,6 @@ func draw_gate_booth() -> void:
 	rc(r.position.x - 4,  r.position.y - 7, r.size.x + 8, 8, Color("4a4f57"))
 	rc(r.position.x - 4,  r.position.y - 7, r.size.x + 8, 2, Color("6e747b"))
 	ctext("Bảo vệ", r.position.x - 10, r.end.y + 14, 60, 8, Color.WHITE)
-
-func draw_side_lane() -> void:
-	if not view.intersects(LANE_SW.grow(16.0)):
-		return
-	asphalt(LANE_SW)
-	rc(LANE_SW.position.x, LANE_SW.position.y - 2.0, LANE_SW.size.x, 2, Color("b9b2a5"))
-	var mid := LANE_SW.position.y + LANE_SW.size.y / 2.0 - 1.0
-	for x in range(int(LANE_SW.position.x) + 10, int(LANE_SW.end.x) - 20, 36):
-		rc(x, mid, 18, 2, Color("e8e8e8"))
-	paved(Rect2(LANE_SW.position.x, LANE_SW.end.y, LANE_SW.size.x - 10.0, 6), Color("dccaa0"))
 
 func draw_national_flag(top_left: Vector2, w: float = 24.0, h: float = 16.0) -> void:
 	rc(top_left.x, top_left.y, w, h, Color("da251d"))

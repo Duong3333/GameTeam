@@ -519,40 +519,55 @@ static func _oval(c: Vector2, rx: float, ry: float, n: int = 16) -> PackedVector
 		pts.append(c + Vector2(cos(a) * rx, sin(a) * ry))
 	return pts
 
-# ─── HỆ THỐNG VA CHẠM (COLLISION) CHÍNH XÁC: CHO PHÉP ĐI TRÊN CẦU VÀO ĐẢO ────
+# ─── HỆ THỐNG VA CHẠM (COLLISION): CHẶN NƯỚC, CHỪ CẦU VÀ ĐẢO ─────────────────
 static func collision_rects(c: Vector2) -> Array[Rect2]:
 	var out: Array[Rect2] = []
 
 	# 1. Bể phun nước trung tâm (vật cản tuyệt đối)
 	out.append(Rect2(c.x - R_FOUNTAIN - 2.0, c.y - R_FOUNTAIN - 2.0, (R_FOUNTAIN + 2.0) * 2.0, (R_FOUNTAIN + 2.0) * 2.0))
 
-	# 2. Các khoang nước của Vành ngoài và Vành trong:
-	# Cầu trục chính dọc: x từ c.x - 7.0 đến c.x + 7.0 (LỐI ĐI THÔNG THOÁNG)
-	# Cầu trục chính ngang: y từ c.y - 7.0 đến c.y + 7.0 (LỐI ĐI THÔNG THOÁNG)
-	# Đảo trung tâm: bán kính 38px quanh tâm (ĐI BỘ TỰ DO)
-	# Vòng thành phân cách: bán kính 56px đến 72px (ĐI BỘ TỰ DO)
-
-	# Chặn các ô nước sâu hình học ở 4 góc phần tư:
-	var quadrants := [
-		Vector2(-1, -1), # Tây Bắc
-		Vector2( 1, -1), # Đông Bắc
-		Vector2(-1,  1), # Tây Nam
-		Vector2( 1,  1)  # Đông Nam
-	]
-
-	for q: Vector2 in quadrants:
-		# Nước vành ngoài ở góc này
-		var w1_x := c.x + (8.0 if q.x > 0 else -R_WATER1_OUT)
-		var w1_y := c.y + (8.0 if q.y > 0 else -R_WATER1_OUT)
-		var w1_w := R_WATER1_OUT - 12.0
-		var w1_h := R_WATER1_OUT - R_STONE_RING - 2.0
-		out.append(Rect2(w1_x, w1_y, w1_w, w1_h))
-
-		# Nước vành trong ở góc này
-		var w2_x := c.x + (8.0 if q.x > 0 else -R_WATER2_OUT)
-		var w2_y := c.y + (8.0 if q.y > 0 else -R_WATER2_OUT)
-		var w2_w := R_WATER2_OUT - 12.0
-		var w2_h := R_WATER2_OUT - R_ISLAND - 2.0
-		out.append(Rect2(w2_x, w2_y, w2_w, w2_h))
+	# 2. Chặn các vành nước bằng lưới ô nhỏ, bỏ qua 4 cầu trục và 4 cầu chéo
+	# Đảo (<= R_ISLAND) và vòng đá phân cách (R_STONE_INNER..R_STONE_RING) đi bộ tự do.
+	var step := 4.0
+	var max_r := R_WATER1_OUT
+	var start_x := c.x - max_r
+	var start_y := c.y - max_r
+	var x := start_x
+	while x < c.x + max_r:
+		var y := start_y
+		while y < c.y + max_r:
+			var cx := x + step * 0.5
+			var cy := y + step * 0.5
+			if _is_water_blocked(cx - c.x, cy - c.y):
+				out.append(Rect2(x, y, step, step))
+			y += step
+		x += step
 
 	return out
+
+static func _is_water_blocked(dx: float, dy: float) -> bool:
+	var r := sqrt(dx * dx + dy * dy)
+	if r < R_FOUNTAIN + 2.0:
+		return false # đã có khối chặn bể trung tâm
+	if r <= R_ISLAND:
+		return false # đảo trung tâm
+	if r >= R_STONE_INNER and r <= R_STONE_RING:
+		return false # vòng thành đá đi bộ
+	var in_inner_water := r > R_WATER2_IN and r < R_WATER2_OUT
+	var in_outer_water := r > R_WATER1_IN and r < R_WATER1_OUT
+	if not in_inner_water and not in_outer_water:
+		return false
+
+	var half_main := BRIDGE_MAIN_W * 0.5
+	if absf(dx) <= half_main or absf(dy) <= half_main:
+		return false # 4 cầu trục chính
+
+	var half_spoke := BRIDGE_SPOKE_W * 0.5
+	var inv_sqrt2 := 0.70710678
+	# 4 cầu chéo tại ±45°: khoảng cách vuông góc tới trục cầu
+	if absf(-dx * inv_sqrt2 + dy * inv_sqrt2) <= half_spoke:
+		return false
+	if absf(dx * inv_sqrt2 + dy * inv_sqrt2) <= half_spoke:
+		return false
+
+	return true

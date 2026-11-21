@@ -3,50 +3,39 @@ extends Node2D
 # Muốn dời tòa nhà: sửa bảng BUILDINGS (x, y, rộng, cao). Quầy nhỏ: KIOSKS. Khu vực hiện tên: ZONES.
 # Câu NPC hay nói: LINES.
 
-const WORLD := Vector2(2400, 1500)
+const WORLD := Vector2(2500, 1500)
 const SPEED := 70.0
 const GATE_X := 1150.0
 const GATE_W := 120.0
 const GATE_Y := 1430.0
-const FOUNT := Vector2(1280, 440)        # Đài phun nước - giữa tòa E và F
-const QUIZ_NPC_POS := Vector2(1560, 500) # Vị trí NPC Cô Toán cạnh Tòa F
+const FOUNT := Vector2(1420, 440)        # Đài phun nước - giữa tòa E và F
+const QUIZ_NPC_POS := Vector2(1700, 500) # Vị trí NPC Cô Toán cạnh Tòa F
 const DIEUHANH := Rect2(1180, 1060, 350, 230)
 # Tốc độ thời gian: 1 giây thật = TIME_SCALE phút trong game (3.0 -> 1 ngày game dài khoảng 3 phút 20 giây)
 const TIME_SCALE := 3.0
-const LAKE := Rect2(1170, 330, 220, 220) # Hồ nước của đài phun nước (giữa E và F)
+const LAKE := Rect2(1310, 330, 220, 220) # Hồ nước của đài phun nước (giữa E và F)
 # ─── BỐ CỤC MỚI ─────────────────────────────────────────────────────────────
 const WE_LOVE_POS   := Vector2(430, 480)   # Chữ We ❤ HCMUS - sân cỏ giữa A và C
 const MONUMENT_POS  := Vector2(430, 540)   # Tượng đài trắng phía dưới chữ
-const FOUNTAIN_CENTER := Vector2(1280, 440) # Trung tâm đài phun nước đồng tâm (giữa E và F)
+const FOUNTAIN_CENTER := Vector2(1420, 440) # Trung tâm đài phun nước đồng tâm (giữa E và F)
 const PARKING1_RECT := Rect2(60, 920, 380, 260)  # Bãi xe số 1 (trái cổng) - thu nhỏ
-const PARKING2_RECT := Rect2(2030, 50, 250, 130) # Bãi xe số 2 (kế bên phải Nhà Thể Dục)
+const PARKING2_RECT := Rect2(2170, 50, 250, 130) # Bãi xe số 2 (kế bên phải Nhà Thể Dục)
 const LAWN_B_RECT   := Rect2(260, 360, 310, 190) # Sân cỏ trước Hội trường B (rút ngắn)
 const LINES := ["Thi chưa?", "Deadline!", "Đi ăn không?", "Đến giờ học rồi!", "Mượn tui cây bút", "Nhà ăn đông quá", "Sáng nay có kiểm tra!", "Ngủ quên mất...", "Lên thư viện không?"]
 
 var WALL := Color("f2d98c")
 var ROOF := Color("c0453a")
 # [tên, x, y, rộng, cao, màu tường, màu mái, mô tả]
-# Bố cục mới: WORLD=2400x1500. Khu A-B-C-D-E bên trái; F-G + công viên bên phải.
+# Bố cục mới: WORLD=2500x1500. Khu A-B-C-D-E bên trái; F-G + công viên bên phải.
 var BUILDINGS := [
-<<<<<<< Updated upstream
-	["A", 152, 157, 120, 260, WALL, ROOF, "Tòa A - giảng đường."],
-	["B", 240, 440, 182, 110, WALL, ROOF, "Hội trường B - hội trường lớn, có nhiều cửa vào."],
-	["C", 432, 240, 105, 213, WALL, ROOF, "Tòa C - có Thư viện, Phòng học C301, Quầy giáo trình và ATM."],
-	["D", 576, 240, 100, 213, WALL, ROOF, "Tòa D - giảng đường, gần nhà ăn và khu tự học."],
-	["E", 712, 278, 105, 286, WALL, ROOF, "Tòa E - giảng đường lớn."],
-	["F", 1056, 278, 112, 286, WALL, ROOF, "Tòa F - giảng đường."],
-	["G", 1256, 278, 120, 286, Color("dfe3e8"), Color("5d7c99"), "Tòa G - phòng học và phòng thí nghiệm."],
-	["NHÀ THỂ DỤC", 872, 166, 192, 120, Color("e9efe9"), Color("5f9c6a"), "Nhà Thể Dục - sân tập trong nhà."],
-=======
 	["A", 120, 160, 130, 380, WALL, ROOF, "Tòa A - giảng đường."],
 	["B", 290, 220, 200, 130, WALL, Color("4a8a52"), "Hội trường B - hội trường lớn, có nhiều cửa vào."],
 	["C", 530, 180, 125, 380, WALL, ROOF, "Tòa C - có Thư viện, Quầy giáo trình và ATM."],
 	["D", 690, 180, 120, 380, WALL, ROOF, "Tòa D - giảng đường, gần nhà ăn và khu tự học."],
 	["E", 860, 180, 125, 440, WALL, ROOF, "Tòa E - giảng đường lớn."],
-	["F", 1420, 180, 135, 440, WALL, ROOF, "Tòa F - giảng đường."],
-	["G", 1600, 180, 135, 440, Color("dfe3e8"), Color("5d7c99"), "Tòa G - phòng học và phòng thí nghiệm."],
-	["NHÀ THỂ DỤC", 1760, 50, 240, 120, Color("e9efe9"), Color("5f9c6a"), "Nhà Thể Dục - sân tập trong nhà."],
->>>>>>> Stashed changes
+	["F", 1560, 180, 135, 440, WALL, ROOF, "Tòa F - giảng đường."],
+	["G", 1740, 180, 135, 440, Color("dfe3e8"), Color("5d7c99"), "Tòa G - phòng học và phòng thí nghiệm."],
+	["NHÀ THỂ DỤC", 1900, 50, 240, 120, Color("e9efe9"), Color("5f9c6a"), "Nhà Thể Dục - sân tập trong nhà."],
 ]
 # [tên, x, y, màu mái, mô tả] : quầy, kiosk nhỏ
 # Đã xóa các kiosk thừa đè lên tòa nhà/bãi cỏ (Nhà ăn, Tự học, Giáo trình); ATM chuyển thành module riêng
@@ -105,21 +94,21 @@ var STALLS := [
 ]
 
 var ZONES := [
-	["Đài phun nước và hồ sinh viên", Rect2(1170, 330, 220, 220)],
+	["Đài phun nước và hồ sinh viên", Rect2(1310, 330, 220, 220)],
 	["Sân cỏ We ❤ HCMUS - trước Hội trường B", Rect2(260, 360, 310, 260)],
 	["Sân trước Nhà Điều hành (bậc thềm có hoa cảnh)", Rect2(1130, 1290, 420, 160)],
 	["Bãi giữ xe số 1", Rect2(60, 920, 380, 260)],
-	["Bãi giữ xe số 2", Rect2(2030, 50, 250, 130)],
+	["Bãi giữ xe số 2", Rect2(2170, 50, 250, 130)],
 	["Dãy quán nội bộ trường", Rect2(1300, 1240, 72, 240)],
 	["Hẻm nhà dân và quán vỉa hè", Rect2(60, 1304, 900, 80)],
 	["Cổng trường", Rect2(1050, 1360, 300, 120)],
-	["Đường nội bộ chính (ngang)", Rect2(0, 870, 2400, 60)],
+	["Đường nội bộ chính (ngang)", Rect2(0, 870, 2500, 60)],
 	["Đường nội bộ chính (dọc)", Rect2(1070, 0, 90, 1500)],
 ]
 # Hàng dừa vòng quanh đài phun nước (tọa độ tính trong draw_fountain_plaza)
 const PALMS := [
-	[1310, 180], [1360, 180], [1420, 180], [1480, 180],
-	[1570, 180], [1660, 180], [1720, 180],
+	[1450, 180], [1500, 180], [1560, 180], [1620, 180],
+	[1710, 180], [1800, 180], [1860, 180],
 	[260, 160],  [310, 160],  [420, 160],  [470, 160],
 ]
 
@@ -153,6 +142,7 @@ func get_doorways() -> Array:
 	doors.append({
 		"title": "Căn tin",
 		"kind": "canteen",
+		"interior": "canteen",   # nội thất riêng: scripts/maps/canteen.gd
 		"position": Vector2(636.0, 158.0),
 	})
 	return doors
@@ -219,7 +209,7 @@ func frontage_solid_rects() -> Array[Rect2]:
 # Các vùng đi lại / công trình cũ mà vật cản mới không được đè lên.
 func frontage_keepout_rects() -> Array[Rect2]:
 	var out: Array[Rect2] = [
-		ROAD_T1, DIEUHANH, LAKE.grow(16.0), PARKING_LOT, LANE_SW,
+		ROAD_T1, DIEUHANH, LAKE.grow(16.0), PARKING_LOT,
 		LAWN_B_RECT,
 		Rect2(FOUNTAIN_CENTER.x - 110.0, FOUNTAIN_CENTER.y - 110.0, 220.0, 220.0),
 		Rect2(1150.0, 870.0, 1200.0, 20.0),

@@ -248,7 +248,7 @@ const ROOM_CONFIGS := {
 	}
 }
 
-const DIRECT_DOORS := ["A", "B", "D", "E", "F", "G"]
+const DIRECT_DOORS := ["A", "D", "E", "F", "G"]
 
 var inside := false
 var _choice_building := ""
@@ -799,8 +799,6 @@ func draw_front_layer() -> void:
 	match b:
 		"A":
 			label = "Bấm [E] để vào Giảng đường Tòa A"
-		"B":
-			label = "Bấm [E] để vào Giảng đường Tòa B"
 		"D":
 			label = "Bấm [E] để vào Tòa D (TH CSLT / Toán rời rạc)"
 		"E":
