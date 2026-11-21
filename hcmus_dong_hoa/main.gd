@@ -18,7 +18,8 @@ func _ready() -> void:
 	add_child(stats)
 	audio = AudioManager.new()
 	add_child(audio)
-	audio.play_music("xuongrongpiano")
+	# Nhạc piano chỉ phát khi vào Nhà Điều hành (do nha_dieu_hanh.gd kích hoạt).
+	# Ngoài trời không có nhạc nền — chỉ tiếng bước chân và âm thanh khuôn viên.
 	setup_features()
 	multiplayer_manager = MultiplayerManager.new()
 	multiplayer_manager.name = "MultiplayerManager"
