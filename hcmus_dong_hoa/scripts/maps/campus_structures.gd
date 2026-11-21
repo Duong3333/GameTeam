@@ -132,8 +132,19 @@ func draw_dieuhanh() -> void:
 	rc(cx - 38, y + 130, 6, 6, gold)
 	rc(cx + 32, y + 130, 6, 6, gold)
 	draw_rect(r, Color("2b2b2b"), false, 1.0)
+	# Bậc thang phía trước (6 bậc, rộng ra từng bậc)
 	for i in 6:
-		rc(x + 18 - i * 2, r.end.y + i * 8, r.size.x - 36 + i * 4, 8, Color("c9c9c9") if i % 2 == 0 else Color("adadad"))
+		var step_x := x + 18 - i * 3
+		var step_w := r.size.x - 36 + i * 6
+		var step_y := r.end.y + i * 8
+		# mặt bậc (ngang) màu bê tông
+		rc(step_x, step_y, step_w, 7, Color("c4c4c4") if i % 2 == 0 else Color("b0b0b0"))
+		# sọc đen chia bậc (mép trên mỗi bậc)
+		rc(step_x, step_y, step_w, 2, Color(0.0, 0.0, 0.0, 0.55))
+		# viền sáng bên trái (chiều sâu 3D)
+		rc(step_x, step_y + 2, 3, 5, Color(1.0, 1.0, 1.0, 0.25))
+		# bóng tối bên phải
+		rc(step_x + step_w - 3, step_y + 2, 3, 5, Color(0.0, 0.0, 0.0, 0.18))
 	# Bụi tròn và tay vịn cũ đã được thay bằng draw_dieuhanh_front() (gọi trong draw_frontage_overlay).
 	var fp := Vector2(x - 30, r.end.y + 30)
 	rc(fp.x, fp.y - 52, 2, 52, Color("c4c8cc"))

@@ -112,7 +112,7 @@ var _seats: Array = []        # danh sách chỗ ngồi học: {kind, t/w, side,
 var _solid: Array = []        # vùng va chạm vật thể trong phòng
 var _looked := false
 var _quiz: Node = null
-var _doors_f: Node = null
+var _room_f: Node = null
 
 # Tủ gửi cặp
 var _slot_cols: Array = []
@@ -292,19 +292,11 @@ func _lookup() -> void:
 			continue
 		if _quiz == null and f.has_method("start_round") and f.has_method("begin"):
 			_quiz = f
-		if _doors_f == null and f.has_method("enter_room") and f.get("doors") is Array:
-			_doors_f = f
+		if _room_f == null and f.has_method("open_classroom") and f.has_method("enter_room"):
+			_room_f = f
 
 func _quiz_open() -> bool:
 	return _quiz != null and bool(_quiz.active)
-
-func _c_door() -> Dictionary:
-	if _doors_f == null:
-		return {}
-	for d in _doors_f.doors:
-		if d is Dictionary and str(d.get("title", "")) == "Tòa " + BUILDING_NAME:
-			return d
-	return {}
 
 # ======================= GIỜ MỞ CỬA =======================
 
@@ -436,10 +428,12 @@ func _choice_key(k: InputEventKey) -> void:
 			_choice_msg = "Thư viện đóng cửa. " + _next_open_text()
 			_painter.queue_redraw()
 	elif kc == KEY_2 or kc == KEY_KP_2:
-		var d: Dictionary = _c_door()
 		finish()
-		if not d.is_empty() and _doors_f != null:
-			_doors_f.enter_room(d)
+		if _room_f != null:
+			_room_f.open_classroom("C")
+		else:
+			_choice_msg = "Chưa nạp được module phòng học."
+			_painter.queue_redraw()
 	elif kc == KEY_ESCAPE or kc == KEY_E or kc == KEY_BACKSPACE:
 		finish()
 	else:

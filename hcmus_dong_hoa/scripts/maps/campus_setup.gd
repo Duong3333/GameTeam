@@ -29,36 +29,49 @@ func setup_collision() -> void:
 	for k in KIOSKS:
 		solids.append(Rect2(k[1], k[2], 26, 20))
 	solids.append(DIEUHANH)
-	solids.append(Rect2(FOUNT.x - 45, FOUNT.y - 45, 90, 90))
+	# Va chạm hồ nước: chỉ chặn mặt nước và bể phun, người chơi đi được trên cầu và vào đảo trung tâm!
+	solids.append_array(HoNuoc.collision_rects(FOUNTAIN_CENTER))
 	solids.append(Rect2(0, GATE_Y, GATE_X, 14))
 	solids.append(Rect2(GATE_X + GATE_W, GATE_Y, WORLD.x - GATE_X - GATE_W, 14))
-	solids.append(Rect2(800, 920, 28, 34)) # chòi bảo vệ
+	solids.append(Rect2(GUARD_BOOTH.position.x, GUARD_BOOTH.position.y, GUARD_BOOTH.size.x, GUARD_BOOTH.size.y))
+	solids.append(PARKING1_RECT)
+	solids.append(PARKING2_RECT)
 
 func setup_trees() -> void:
-	for x in range(120, 1500, 80):
-		if (x > 680 and x < 770) or (x > 140 and x < 240):
-			continue
-		trees.append([x, 668, 1])
+	# Hàng cây dừa (type 2) vòng quanh đài phun nước (do draw_fountain_plaza vẽ)
+	# Hàng thông (type 1) và cây tán rộng (type 0) dọc các trục đường lớn
+	for x in range(100, 1060, 100):
+		trees.append([x, 668, 1])  # thông dọc đường ngang (khu A-E)
+	for x in range(1200, 2350, 100):
+		trees.append([x, 668, 1])  # thông dọc đường ngang (khu F-G)
+	# Hàng dừa phía trên các tòa nhà
 	for p in PALMS:
 		trees.append([p[0], p[1], 2])
 	rng = RandomNumberGenerator.new()
 	rng.seed = 11
-	for i in 260:
-		tufts.append(Vector2(rng.randi_range(0, 1598), rng.randi_range(0, 998)))
+	for i in 420:
+		tufts.append(Vector2(rng.randi_range(0, int(WORLD.x) - 2), rng.randi_range(0, int(WORLD.y) - 2)))
 	var n := 0
-	while n < 70:
-		var p := Vector2(rng.randi_range(20, 1580), rng.randi_range(40, 940))
-		if p.y > 560 and p.y < 700:
+	while n < 100:
+		var p := Vector2(rng.randi_range(32, int(WORLD.x) - 32), rng.randi_range(40, int(WORLD.y) - 40))
+		# Không đặt cây trên đường nội bộ, bãi xe, khu tòa nhà
+		if p.y > 840 and p.y < 950:
+			continue
+		if p.x > 1050 and p.x < 1180:
+			continue
+		if PARKING1_RECT.grow(16).has_point(p) or PARKING2_RECT.grow(16).has_point(p):
+			continue
+		if LAWN_B_RECT.grow(8).has_point(p):
 			continue
 		var ok := true
 		for s in solids:
 			if s.grow(16).has_point(p):
 				ok = false
+				break
 		for z in ZONES:
 			if z[1].has_point(p):
 				ok = false
-		if p.x > 680 and p.x < 800 and p.y > 560:
-			ok = false
+				break
 		if ok:
 			trees.append([p.x, p.y, 0])
 			n += 1
@@ -67,11 +80,15 @@ func setup_trees() -> void:
 
 func spawn_npcs() -> void:
 	var shirts := [Color("e07a5f"), Color("81b29a"), Color("f2cc8f"), Color("3d5a80"), Color("e8e8e8")]
-	var hairs := [Color("1b1b1b"), Color("3b2a1a"), Color("5a3a22"), Color("1b1b1b")]
-	var spawn := [Rect2(150, 470, 1300, 100), Rect2(840, 320, 176, 200)]
-	for i in 18:
-		var p := Vector2(480, 520)
-		for tries in 80:
+	var hairs  := [Color("1b1b1b"), Color("3b2a1a"), Color("5a3a22"), Color("1b1b1b")]
+	# Khu spawn: hành lang giữa các tòa và vườn công viên
+	var spawn := [
+		Rect2(120, 580, 950, 180),
+		Rect2(1440, 320, 320, 240),
+	]
+	for i in 24:
+		var p := Vector2(600, 700)
+		for tries in 100:
 			var r: Rect2 = spawn[randi() % 2]
 			var c := Vector2(randf_range(r.position.x, r.end.x), randf_range(r.position.y, r.end.y))
 			if not blocked(c):
@@ -84,33 +101,43 @@ func spawn_npcs() -> void:
 	solids.append(Rect2(QUIZ_NPC_POS.x - 5, QUIZ_NPC_POS.y - 4, 10, 4))
 
 func spawn_bikes() -> void:
-	bikes.append({"x": 100.0, "y": 596.0, "dir": 1.0, "sp": 70.0, "col": Color("c0392b")})
-	bikes.append({"x": 700.0, "y": 596.0, "dir": 1.0, "sp": 55.0, "col": Color("2980b9")})
-	bikes.append({"x": 1200.0, "y": 620.0, "dir": -1.0, "sp": 65.0, "col": Color("27ae60")})
+	# Chỉ 2 xe máy chạy dọc đường nội bộ (bớt xe không có người lái)
+	bikes.append({"x": 100.0,  "y": 898.0, "dir":  1.0, "sp": 90.0, "col": Color("c0392b")})
+	bikes.append({"x": 1800.0, "y": 905.0, "dir": -1.0, "sp": 85.0, "col": Color("27ae60")})
 
 func setup_decor() -> void:
-	for i in 420:
-		flowers.append([Vector2(rng.randi_range(0, 1596), rng.randi_range(0, 940)), [Color("ffffff"), Color("ffe066"), Color("ff9ecb"), Color("c9a0ff")][rng.randi_range(0, 3)]])
-	for x in range(160, 1500, 140):
-		lamps.append(Vector2(x, 576))
-	for x in range(200, 800, 150):
-		lamps.append(Vector2(x, 480))
-	for q in [Vector2(838, 322), Vector2(1018, 322), Vector2(838, 524), Vector2(1018, 524)]:
+	for i in 700:
+		flowers.append([Vector2(rng.randi_range(0, int(WORLD.x) - 4), rng.randi_range(0, int(WORLD.y) - 60)), [Color("ffffff"), Color("ffe066"), Color("ff9ecb"), Color("c9a0ff")][rng.randi_range(0, 3)]])
+	# Đèn dọc hành lang (y≈562, cứ 140px)
+	for x in range(200, 1060, 140):
+		lamps.append(Vector2(x, 562))
+	# Đèn khu công viên đài phun nước
+	for q in [Vector2(1440, 320), Vector2(1760, 320), Vector2(1440, 560), Vector2(1760, 560)]:
 		lamps.append(q)
-	benches = [Vector2(868, 534), Vector2(960, 534), Vector2(300, 470), Vector2(620, 470), Vector2(1200, 570), Vector2(400, 570), Vector2(1300, 708), Vector2(1400, 900)]
+	# Ghế đá (bỏ ghế trong sân cỏ WE ❤ HCMUS — không fit)
+	benches = [
+		Vector2(300, 660),
+		Vector2(750, 660),
+		Vector2(1500, 440),  # khu công viên
+		Vector2(1700, 440),
+		Vector2(1500, 350),
+		Vector2(1700, 350),
+		Vector2(1800, 1050),
+		Vector2(2100, 1360),
+	]
 	for l in lamps:
 		solids.append(Rect2(l.x - 2, l.y - 3, 4, 3))
 	for b in benches:
 		solids.append(Rect2(b.x - 9, b.y - 5, 18, 5))
-	for i in 6:
-		clouds.append({"x": rng.randf_range(0, 1600), "y": rng.randf_range(100, 900), "r": rng.randf_range(60, 110), "sp": rng.randf_range(6, 14)})
+	for i in 8:
+		clouds.append({"x": rng.randf_range(0, WORLD.x), "y": rng.randf_range(100, WORLD.y - 100), "r": rng.randf_range(70, 130), "sp": rng.randf_range(6, 14)})
 
 func setup_camera() -> void:
 	cam = Camera2D.new()
 	cam.position = player
-	cam.limit_left = 0
-	cam.limit_top = 0
-	cam.limit_right = int(WORLD.x)
+	cam.limit_left   = 0
+	cam.limit_top    = 0
+	cam.limit_right  = int(WORLD.x)
 	cam.limit_bottom = int(WORLD.y)
 	cam.position_smoothing_enabled = true
 	add_child(cam)

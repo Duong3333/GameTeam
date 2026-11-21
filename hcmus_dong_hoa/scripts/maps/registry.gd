@@ -4,10 +4,17 @@ extends RefCounted
 const LIST := [
 	"res://scripts/maps/b42_lab.gd", # Tòa B4.2 và phòng máy tính dùng chung
 	"res://scripts/maps/nha_dieu_hanh.gd", # Nhà Điều hành và sảnh đón
-	# Tòa căn tin
+<<<<<<< Updated upstream
+	"res://scripts/maps/canteen.gd", # Căn tin HCMUS
 	"res://scripts/maps/thu_vien.gd", # Tòa C (Thư viện + menu chọn phòng học)
 	"res://scripts/maps/phong_hoc.gd", # Giảng đường các dãy A - G & Nhà Điều hành
-	"res://scripts/features/co_che_di_hoc.gd", # Tiết học tương tác, điểm danh nhanh, chép bài, bạn bè & BTVN
-	"res://scripts/features/hoat_dong_hang_ngay.gd", # Thanh năng lượng, làm thêm, sự kiện ngẫu nhiên & mục tiêu tuần
-	"res://scripts/features/co_che_nghi_hoc.gd", # Cảnh báo vắng học, đơn xin phép, học lại & HUD học phí
+	"res://scripts/maps/nha_the_duc.gd", # Nhà tập luyện Thể dục Thể thao
+	"res://scripts/maps/hoitruongB.gd", # Hội trường B
+=======
+	"res://scripts/maps/canteen.gd", # Tòa căn tin
+	"res://scripts/maps/thu_vien.gd", # Tòa thư viện
+	"res://scripts/maps/hoitruongB.gd", # hoitruong
+	"res://scripts/maps/nha_the_duc.gd",
+	"res://scripts/maps/atm.gd", # Cây ATM rút tiền tự động
+>>>>>>> Stashed changes
 ]

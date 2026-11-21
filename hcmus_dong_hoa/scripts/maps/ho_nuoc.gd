@@ -1,245 +1,558 @@
-extends RefCounted
 class_name HoNuoc
-# HỒ NƯỚC + ĐÀI PHUN ở sân giữa khuôn viên (tâm = FOUNT trong campus_data.gd).
-# Bát giác có cạnh phẳng hướng lên/xuống/trái/phải. Từ ngoài vào trong:
-#   bậc đá -> bờ đá -> mặt nước -> vòng đá đồng tâm -> nước trong -> đảo hoa + đài phun
-# 4 lối đi đá (trên/dưới/trái/phải) bắc từ sân vào đảo, 4 lá sen ở các góc chéo.
+extends RefCounted
+# ==============================================================================
+# HỒ SINH VIÊN & CÔNG VIÊN ĐÀI PHUN NƯỚC HCMUS LINH TRUNG
+# (scripts/maps/ho_nuoc.gd)
 #
-# Muốn to/nhỏ: sửa các hằng số *_A bên dưới
-# (A = khoảng cách từ tâm tới GIỮA mỗi cạnh bát giác, đơn vị px).
-# Chặn đi xuống nước: campus_setup.gd gọi collision_rects(); vùng chặn bám theo COPING_A.
+# Thiết kế kiến trúc hồ nước lớn nhiều vòng tròn đồng tâm chuẩn xác theo ảnh
+# thực tế khuôn viên HCMUS Đông Hòa (Linh Trung) và yêu cầu thiết kế:
+#
+# CẤU TRÚC ĐỒNG TÂM TỪ NGOÀI VÀO TRONG (Tất cả chung một tâm cân đối):
+#   1. Vòng quảng trường bao quanh hồ (R_PLAZA = 110px) với thảm cỏ & hàng cau vua.
+#   2. Bờ kè đá ngoài cùng hồ nước (R_OUTER_RIM = 95px).
+#   3. VÀNH NƯỚC TRÒN LỚN PHÍA NGOÀI (R: 72px -> 92px, rộng 20px).
+#   4. VÒNG THÀNH HỒ BẰNG ĐÁ/BÊ TÔNG PHÂN CÁCH (R: 56px -> 72px, rộng 16px)
+#      với mặt đi bộ lát đá, viền gạch terracotta và vành cây cảnh cắt tỉa uốn lượn.
+#   5. VÀNH NƯỚC RIÊNG BIỆT PHÍA TRONG (R: 38px -> 56px, rộng 18px).
+#   6. ĐẢO TRÒN Ở CHÍNH GIỮA (R_ISLAND = 38px) với vành đai cây cảnh và luống hoa.
+#   7. BỂ PHUN NƯỚC CYAN & ĐÀI PHUN NƯỚC TRUNG TÂM (R_FOUNTAIN = 16px).
+#
+# HỆ THỐNG CẦU HƯỚNG TÂM:
+#   - 4 Cầu trục chính (Bắc, Nam, Đông, Tây) rộng 14px.
+#   - 4 Cầu chéo 45° (Tây Bắc, Đông Bắc, Tây Nam, Đông Nam) rộng 10px.
+#   - Chạy xuyên qua các vành nước, kết nối liền mạch với vòng thành phân cách
+#     và đảo trung tâm, chia hồ thành 16 khoang nước đối xứng tuyệt đẹp!
+# ==============================================================================
 
-const STEP_A := 71.0     # mép ngoài cùng của bậc đá
-const COPING_A := 66.0   # mặt bờ đá (cũng là mép vùng va chạm)
-const WATER_A := 61.0    # mép mặt nước ngoài
-const RING_A := 40.0     # vòng đá đồng tâm
-const POOL_A := 35.0     # mặt nước bên trong vòng đá
-const ISLAND_A := 17.0   # đảo giữa
-const WALK_HALF := 5.0   # nửa bề rộng lối đi
+# ─── BÁN KÍNH HÌNH HỌC ĐỒNG TÂM (CHUNG MỘT TÂM center) ────────────────────────
+const R_PLAZA        := 110.0  # Mép ngoài quảng trường công viên đi dạo
+const R_OUTER_RIM    := 95.0   # Bờ kè đá ngoài cùng hồ nước
+const R_WATER1_OUT   := 92.0   # Mép ngoài vành nước 1 (vành ngoài)
+const R_WATER1_IN    := 72.0   # Mép trong vành nước 1 (rộng 20px)
+const R_STONE_RING   := 72.0   # Mép ngoài vòng thành đá phân cách
+const R_STONE_INNER  := 56.0   # Mép trong vòng thành đá phân cách (rộng 16px)
+const R_WATER2_OUT   := 56.0   # Mép ngoài vành nước 2 (vành trong)
+const R_WATER2_IN    := 38.0   # Mép trong vành nước 2 (rộng 18px)
+const R_ISLAND       := 38.0   # Bán kính đảo tròn trung tâm
+const R_FOUNTAIN     := 16.0   # Bán kính bể đài phun nước cyan
 
-const STONE_DARK := Color("a3adaa")
-const STONE := Color("d9d5c8")
-const STONE_LIGHT := Color("f4f0e2")
-const STONE_SHADE := Color("aaa999")
-const STONE_JOINT := Color("c8c4b5")
-const WATER_EDGE := Color("2f6f86")
-const WATER_DEEP := Color("3f8aa3")
-const WATER_MID := Color("4a98b0")
-const WATER_LIGHT := Color("56a4bb")
-const POOL_DEEP := Color("4f9fb8")
-const POOL_MID := Color("5cb0c6")
-const POOL_LIGHT := Color("69bdd0")
+# Bề rộng các cây cầu hướng tâm
+const BRIDGE_MAIN_W  := 14.0   # Cầu trục chính Bắc, Nam, Đông, Tây
+const BRIDGE_SPOKE_W := 10.0   # Cầu chéo 45 độ
 
-static func draw_landscape(canvas, center: Vector2, clock: float) -> void:
-	# Ngoài màn hình thì khỏi vẽ.
-	var area := Rect2(center - Vector2(100, 112), Vector2(200, 224))
-	if not canvas.view.grow(24.0).intersects(area):
+# ─── MÀU SẮC KIẾN TRÚC & VẬT LIỆU ──────────────────────────────────────────────
+# Đá lát & bờ kè
+const C_PLAZA_BG     := Color("e5ded0") # Nền quảng trường đá be sáng
+const C_PLAZA_BORDER := Color("b8b09f") # Viền bờ quảng trường
+const C_STONE_DARK   := Color("4a463e") # Bờ kè đá tối / bóng chân kè
+const C_STONE_MID    := Color("c8c2b5") # Mặt bờ đá hoa cương
+const C_STONE_LIGHT  := Color("f6f2e8") # Gờ đá sáng nổi khối 3D
+const C_STONE_SHADE  := Color("8e877a") # Mặt đứng bờ kè đá
+const C_JOINT        := Color("bbb2a1") # Mạch ron gạch lát sàn
+const C_BRICK_RIM    := Color("a63e2d") # Viền gạch terracotta đỏ nâu đặc trưng
+const C_BRICK_LIGHT  := Color("cb523f") # Cạnh sáng viền gạch
+
+# Mặt nước hồ chính (xanh lục ngọc bích emerald teal theo ảnh thực tế)
+const C_WATER_EDGE   := Color("103024") # Nước chân bờ kè sâu thẳm
+const C_WATER_DEEP   := Color("184a3c") # Nước sâu đậm màu
+const C_WATER_MID    := Color("226352") # Nước xanh ngọc bích
+const C_WATER_LIGHT  := Color("2d7866") # Nước phản quang sáng
+const C_RIPPLE       := Color(0.50, 0.86, 0.76, 0.45) # Gợn sóng nước lấp lánh
+
+# Bể phun nước trung tâm (xanh cyan / turquoise rực rỡ đặc trưng trong ảnh)
+const C_CYAN_DEEP    := Color("0077b6") # Đáy bể cyan đậm
+const C_CYAN_MID     := Color("00b4d8") # Nước bể cyan ngọc biển
+const C_CYAN_LIGHT   := Color("48cae4") # Mặt nước cyan sáng lấp lánh
+const C_CYAN_FOAM    := Color("90e0ef") # Bọt nước bề mặt
+const C_CYAN_RIM     := Color("fbfaf5") # Thành bể đá hoa cương trắng
+
+# Cây cảnh & đài phun nước
+const C_HEDGE_DARK   := Color("1e5622") # Cây tỉa bóng râm
+const C_HEDGE_MID    := Color("3ca342") # Cây tỉa xanh lá tươi tắn
+const C_HEDGE_LIGHT  := Color("6be071") # Đọt lá non sáng
+const C_FOUNT_SPRAY  := Color(0.92, 0.98, 1.0, 0.92) # Tia nước phun trắng xóa
+const C_BENCH_WOOD   := Color("9c6b3e") # Ghế đá / gỗ công viên
+const C_BENCH_LEG    := Color("4a3c28") # Chân ghế
+
+# ─── HÀM CHÍNH: VẼ TOÀN BỘ CÔNG TRÌNH HỒ NƯỚC ĐỒNG TÂM ──────────────────────────
+static func draw_landscape(canvas: CanvasItem, center: Vector2, clock: float = 0.0) -> void:
+	var c := center
+	var bbox := Rect2(c - Vector2(170, 170), Vector2(340, 340))
+	if "view" in canvas and not canvas.view.grow(40.0).intersects(bbox):
 		return
-	_draw_gardens(canvas, center)
-	_draw_basin(canvas, center)
-	_draw_lily_pads(canvas, center, clock)
-	_draw_water_effects(canvas, center, clock)
-	_draw_walkways(canvas, center)
-	_draw_island(canvas, center)
-	_draw_fountain(canvas, center, clock)
-	_draw_posts(canvas, center)
 
-# Các khối chữ nhật chặn người đi xuống nước (ghép thành hình bát giác).
-# Gọi từ campus_setup.gd: solids.append_array(...collision_rects(FOUNT))
-static func collision_rects(center: Vector2) -> Array[Rect2]:
-	var out: Array[Rect2] = []
-	var a := COPING_A
-	var row := 6.0
-	var y := -a
-	while y < a - 0.01:
-		var near: float = minf(absf(y), absf(y + row))
-		var hw: float = a if near <= a * 0.4142 else a * 1.4142 - near
-		out.append(Rect2(center.x - hw, center.y + y, hw * 2.0, row))
-		y += row
-	return out
+	# 1. Vòng quảng trường công viên bao quanh hồ & các lối tiếp cận 4 hướng
+	_draw_plaza_and_avenues(canvas, c)
 
-# ---------- Hình học ----------
+	# 2. Vành nước tròn lớn phía ngoài (Outer Water Ring)
+	_draw_outer_water_ring(canvas, c, clock)
 
-static func _octagon(c: Vector2, apothem: float) -> PackedVector2Array:
-	var r := apothem / cos(PI / 8.0)
-	var pts := PackedVector2Array()
+	# 3. Vòng thành hồ phân cách bằng đá/bê tông (Concentric Stone Divider Ring)
+	_draw_stone_divider_ring_base(canvas, c)
+
+	# 4. Vành nước riêng biệt phía trong (Inner Water Ring)
+	_draw_inner_water_ring(canvas, c, clock)
+
+	# 5. Hệ thống 8 cây cầu hướng tâm (chia hồ thành 16 khoang nước đối xứng)
+	_draw_radial_bridges(canvas, c)
+
+	# 6. Bề mặt đi bộ & vành cây cảnh uốn lượn trên vòng thành đá phân cách
+	_draw_stone_divider_walkway_and_hedges(canvas, c)
+
+	# 7. Đảo tròn ở chính giữa có bồn cây cảnh và luống hoa
+	_draw_central_island(canvas, c)
+
+	# 8. Bể phun nước cyan và cột đài phun nước trung tâm sinh động
+	_draw_fountain_basin_and_jets(canvas, c, clock)
+
+	# 9. Cảnh quan cây xanh (hàng cau vua thẳng tắp, ghế đá, hàng rào tỉa)
+	_draw_park_landscaping(canvas, c)
+
+# ─── 1. VÒNG QUẢNG TRƯỜNG CÔNG VIÊN & LỐI TIẾP CẬN 4 HƯỚNG ────────────────────
+static func _draw_plaza_and_avenues(canvas: CanvasItem, c: Vector2) -> void:
+	# Nền cỏ công viên xanh bao quanh quảng trường
+	_draw_circle_poly(canvas, c, R_PLAZA + 28.0, Color("4aa246"), 36)
+
+	# 4 mảng cỏ hoa viên ở 4 góc chéo
+	for k: int in [1, 3, 5, 7]:
+		var ang: float = float(k) * PI * 0.25
+		var lawn_pos := c + Vector2(cos(ang), sin(ang)) * (R_PLAZA + 12.0)
+		_draw_circle_poly(canvas, lawn_pos, 18.0, Color("3da443"), 20)
+		_draw_circle_poly(canvas, lawn_pos + Vector2(-1, -1), 15.0, Color("54c24b"), 20)
+
+	# Vòng quảng trường đi dạo lát đá be sáng
+	_draw_circle_poly(canvas, c + Vector2(0, 3), R_PLAZA + 2.0, Color(0, 0, 0, 0.18), 36) # bóng đổ
+	_draw_circle_poly(canvas, c, R_PLAZA, C_PLAZA_BORDER, 36)
+	_draw_circle_poly(canvas, c, R_PLAZA - 1.5, C_PLAZA_BG, 36)
+
+	# Đường chỉ ron đá tròn đồng tâm trên quảng trường
+	_draw_circle_outline(canvas, c, R_PLAZA - 6.0, C_JOINT, 1.0, 36)
+
+	# ── 4 Lối đi tiếp cận từ các hướng ──
+	# Nhánh Nam: Đại lộ chính dẫn vào hồ từ phía cổng trường
+	var s_rect := Rect2(c.x - 14.0, c.y + R_PLAZA - 2.0, 28.0, 52.0)
+	canvas.draw_rect(s_rect.grow(1.5), C_PLAZA_BORDER)
+	canvas.draw_rect(s_rect, C_PLAZA_BG)
+	for sy in range(int(s_rect.position.y) + 4, int(s_rect.end.y), 8):
+		canvas.draw_line(Vector2(s_rect.position.x + 2, sy), Vector2(s_rect.end.x - 2, sy), C_JOINT, 1.0)
+
+	# Nhánh Bắc: dẫn lên Nhà Thể Dục
+	var n_rect := Rect2(c.x - 12.0, c.y - R_PLAZA - 48.0, 24.0, 50.0)
+	canvas.draw_rect(n_rect.grow(1.5), C_PLAZA_BORDER)
+	canvas.draw_rect(n_rect, C_PLAZA_BG)
+	for ny in range(int(n_rect.position.y) + 4, int(n_rect.end.y), 8):
+		canvas.draw_line(Vector2(n_rect.position.x + 2, ny), Vector2(n_rect.end.x - 2, ny), C_JOINT, 1.0)
+
+	# Nhánh Đông (sang Tòa F) & Nhánh Tây (sang trục đường chính)
+	var e_rect := Rect2(c.x + R_PLAZA - 2.0, c.y - 11.0, 50.0, 22.0)
+	canvas.draw_rect(e_rect.grow(1.5), C_PLAZA_BORDER)
+	canvas.draw_rect(e_rect, C_PLAZA_BG)
+
+	var w_rect := Rect2(c.x - R_PLAZA - 48.0, c.y - 11.0, 50.0, 22.0)
+	canvas.draw_rect(w_rect.grow(1.5), C_PLAZA_BORDER)
+	canvas.draw_rect(w_rect, C_PLAZA_BG)
+
+# ─── 2. VÀNH NƯỚC TRÒN LỚN PHÍA NGOÀI (OUTER WATER RING) ──────────────────────
+static func _draw_outer_water_ring(canvas: CanvasItem, c: Vector2, clock: float) -> void:
+	# Bờ kè đá ngoài cùng hồ nước (Outer Retaining Wall)
+	_draw_circle_poly(canvas, c + Vector2(0, 3.5), R_OUTER_RIM + 2.5, Color(0, 0, 0, 0.26), 40)
+	_draw_circle_poly(canvas, c, R_OUTER_RIM + 1.5, C_STONE_DARK, 40)
+	_draw_circle_poly(canvas, c, R_OUTER_RIM, C_STONE_MID, 40)
+	_draw_circle_poly(canvas, c, R_OUTER_RIM - 1.5, C_STONE_LIGHT, 40)
+	_draw_circle_poly(canvas, c, R_OUTER_RIM - 3.0, C_STONE_SHADE, 40)
+
+	# Mặt nước vành ngoài (từ R_OUTER_RIM - 3px = 92px đến R_WATER1_IN = 72px)
+	_draw_circle_poly(canvas, c, R_WATER1_OUT, C_WATER_EDGE, 40)
+	_draw_circle_poly(canvas, c, R_WATER1_OUT - 2.5, C_WATER_DEEP, 40)
+	_draw_circle_poly(canvas, c, R_WATER1_OUT - 7.0, C_WATER_MID, 40)
+	_draw_circle_poly(canvas, c, R_WATER1_OUT - 12.0, C_WATER_LIGHT, 40)
+
+	# Gợn sóng nước lấp lánh trên vành nước ngoài
+	for i in 20:
+		var ang := float(i) * TAU / 20.0
+		var r_wave := lerpf(R_WATER1_IN + 4.0, R_WATER1_OUT - 4.0, fmod(float(i) * 0.37 + clock * 0.14, 1.0))
+		var wp := c + Vector2(cos(ang), sin(ang)) * r_wave
+		if sin(clock * 2.8 + float(i) * 1.7) > -0.1:
+			var w_len := 6.5 + sin(clock * 3.2 + float(i)) * 2.0
+			canvas.draw_line(Vector2(wp.x - w_len * 0.5, wp.y), Vector2(wp.x + w_len * 0.5, wp.y), C_RIPPLE, 1.2)
+
+# ─── 3. VÒNG THÀNH HỒ BẰNG ĐÁ ĐỒNG TÂM PHÂN CÁCH (NỀN ĐÁ CƠ BẢN) ─────────────
+static func _draw_stone_divider_ring_base(canvas: CanvasItem, c: Vector2) -> void:
+	# Bóng đổ của vòng thành đá phân cách xuống vành nước ngoài
+	_draw_circle_poly(canvas, c + Vector2(0, 3.0), R_STONE_RING + 2.5, Color(0, 0, 0, 0.32), 36)
+
+	# Vòng thành đá đồng tâm phân cách (R từ 56px đến 72px, rộng 16px)
+	_draw_circle_poly(canvas, c, R_STONE_RING + 1.2, C_STONE_DARK, 36)
+	_draw_circle_poly(canvas, c, R_STONE_RING, C_BRICK_RIM, 36)
+	_draw_circle_poly(canvas, c, R_STONE_RING - 1.5, C_BRICK_LIGHT, 36)
+	_draw_circle_poly(canvas, c, R_STONE_RING - 2.5, C_PLAZA_BG, 36)
+
+# ─── 4. VÀNH NƯỚC RIÊNG BIỆT PHÍA TRONG (INNER WATER RING) ────────────────────
+static func _draw_inner_water_ring(canvas: CanvasItem, c: Vector2, clock: float) -> void:
+	# Bờ kè trong của vòng thành đá đổ bóng xuống vành nước trong
+	_draw_circle_poly(canvas, c + Vector2(0, 2.5), R_WATER2_OUT + 2.0, Color(0, 0, 0, 0.30), 32)
+	_draw_circle_poly(canvas, c, R_WATER2_OUT + 1.0, C_BRICK_RIM, 32)
+
+	# Mặt nước vành trong (từ R_WATER2_OUT = 56px đến R_WATER2_IN = 38px, rộng 18px)
+	_draw_circle_poly(canvas, c, R_WATER2_OUT, C_WATER_EDGE, 32)
+	_draw_circle_poly(canvas, c, R_WATER2_OUT - 2.5, C_WATER_DEEP, 32)
+	_draw_circle_poly(canvas, c, R_WATER2_OUT - 6.0, C_WATER_MID, 32)
+	_draw_circle_poly(canvas, c, R_WATER2_OUT - 10.0, C_WATER_LIGHT, 32)
+
+	# Gợn sóng nước lấp lánh trên vành trong
+	for i in 12:
+		var ang := float(i) * TAU / 12.0 + PI * 0.1
+		var r_wave := lerpf(R_WATER2_IN + 3.0, R_WATER2_OUT - 3.0, fmod(float(i) * 0.42 + clock * 0.16, 1.0))
+		var wp := c + Vector2(cos(ang), sin(ang)) * r_wave
+		if sin(clock * 3.0 + float(i) * 2.2) > 0.0:
+			canvas.draw_line(Vector2(wp.x - 3.5, wp.y), Vector2(wp.x + 3.5, wp.y), C_RIPPLE, 1.0)
+
+# ─── 5. HỆ THỐNG CÁC LỐI ĐI RỘNG CHẠY THEO HƯỚNG TÂM (CẦU ĐI BỘ) ────────────
+static func _draw_radial_bridges(canvas: CanvasItem, c: Vector2) -> void:
+	var shade_col := Color(0, 0, 0, 0.34)
+
+	# A. 4 CẦU CHÉO 45° (Tây Bắc, Đông Bắc, Tây Nam, Đông Nam) rộng 10px
+	var spoke_angles: Array[float] = [
+		-PI * 0.75, # Tây Bắc
+		-PI * 0.25, # Đông Bắc
+		 PI * 0.75, # Tây Nam
+		 PI * 0.25  # Đông Nam
+	]
+	var spoke_hw := BRIDGE_SPOKE_W * 0.5
+
+	for ang: float in spoke_angles:
+		var dir := Vector2(cos(ang), sin(ang))
+		var perp := Vector2(-dir.y, dir.x) * spoke_hw
+		var p_start := c + dir * (R_ISLAND - 1.0)
+		var p_end   := c + dir * (R_OUTER_RIM + 2.0)
+
+		# Bóng đổ cầu chéo xuống mặt nước hồ
+		canvas.draw_colored_polygon(PackedVector2Array([
+			p_start - perp + Vector2(1.5, 3.0), p_end - perp + Vector2(1.5, 3.0),
+			p_end + perp + Vector2(1.5, 3.0),   p_start + perp + Vector2(1.5, 3.0)
+		]), shade_col)
+
+		# Thân cầu viền đá hoa cương
+		canvas.draw_colored_polygon(PackedVector2Array([
+			p_start - perp, p_end - perp, p_end + perp, p_start + perp
+		]), C_STONE_MID)
+
+		# Mặt cầu lát đá màu be sáng
+		var inner_perp := perp * 0.78
+		canvas.draw_colored_polygon(PackedVector2Array([
+			p_start - inner_perp, p_end - inner_perp, p_end + inner_perp, p_start + inner_perp
+		]), C_PLAZA_BG)
+
+		# Gờ thành lan can cầu đá 2 bên nổi khối 3D
+		canvas.draw_line(p_start - perp, p_end - perp, C_STONE_LIGHT, 1.4)
+		canvas.draw_line(p_start + perp, p_end + perp, C_STONE_SHADE, 1.4)
+
+	# B. 4 CẦU TRỤC CHÍNH (BẮC, NAM, ĐÔNG, TÂY) RỘNG 14px
+	var m_hw := BRIDGE_MAIN_W * 0.5
+
+	# 1. Cầu trục Nam (dẫn từ đại lộ vào đảo trung tâm)
+	var s_y0 := c.y + R_ISLAND - 1.0
+	var s_y1 := c.y + R_OUTER_RIM + 3.0
+	var s_len := s_y1 - s_y0
+	canvas.draw_rect(Rect2(c.x - m_hw + 2.5, s_y0 + 3.0, BRIDGE_MAIN_W, s_len), shade_col)
+	canvas.draw_rect(Rect2(c.x - m_hw - 1.2, s_y0, BRIDGE_MAIN_W + 2.4, s_len), C_STONE_MID)
+	canvas.draw_rect(Rect2(c.x - m_hw, s_y0, BRIDGE_MAIN_W, s_len), C_PLAZA_BG)
+	canvas.draw_line(Vector2(c.x - m_hw, s_y0), Vector2(c.x - m_hw, s_y1), C_STONE_LIGHT, 1.5)
+	canvas.draw_line(Vector2(c.x + m_hw, s_y0), Vector2(c.x + m_hw, s_y1), C_STONE_SHADE, 1.5)
+	for gy in range(int(s_y0) + 4, int(s_y1) - 2, 7):
+		canvas.draw_line(Vector2(c.x - m_hw + 1, gy), Vector2(c.x + m_hw - 1, gy), C_JOINT, 1.0)
+
+	# 2. Cầu trục Bắc (dẫn lên Nhà Thể Dục)
+	var n_y0 := c.y - R_OUTER_RIM - 3.0
+	var n_y1 := c.y - R_ISLAND + 1.0
+	var n_len := n_y1 - n_y0
+	canvas.draw_rect(Rect2(c.x - m_hw + 2.5, n_y0 + 3.0, BRIDGE_MAIN_W, n_len), shade_col)
+	canvas.draw_rect(Rect2(c.x - m_hw - 1.2, n_y0, BRIDGE_MAIN_W + 2.4, n_len), C_STONE_MID)
+	canvas.draw_rect(Rect2(c.x - m_hw, n_y0, BRIDGE_MAIN_W, n_len), C_PLAZA_BG)
+	canvas.draw_line(Vector2(c.x - m_hw, n_y0), Vector2(c.x - m_hw, n_y1), C_STONE_LIGHT, 1.5)
+	canvas.draw_line(Vector2(c.x + m_hw, n_y0), Vector2(c.x + m_hw, n_y1), C_STONE_SHADE, 1.5)
+	for gy in range(int(n_y0) + 4, int(n_y1) - 2, 7):
+		canvas.draw_line(Vector2(c.x - m_hw + 1, gy), Vector2(c.x + m_hw - 1, gy), C_JOINT, 1.0)
+
+	# 3. Cầu trục Tây (sang trục đường chính)
+	var w_x0 := c.x - R_OUTER_RIM - 3.0
+	var w_x1 := c.x - R_ISLAND + 1.0
+	var w_len := w_x1 - w_x0
+	canvas.draw_rect(Rect2(w_x0 + 2.5, c.y - m_hw + 3.0, w_len, BRIDGE_MAIN_W), shade_col)
+	canvas.draw_rect(Rect2(w_x0, c.y - m_hw - 1.2, w_len, BRIDGE_MAIN_W + 2.4), C_STONE_MID)
+	canvas.draw_rect(Rect2(w_x0, c.y - m_hw, w_len, BRIDGE_MAIN_W), C_PLAZA_BG)
+	canvas.draw_line(Vector2(w_x0, c.y - m_hw), Vector2(w_x1, c.y - m_hw), C_STONE_LIGHT, 1.5)
+	canvas.draw_line(Vector2(w_x0, c.y + m_hw), Vector2(w_x1, c.y + m_hw), C_STONE_SHADE, 1.5)
+	for gx in range(int(w_x0) + 4, int(w_x1) - 2, 7):
+		canvas.draw_line(Vector2(gx, c.y - m_hw + 1), Vector2(gx, c.y + m_hw - 1), C_JOINT, 1.0)
+
+	# 4. Cầu trục Đông (sang Tòa F)
+	var e_x0 := c.x + R_ISLAND - 1.0
+	var e_x1 := c.x + R_OUTER_RIM + 3.0
+	var e_len := e_x1 - e_x0
+	canvas.draw_rect(Rect2(e_x0 + 2.5, c.y - m_hw + 3.0, e_len, BRIDGE_MAIN_W), shade_col)
+	canvas.draw_rect(Rect2(e_x0, c.y - m_hw - 1.2, e_len, BRIDGE_MAIN_W + 2.4), C_STONE_MID)
+	canvas.draw_rect(Rect2(e_x0, c.y - m_hw, e_len, BRIDGE_MAIN_W), C_PLAZA_BG)
+	canvas.draw_line(Vector2(e_x0, c.y - m_hw), Vector2(e_x1, c.y - m_hw), C_STONE_LIGHT, 1.5)
+	canvas.draw_line(Vector2(e_x0, c.y + m_hw), Vector2(e_x1, c.y + m_hw), C_STONE_SHADE, 1.5)
+	for gx in range(int(e_x0) + 4, int(e_x1) - 2, 7):
+		canvas.draw_line(Vector2(gx, c.y - m_hw + 1), Vector2(gx, c.y + m_hw - 1), C_JOINT, 1.0)
+
+# ─── 6. BỀ MẶT ĐI BỘ & CÂY CẢNH TRÊN VÒNG THÀNH ĐÁ PHÂN CÁCH ───────────────────
+# ĐẶC ĐIỂM NỔI BẬT TRONG ẢNH: Vòng thành phân cách có hàng cây cảnh cắt tỉa
+# hình khuyên uốn lượn tuyệt đẹp chạy quanh giữa 2 vành nước!
+static func _draw_stone_divider_walkway_and_hedges(canvas: CanvasItem, c: Vector2) -> void:
+	# Bán kính tim của vành cây cảnh trên vòng thành đá phân cách
+	var r_hedge_mid := (R_STONE_RING + R_STONE_INNER) * 0.5 # ≈ 64.0px
+
+	# Vẽ vành đai cây cảnh cắt tỉa hình khuyên chạy dọc vòng thành đá,
+	# chừa lối mở thông thoáng tại 8 giao điểm với 8 cây cầu hướng tâm!
+	for i in 32:
+		var ang := float(i) * TAU / 32.0
+
+		# Kiểm tra xem có trùng với lối đi của 8 cây cầu không
+		var is_bridge_crossing := false
+		for k in 8:
+			var bridge_ang := float(k) * PI * 0.25
+			if absf(fposmod(ang - bridge_ang + PI, TAU) - PI) < 0.16:
+				is_bridge_crossing = true
+				break
+		if is_bridge_crossing:
+			continue
+
+		var hp := c + Vector2(cos(ang), sin(ang)) * r_hedge_mid
+
+		# Bụi cây tròn cắt tỉa xinh xắn
+		canvas.draw_circle(hp + Vector2(0, 1.5), 3.8, C_HEDGE_DARK)
+		canvas.draw_circle(hp, 3.4, C_HEDGE_MID)
+		canvas.draw_circle(hp + Vector2(-0.8, -0.8), 1.8, C_HEDGE_LIGHT)
+
+		# Hoa đỏ và vàng xen kẽ
+		if i % 3 == 0:
+			canvas.draw_rect(Rect2(hp.x - 0.6, hp.y - 1.2, 1.4, 1.4), Color("ff3b30"))
+		elif i % 3 == 1:
+			canvas.draw_rect(Rect2(hp.x + 0.4, hp.y - 0.8, 1.4, 1.4), Color("ffd60a"))
+
+# ─── 7. ĐẢO TRÒN Ở CHÍNH GIỮA CÓ CÂY CẢNH VÀ HOA ──────────────────────────────
+static func _draw_central_island(canvas: CanvasItem, c: Vector2) -> void:
+	# Bóng bờ kè đảo đổ xuống vành nước trong
+	_draw_circle_poly(canvas, c + Vector2(0, 3.2), R_ISLAND + 2.2, Color(0, 0, 0, 0.35), 32)
+
+	# Bờ kè đảo bằng gạch terracotta đỏ nâu nổi bật
+	_draw_circle_poly(canvas, c, R_ISLAND + 1.6, C_BRICK_RIM, 32)
+	_draw_circle_poly(canvas, c, R_ISLAND, Color("c24836"), 32)
+	_draw_circle_poly(canvas, c + Vector2(0, -1), R_ISLAND - 1.2, Color("df6450"), 32)
+
+	# Nền sân đảo trung tâm lát đá màu be sạch sẽ
+	_draw_circle_poly(canvas, c, R_ISLAND - 2.8, C_PLAZA_BG, 32)
+
+	# VÀNH ĐAI CÂY CẢNH CẮT TỈA HÌNH KHUYÊN TRÊN ĐẢO (Circular Hedge Ring)
+	# Bao quanh bồn phun nước, chừa 8 cửa mở tương ứng 8 cây cầu hướng tâm
+	var r_island_hedge := R_ISLAND - 7.5 # ≈ 30.5px
+	for i in 24:
+		var ang := float(i) * TAU / 24.0
+
+		var is_door := false
+		for k in 8:
+			var bridge_ang := float(k) * PI * 0.25
+			if absf(fposmod(ang - bridge_ang + PI, TAU) - PI) < 0.20:
+				is_door = true
+				break
+		if is_door:
+			continue
+
+		var hp := c + Vector2(cos(ang), sin(ang)) * r_island_hedge
+		canvas.draw_circle(hp + Vector2(0, 1.4), 3.6, C_HEDGE_DARK)
+		canvas.draw_circle(hp, 3.2, C_HEDGE_MID)
+		canvas.draw_circle(hp + Vector2(-0.8, -0.8), 1.6, C_HEDGE_LIGHT)
+
+		if i % 2 == 0:
+			canvas.draw_rect(Rect2(hp.x - 0.5, hp.y - 1.2, 1.4, 1.4), Color("ff334b"))
+		else:
+			canvas.draw_rect(Rect2(hp.x + 0.5, hp.y - 0.8, 1.4, 1.4), Color("ffcc00"))
+
+# ─── 8. BỂ PHUN NƯỚC CYAN VÀ ĐÀI PHUN NƯỚC TRUNG TÂM ──────────────────────────
+# Bám sát ảnh thực tế: Lòng bể nước màu xanh cyan/ngọc biển rực rỡ nổi bật
+static func _draw_fountain_basin_and_jets(canvas: CanvasItem, c: Vector2, clock: float) -> void:
+	# Thành bể bát giác viền đá trắng kem nổi khối
+	_draw_octagon_poly(canvas, c + Vector2(0, 2.5), R_FOUNTAIN + 3.0, Color(0, 0, 0, 0.28)) # bóng đổ
+	_draw_octagon_poly(canvas, c, R_FOUNTAIN + 2.5, C_STONE_DARK)
+	_draw_octagon_poly(canvas, c, R_FOUNTAIN + 1.6, C_CYAN_RIM)
+	_draw_octagon_poly(canvas, c, R_FOUNTAIN + 1.0, Color.WHITE)
+
+	# LÒNG BỂ MÀU XANH CYAN/AZURE RỰC RỠ ĐẶC TRƯNG TRONG ẢNH
+	_draw_octagon_poly(canvas, c, R_FOUNTAIN, C_CYAN_DEEP)
+	_draw_octagon_poly(canvas, c, R_FOUNTAIN - 2.0, C_CYAN_MID)
+	_draw_octagon_poly(canvas, c, R_FOUNTAIN - 5.0, C_CYAN_LIGHT)
+
+	# Hiệu ứng nước xao động trong bể cyan
+	var wave_shift := sin(clock * 4.0) * 1.5
+	canvas.draw_line(Vector2(c.x - 8 + wave_shift, c.y - 2), Vector2(c.x + 8 + wave_shift, c.y - 2), Color(1, 1, 1, 0.50), 1.0)
+	canvas.draw_line(Vector2(c.x - 6 - wave_shift, c.y + 3), Vector2(c.x + 6 - wave_shift, c.y + 3), Color(1, 1, 1, 0.40), 1.0)
+
+	# Bệ đá trụ phun nước trung tâm (White Marble Pedestal)
+	canvas.draw_rect(Rect2(c.x - 4.5, c.y - 5.5, 9, 9), Color("7e8a96"))
+	canvas.draw_rect(Rect2(c.x - 3.5, c.y - 6.5, 7, 9), Color("e8eef4"))
+	canvas.draw_rect(Rect2(c.x - 2.5, c.y - 7.5, 5, 4), Color.WHITE)
+
+	# CỘT NƯỚC CHÍNH BẮN THẲNG LÊN CAO
+	var main_h := 22.0 + sin(clock * 5.0) * 3.8
+	var top_pos := Vector2(c.x, c.y - 7.0 - main_h)
+
+	# Cột nước trắng bung bọt
+	canvas.draw_line(Vector2(c.x, c.y - 7.0), top_pos, Color("d0f0fd", 0.85), 3.4)
+	canvas.draw_line(Vector2(c.x, c.y - 7.0), top_pos, Color.WHITE, 1.8)
+	canvas.draw_circle(top_pos, 3.6, Color("e1f5fe", 0.95))
+	canvas.draw_circle(top_pos + Vector2(-0.6, -0.6), 2.2, Color.WHITE)
+
+	# 8 TIA NƯỚC VÒNG CUNG BẮN TỎA RA 8 HƯỚNG
+	for k in 8:
+		var ang := float(k) * PI * 0.25 + clock * 0.20
+		var spray_r := 11.0 + sin(clock * 3.5 + float(k)) * 1.8
+		var fall_pos := c + Vector2(cos(ang), sin(ang)) * spray_r
+		var mid_h := 12.0 + sin(clock * 4.0 + float(k)) * 2.2
+		var mid_pos := Vector2.ZERO.lerp(fall_pos - c, 0.5) + c + Vector2(0, -mid_h)
+
+		canvas.draw_line(Vector2(c.x, c.y - 7.0), mid_pos, Color(C_FOUNT_SPRAY, 0.88), 1.4)
+		canvas.draw_line(mid_pos, fall_pos, Color(C_FOUNT_SPRAY, 0.72), 1.1)
+		canvas.draw_circle(fall_pos, 1.8, Color(1, 1, 1, 0.85))
+		canvas.draw_circle(fall_pos + Vector2(0.5, -0.5), 0.9, Color.WHITE)
+
+	# Bọt nước li ti bay trong không khí
 	for i in 8:
-		pts.append(c + Vector2.from_angle(PI / 8.0 + float(i) * PI / 4.0) * r)
+		var ph := fmod(clock * 1.8 + float(i) * 0.125, 1.0)
+		var sp_y := top_pos.y + ph * main_h * 0.85
+		var sp_x := c.x + sin(float(i) * 2.1 + clock * 3.0) * (ph * 7.5)
+		canvas.draw_rect(Rect2(sp_x, sp_y, 1.4, 1.4), Color(1.0, 1.0, 1.0, 1.0 - ph))
+
+# ─── 9. CẢNH QUAN CÂY XANH (HÀNG CAU VUA VÀ GHẾ ĐÁ CÔNG VIÊN) ─────────────────
+static func _draw_park_landscaping(canvas: CanvasItem, c: Vector2) -> void:
+	# Hai hàng cây cau vua thẳng tắp đối xứng dọc lối vào Nam (chuẩn ảnh thực tế!)
+	for row in 3:
+		var py := c.y + R_PLAZA + 8.0 + float(row) * 17.0
+		_draw_palm_tree(canvas, Vector2(c.x - 18.0, py), 0.88)
+		_draw_palm_tree(canvas, Vector2(c.x + 18.0, py), 0.88)
+
+	# Các cây cau vua đứng ở các góc ngoài quảng trường
+	for k in [1, 3, 5, 7]:
+		var ang: float = float(k) * PI * 0.25
+		var pp := c + Vector2(cos(ang), sin(ang)) * (R_PLAZA + 12.0)
+		_draw_palm_tree(canvas, pp, 0.92)
+
+	# Hàng rào cây xanh cắt tỉa gọn gàng ở 2 bên lối vào Nam
+	_draw_neat_hedge(canvas, c.x - 14.0 - 28.0, c.y + R_PLAZA + 4.0, 28.0)
+	_draw_neat_hedge(canvas, c.x + 14.0,        c.y + R_PLAZA + 4.0, 28.0)
+
+	# Các băng ghế đá công viên trên quảng trường (đặt ở các cung tròn)
+	_draw_park_bench(canvas, Vector2(c.x - 72.0, c.y + 72.0), 0.0)
+	_draw_park_bench(canvas, Vector2(c.x + 72.0, c.y + 72.0), 0.0)
+	_draw_park_bench(canvas, Vector2(c.x - 72.0, c.y - 72.0), 0.0)
+	_draw_park_bench(canvas, Vector2(c.x + 72.0, c.y - 72.0), 0.0)
+
+# ─── HELPER: VẼ HÌNH TRÒN POLYGON ĐỀU ĐỒNG TÂM ────────────────────────────────
+static func _circle_polygon(c: Vector2, r: float, n: int = 32) -> PackedVector2Array:
+	var pts := PackedVector2Array()
+	for i in n:
+		var a := TAU * float(i) / float(n)
+		pts.append(c + Vector2(cos(a), sin(a)) * r)
 	return pts
 
-static func _oct(canvas, c: Vector2, apothem: float, col: Color) -> void:
-	canvas.draw_colored_polygon(_octagon(c, apothem), col)
+static func _draw_circle_poly(canvas: CanvasItem, c: Vector2, r: float, col: Color, n: int = 32) -> void:
+	canvas.draw_colored_polygon(_circle_polygon(c, r, n), col)
 
-static func _octagon_outline(canvas, c: Vector2, apothem: float, col: Color) -> void:
-	var pts := _octagon(c, apothem)
+static func _draw_circle_outline(canvas: CanvasItem, c: Vector2, r: float, col: Color, width: float = 1.0, n: int = 32) -> void:
+	var pts := _circle_polygon(c, r, n)
 	pts.append(pts[0])
-	canvas.draw_polyline(pts, col, 1.0)
+	canvas.draw_polyline(pts, col, width)
 
-# ---------- Bờ đá + mặt nước ----------
-
-static func _draw_basin(canvas, c: Vector2) -> void:
-	# bóng đổ xuống sân
-	_oct(canvas, c + Vector2(0, 3), STEP_A + 1.0, Color(0, 0, 0, 0.16))
-	# bậc đá thấp + bậc đá cao (bờ hồ)
-	_oct(canvas, c, STEP_A, STONE_DARK)
-	_oct(canvas, c, STEP_A - 1.0, STONE)
-	_oct(canvas, c, COPING_A + 1.0, STONE_SHADE)
-	_oct(canvas, c, COPING_A, STONE_LIGHT)
-	_oct(canvas, c, COPING_A - 3.0, STONE_DARK)
-	# mặt nước ngoài: đậm ở sát bờ, sáng dần vào trong
-	_oct(canvas, c, WATER_A + 1.0, WATER_EDGE)
-	_oct(canvas, c, WATER_A, WATER_DEEP)
-	_oct(canvas, c, WATER_A - 4.0, WATER_MID)
-	_oct(canvas, c, WATER_A - 11.0, WATER_LIGHT)
-
-	# vòng đá đồng tâm quanh đài phun (bóng đổ xuống nước trước)
-	_oct(canvas, c + Vector2(0, 2), RING_A + 1.5, Color(0, 0.1, 0.2, 0.25))
-	_oct(canvas, c, RING_A, STONE_DARK)
-	_oct(canvas, c, RING_A - 1.0, STONE_LIGHT)
-	_oct(canvas, c, RING_A - 3.0, STONE)
-	_oct(canvas, c, RING_A - 4.0, STONE_SHADE)
-	# nước trong vòng đá: sáng hơn nước ngoài
-	_oct(canvas, c, POOL_A, POOL_DEEP)
-	_oct(canvas, c, POOL_A - 5.0, POOL_MID)
-	_oct(canvas, c, POOL_A - 11.0, POOL_LIGHT)
-
-static func _draw_water_effects(canvas, c: Vector2, clock: float) -> void:
-	# sóng lan từ đảo ra tới vòng đá
-	for i in 3:
-		var t := fposmod(clock * 0.35 + float(i) / 3.0, 1.0)
-		var ap: float = lerpf(ISLAND_A + 2.0, POOL_A - 1.0, t)
-		_octagon_outline(canvas, c, ap, Color(0.9, 0.98, 1.0, (1.0 - t) * 0.5))
-	# gợn nhẹ ở mặt nước ngoài
-	_octagon_outline(canvas, c, WATER_A - 7.0, Color(1, 1, 1, 0.12 + 0.06 * sin(clock * 1.5)))
-	# ánh nắng lấp lánh
-	for k in 8:
-		if sin(clock * 2.0 + float(k) * 1.3) > 0.3:
-			var p: Vector2 = (c + Vector2.from_angle(PI / 8.0 + float(k) * PI / 4.0) * (RING_A + 14.0)).round()
-			canvas.rc(p.x - 1, p.y, 3, 1, Color(1, 1, 1, 0.75))
-			canvas.rc(p.x + 2, p.y + 2, 2, 1, Color(1, 1, 1, 0.5))
-
-# ---------- Lá sen ở 4 góc chéo ----------
-
-static func _draw_lily_pads(canvas, c: Vector2, clock: float) -> void:
-	var mid := (RING_A + WATER_A) * 0.5
-	for k in 4:
-		var dir := Vector2.from_angle(PI / 4.0 + float(k) * PI / 2.0)
-		var bob := Vector2(sin(clock * 0.7 + float(k) * 1.9), cos(clock * 0.5 + float(k) * 2.3)) * 0.7
-		var p := c + dir * mid + bob
-		var side := Vector2(-dir.y, dir.x)
-		_lily(canvas, p, 3.5, dir.angle() + PI)
-		_lily(canvas, p + side * 7.0 + dir * 2.0, 2.4, dir.angle() + 2.0)
-		_lily(canvas, p - side * 6.0 - dir * 3.0, 2.0, dir.angle() - 2.0)
-		if k % 2 == 0:
-			var f := p.round()
-			canvas.rc(f.x - 1, f.y - 1, 2, 2, Color("f08fb4"))
-			canvas.rc(f.x, f.y - 1, 1, 1, Color("ffe0ec"))
-
-static func _lily(canvas, p: Vector2, r: float, notch: float) -> void:
-	canvas.draw_circle(p + Vector2(0, 1), r, Color(0, 0.12, 0.2, 0.25))
-	canvas.draw_circle(p, r, Color("397e4a"))
-	canvas.draw_circle(p + Vector2(-0.5, -0.5), r * 0.65, Color("59a95e"))
-	canvas.draw_colored_polygon(PackedVector2Array([
-		p,
-		p + Vector2.from_angle(notch - 0.25) * (r + 1.0),
-		p + Vector2.from_angle(notch + 0.25) * (r + 1.0),
-	]), WATER_MID)
-
-# ---------- Lối đi đá bắc qua hồ ----------
-
-static func _draw_walkways(canvas, c: Vector2) -> void:
-	var h := WALK_HALF
-	# bóng của lối đi trên mặt nước
-	var shade := Color(0, 0.15, 0.25, 0.28)
-	for ab in [Vector2(RING_A, WATER_A), Vector2(ISLAND_A, POOL_A)]:
-		var a: float = ab.x
-		var length: float = ab.y - ab.x
-		canvas.draw_rect(Rect2(c + Vector2(a + 1, -h + 2), Vector2(length, h * 2.0)), shade)
-		canvas.draw_rect(Rect2(c + Vector2(-a - length + 1, -h + 2), Vector2(length, h * 2.0)), shade)
-		canvas.draw_rect(Rect2(c + Vector2(-h + 1, a + 2), Vector2(h * 2.0, length)), shade)
-		canvas.draw_rect(Rect2(c + Vector2(-h + 1, -a - length + 2), Vector2(h * 2.0, length)), shade)
-	# đoạn ngoài: từ vòng đá ra tới bậc đá; đoạn trong: từ đảo ra tới vòng đá
-	for seg in [Vector2(RING_A - 2.0, STEP_A), Vector2(ISLAND_A - 3.0, POOL_A + 2.0)]:
-		var a: float = seg.x
-		var length: float = seg.y - seg.x
-		_draw_walk(canvas, Rect2(c + Vector2(a, -h), Vector2(length, h * 2.0)), true)
-		_draw_walk(canvas, Rect2(c + Vector2(-a - length, -h), Vector2(length, h * 2.0)), true)
-		_draw_walk(canvas, Rect2(c + Vector2(-h, a), Vector2(h * 2.0, length)), false)
-		_draw_walk(canvas, Rect2(c + Vector2(-h, -a - length), Vector2(h * 2.0, length)), false)
-
-static func _draw_walk(canvas, rect: Rect2, horizontal: bool) -> void:
-	canvas.draw_rect(rect.grow(1.0), STONE_DARK)
-	canvas.draw_rect(rect, STONE)
-	if horizontal:
-		canvas.rc(rect.position.x, rect.position.y, rect.size.x, 1, STONE_LIGHT)
-		canvas.rc(rect.position.x, rect.end.y - 1.0, rect.size.x, 1, STONE_SHADE)
-		var x := rect.position.x + 4.0
-		while x < rect.end.x - 2.0:
-			canvas.rc(x, rect.position.y + 1.0, 1, rect.size.y - 2.0, STONE_JOINT)
-			x += 6.0
-	else:
-		canvas.rc(rect.position.x, rect.position.y, 1, rect.size.y, STONE_LIGHT)
-		canvas.rc(rect.end.x - 1.0, rect.position.y, 1, rect.size.y, STONE_SHADE)
-		var y := rect.position.y + 4.0
-		while y < rect.end.y - 2.0:
-			canvas.rc(rect.position.x + 1.0, y, rect.size.x - 2.0, 1, STONE_JOINT)
-			y += 6.0
-
-# ---------- Đảo giữa + đài phun ----------
-
-static func _draw_island(canvas, c: Vector2) -> void:
-	_oct(canvas, c + Vector2(0, 2), ISLAND_A + 1.5, Color(0, 0.1, 0.2, 0.3))
-	_oct(canvas, c, ISLAND_A, STONE_DARK)
-	_oct(canvas, c, ISLAND_A - 1.0, STONE_LIGHT)
-	_oct(canvas, c, ISLAND_A - 3.0, Color("286d38"))
-	_oct(canvas, c, ISLAND_A - 4.0, Color("4a8a3a"))
-	# hoa quanh đài phun
-	var flower_colors := [Color("e8584f"), Color("f2c94c"), Color("f08fb4"), Color("ffffff")]
-	for i in 12:
-		var p: Vector2 = (c + Vector2.from_angle(float(i) * TAU / 12.0) * 10.5).round()
-		canvas.rc(p.x - 1, p.y - 1, 2, 2, flower_colors[i % flower_colors.size()])
-
-static func _draw_fountain(canvas, c: Vector2, clock: float) -> void:
-	# bệ tròn
-	canvas.draw_circle(c + Vector2(0, 1), 7.0, Color("536f79"))
-	canvas.draw_circle(c, 6.0, Color("aeb9b8"))
-	canvas.draw_circle(c, 4.5, Color("e3e1d4"))
-	canvas.draw_circle(c, 3.0, Color("68bfd8"))
-	canvas.draw_circle(c, 1.5, Color("e8f6ff"))
-	# tia nước phun toả 8 hướng
+# ─── HELPER: VẼ HÌNH BÁT GIÁC ĐỀU CHO BỂ NƯỚC TRUNG TÂM ───────────────────────
+static func _octagon_polygon(c: Vector2, r: float) -> PackedVector2Array:
+	var pts := PackedVector2Array()
 	for i in 8:
-		var angle := float(i) * PI / 4.0
-		var length := 7.0 + sin(clock * 4.0 + float(i)) * 2.0
-		var tip := c + Vector2.from_angle(angle) * length
-		canvas.draw_line(c, tip, Color(0.91, 0.96, 1.0, 0.9), 1.0)
-		canvas.draw_circle(tip, 1.0, Color.WHITE)
-	# giọt nước rơi xuống mặt nước quanh đảo
-	for i in 8:
-		var ph := fposmod(clock * 0.9 + float(i) * 0.125, 1.0)
-		var r: float = lerpf(11.0, 27.0, ph)
-		var p: Vector2 = (c + Vector2.from_angle(float(i) * PI / 4.0 + PI / 8.0) * r).round()
-		canvas.rc(p.x, p.y, 1, 1, Color(1, 1, 1, 1.0 - ph))
+		var a := PI * 0.125 + float(i) * PI * 0.25
+		pts.append(c + Vector2(cos(a), sin(a)) * r)
+	return pts
 
-# ---------- Trụ đá ở 8 góc bờ hồ ----------
+static func _draw_octagon_poly(canvas: CanvasItem, c: Vector2, r: float, col: Color) -> void:
+	canvas.draw_colored_polygon(_octagon_polygon(c, r), col)
 
-static func _draw_posts(canvas, c: Vector2) -> void:
-	for p in _octagon(c, COPING_A - 1.0):
-		canvas.draw_circle(p + Vector2(0, 1), 2.5, STONE_DARK)
-		canvas.draw_circle(p, 2.0, STONE_LIGHT)
-		canvas.draw_circle(p + Vector2(-0.5, -0.5), 1.0, Color.WHITE)
+# ─── HELPER: CÂY CAU VUA, GHẾ ĐÁ, HÀNG RÀO TỈA ──────────────────────────────
+static func _draw_palm_tree(canvas: CanvasItem, pos: Vector2, s: float = 1.0) -> void:
+	var p := pos
+	canvas.draw_colored_polygon(_oval(p + Vector2(3 * s, 1.5 * s), 7 * s, 3 * s, 12), Color(0, 0, 0, 0.18))
+	var trunk_h := 22.0 * s
+	var tw := 3.0 * s
+	var top := p + Vector2(0, -trunk_h)
+	canvas.draw_rect(Rect2(p.x - tw * 0.5, top.y, tw, trunk_h), Color("a8a296"))
+	canvas.draw_rect(Rect2(p.x - tw * 0.5 + 0.5 * s, top.y, 1.0 * s, trunk_h), Color("dcd6c8"))
+	for k in 5:
+		var ring_y := top.y + float(k + 1) * (trunk_h / 6.0)
+		canvas.draw_line(Vector2(p.x - tw * 0.5, ring_y), Vector2(p.x + tw * 0.5, ring_y), Color("767064"), 1.0)
+	canvas.draw_rect(Rect2(p.x - tw * 0.5, top.y - 3 * s, tw, 3 * s), Color("4aa246"))
+	for a: float in [-3.0, -2.4, -1.8, -1.3, -0.7, -0.15, 0.35, -3.4]:
+		var frond_tip := top + Vector2.from_angle(a) * (14.0 * s) + Vector2(0, 3.5 * s)
+		canvas.draw_line(top, frond_tip, Color("256b2c"), 2.8 * s)
+		canvas.draw_line(top, frond_tip + Vector2(0, -0.8 * s), Color("4fb554"), 1.6 * s)
 
-# ---------- Luống hoa (giữ nguyên như bản cũ) ----------
+static func _draw_neat_hedge(canvas: CanvasItem, x: float, y: float, w: float) -> void:
+	canvas.draw_rect(Rect2(x, y + 5.0, w, 3.0), Color(0, 0, 0, 0.16))
+	canvas.draw_rect(Rect2(x, y, w, 6.0), Color("286b2c"))
+	canvas.draw_rect(Rect2(x, y, w, 2.5), Color("48b34e"))
+	for i in range(2, int(w) - 2, 5):
+		canvas.draw_rect(Rect2(x + float(i), y - 0.5, 3.0, 1.5), Color("6ed874"))
 
-static func _draw_gardens(canvas, center: Vector2) -> void:
-	for x_sign in [-1.0, 1.0]:
-		for y_sign in [-1.0, 1.0]:
-			var p := center + Vector2(72.0 * x_sign, 72.0 * y_sign)
-			var bed := Rect2(p - Vector2(12, 12), Vector2(24, 24))
-			canvas.draw_rect(bed.grow(1), Color("777f78"))
-			canvas.draw_rect(bed, Color("b9a77c"))
-			canvas.draw_rect(bed.grow(-2), Color("4a8a3a"))
-			for angle in [-2.8, -2.0, -1.2, -0.4, 0.4, 1.2, 2.0, 2.8]:
-				var tip := p + Vector2.from_angle(angle) * 8.0 + Vector2(0, 1)
-				canvas.draw_line(p, tip, Color("286d38"), 2.0)
-				canvas.draw_line(p, tip + Vector2(0, -1), Color("75b94f"), 1.0)
-			canvas.rc(p.x - 1, p.y - 1, 2, 2, Color("8a5a32"))
+static func _draw_park_bench(canvas: CanvasItem, pos: Vector2, _rot: float = 0.0) -> void:
+	var p := pos
+	# Bóng đổ
+	canvas.draw_colored_polygon(_oval(p + Vector2(0, 2), 7.0, 2.5, 8), Color(0, 0, 0, 0.20))
+	# Chân ghế
+	canvas.draw_rect(Rect2(p.x - 5, p.y - 3, 2, 4), C_BENCH_LEG)
+	canvas.draw_rect(Rect2(p.x + 3, p.y - 3, 2, 4), C_BENCH_LEG)
+	# Mặt ghế ngồi
+	canvas.draw_rect(Rect2(p.x - 6, p.y - 5, 12, 3), C_BENCH_WOOD)
+	canvas.draw_line(Vector2(p.x - 6, p.y - 5), Vector2(p.x + 6, p.y - 5), Color("c48b52"), 1.0)
+
+static func _oval(c: Vector2, rx: float, ry: float, n: int = 16) -> PackedVector2Array:
+	var pts := PackedVector2Array()
+	for i in n:
+		var a := TAU * float(i) / float(n)
+		pts.append(c + Vector2(cos(a) * rx, sin(a) * ry))
+	return pts
+
+# ─── HỆ THỐNG VA CHẠM (COLLISION) CHÍNH XÁC: CHO PHÉP ĐI TRÊN CẦU VÀO ĐẢO ────
+static func collision_rects(c: Vector2) -> Array[Rect2]:
+	var out: Array[Rect2] = []
+
+	# 1. Bể phun nước trung tâm (vật cản tuyệt đối)
+	out.append(Rect2(c.x - R_FOUNTAIN - 2.0, c.y - R_FOUNTAIN - 2.0, (R_FOUNTAIN + 2.0) * 2.0, (R_FOUNTAIN + 2.0) * 2.0))
+
+	# 2. Các khoang nước của Vành ngoài và Vành trong:
+	# Cầu trục chính dọc: x từ c.x - 7.0 đến c.x + 7.0 (LỐI ĐI THÔNG THOÁNG)
+	# Cầu trục chính ngang: y từ c.y - 7.0 đến c.y + 7.0 (LỐI ĐI THÔNG THOÁNG)
+	# Đảo trung tâm: bán kính 38px quanh tâm (ĐI BỘ TỰ DO)
+	# Vòng thành phân cách: bán kính 56px đến 72px (ĐI BỘ TỰ DO)
+
+	# Chặn các ô nước sâu hình học ở 4 góc phần tư:
+	var quadrants := [
+		Vector2(-1, -1), # Tây Bắc
+		Vector2( 1, -1), # Đông Bắc
+		Vector2(-1,  1), # Tây Nam
+		Vector2( 1,  1)  # Đông Nam
+	]
+
+	for q: Vector2 in quadrants:
+		# Nước vành ngoài ở góc này
+		var w1_x := c.x + (8.0 if q.x > 0 else -R_WATER1_OUT)
+		var w1_y := c.y + (8.0 if q.y > 0 else -R_WATER1_OUT)
+		var w1_w := R_WATER1_OUT - 12.0
+		var w1_h := R_WATER1_OUT - R_STONE_RING - 2.0
+		out.append(Rect2(w1_x, w1_y, w1_w, w1_h))
+
+		# Nước vành trong ở góc này
+		var w2_x := c.x + (8.0 if q.x > 0 else -R_WATER2_OUT)
+		var w2_y := c.y + (8.0 if q.y > 0 else -R_WATER2_OUT)
+		var w2_w := R_WATER2_OUT - 12.0
+		var w2_h := R_WATER2_OUT - R_ISLAND - 2.0
+		out.append(Rect2(w2_x, w2_y, w2_w, w2_h))
+
+	return out
