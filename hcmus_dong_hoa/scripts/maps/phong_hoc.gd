@@ -248,7 +248,7 @@ const ROOM_CONFIGS := {
 	}
 }
 
-const DIRECT_DOORS := ["A", "B", "D", "E", "F", "G"]
+const DIRECT_DOORS := ["A", "D", "E", "F", "G"]
 
 var inside := false
 var _choice_building := ""
@@ -267,6 +267,7 @@ var _room_title := ""
 var _room_sub := ""
 var _teacher_npc: Dictionary = {}
 var _active_npcs: Array = []
+var _has_animated_npcs := false
 
 var _desks: Array = []
 var _seats: Array = []
@@ -366,6 +367,11 @@ func open_classroom(room_key: String = "A") -> void:
 			var item: Dictionary = n.duplicate()
 			item["pos"] = Vector2(rx, ry)
 			_active_npcs.append(item)
+	_has_animated_npcs = false
+	for npc in _active_npcs:
+		if bool(npc.get("animated", false)) or bool(npc.get("animate", false)):
+			_has_animated_npcs = true
+			break
 	_choice_building = ""
 	inside = true
 	_closing = false
@@ -476,7 +482,7 @@ func _handle_room_key(k: InputEventKey) -> void:
 				_stand_up()
 				get_viewport().set_input_as_handled()
 			return
-		if pk == KEY_E or k.keycode == KEY_ESCAPE or pk == KEY_W or pk == KEY_A or pk == KEY_S or pk == KEY_D:
+		if pk == KEY_E or k.keycode == KEY_ESCAPE or pk == KEY_W or pk == KEY_A or pk == KEY_S or pk == KEY_D or pk == KEY_UP or pk == KEY_DOWN or pk == KEY_LEFT or pk == KEY_RIGHT:
 			_stand_up()
 			get_viewport().set_input_as_handled()
 		return
@@ -492,36 +498,40 @@ func _handle_room_key(k: InputEventKey) -> void:
 
 func _process(delta: float) -> void:
 	if _choice_building != "":
-		_painter.queue_redraw()
 		return
 	if not inside:
 		return
 	_clock += delta
 	if _closing:
 		_fade = minf(_fade + delta * 4.0, 1.0)
+		_painter.queue_redraw()
 		if _fade >= 1.0:
 			finish()
 			return
 	else:
 		_fade = maxf(_fade - delta * 3.0, 0.0)
 		if _seated < 0:
-			_walk(delta)
+			if _walk(delta):
+				_painter.queue_redraw()
 		elif _di_hoc_f != null:
 			_di_hoc_f.process_classroom_sitting(delta)
-	_painter.queue_redraw()
+		if _fade > 0.0:
+			_painter.queue_redraw()
+		elif _has_animated_npcs:
+			_painter.queue_redraw()
 
-func _walk(delta: float) -> void:
+func _walk(delta: float) -> bool:
 	var v := Vector2.ZERO
-	if Input.is_physical_key_pressed(KEY_W):
+	if Input.is_physical_key_pressed(KEY_W) or Input.is_physical_key_pressed(KEY_UP):
 		v.y -= 1.0
-	if Input.is_physical_key_pressed(KEY_S):
+	if Input.is_physical_key_pressed(KEY_S) or Input.is_physical_key_pressed(KEY_DOWN):
 		v.y += 1.0
-	if Input.is_physical_key_pressed(KEY_A):
+	if Input.is_physical_key_pressed(KEY_A) or Input.is_physical_key_pressed(KEY_LEFT):
 		v.x -= 1.0
-	if Input.is_physical_key_pressed(KEY_D):
+	if Input.is_physical_key_pressed(KEY_D) or Input.is_physical_key_pressed(KEY_RIGHT):
 		v.x += 1.0
 	if v == Vector2.ZERO:
-		return
+		return false
 	v = v.normalized() * WALK_SPEED * delta
 	if absf(v.x) > absf(v.y):
 		_face = 2 if v.x < 0.0 else 3
@@ -534,7 +544,10 @@ func _walk(delta: float) -> void:
 	var b := a + Vector2(0.0, v.y)
 	if _blocked(b):
 		b = a
+	if b == _pos:
+		return false
 	_pos = b
+	return true
 
 func _blocked(p: Vector2) -> bool:
 	if p.x < 12.0 or p.x > VIEW.x - 12.0 or p.y < 60.0 or p.y > FLOOR_BOTTOM - 2.0:
@@ -581,6 +594,7 @@ func _sit(i: int) -> void:
 	var friend_lbl: String = _adjacent_friend_label(i)
 	if _di_hoc_f != null:
 		_di_hoc_f.notify_seat_entered(_room_key, _room_title, friend_lbl)
+	_painter.queue_redraw()
 
 func _stand_up() -> void:
 	if _seated < 0:
@@ -590,6 +604,7 @@ func _stand_up() -> void:
 	_seated = -1
 	if _di_hoc_f != null:
 		_di_hoc_f.notify_seat_exited()
+	_painter.queue_redraw()
 
 func _paint() -> void:
 	var p := _painter
@@ -615,12 +630,13 @@ func _paint() -> void:
 				_paint_bench_desk(p, it[2])
 			1:
 				var npc: Dictionary = it[2]
+				var npc_step: float = _clock if bool(npc.get("animated", false)) or bool(npc.get("animate", false)) else 0.0
 				p.draw_person(
 					npc.pos,
 					Color(str(npc.get("shirt", "3d5a80"))),
 					Color(str(npc.get("hair", "1b1b1b"))),
 					1,
-					0.0,
+					npc_step,
 					bool(npc.get("uni", true)),
 					bool(npc.get("long", false)),
 					bool(npc.get("pack", false))
@@ -799,8 +815,6 @@ func draw_front_layer() -> void:
 	match b:
 		"A":
 			label = "Bấm [E] để vào Giảng đường Tòa A"
-		"B":
-			label = "Bấm [E] để vào Giảng đường Tòa B"
 		"D":
 			label = "Bấm [E] để vào Tòa D (TH CSLT / Toán rời rạc)"
 		"E":

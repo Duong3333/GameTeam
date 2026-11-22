@@ -1,22 +1,45 @@
 extends "res://scripts/draw/newcharacters.gd"
 # HIỂN THỊ KHUÔN VIÊN: sắp xếp chiều sâu, hiệu ứng trời và minimap.
 
+const BG_MARGIN := 400.0
+const BG_TRIGGER := 120.0
+
 func _draw() -> void:
 	var cc := cam.get_screen_center_position()
 	view = Rect2(cc - Vector2(262, 152), Vector2(524, 304))
-	draw_ground()
-	draw_dieuhanh()
+	_sync_static_bg()
+
+	# Hoi truong B van duoc ve boi Main vi draw_hall_b_exterior() dung game.rc().
 	for b in BUILDINGS:
-		draw_building(b)
-	for k in KIOSKS:
-		draw_kiosk(k)
-	for bk in bikes:
-		draw_bike(bk)
+		if str(b[0]) == "B":
+			draw_building(b)
+			break
+	draw_fountain_dynamic()
 	draw_sorted_items()
 	for f in features:
 		f.draw_front_layer()
 	draw_sky_effects()
 	draw_minimap()
+
+func _sync_static_bg() -> void:
+	if _static_bg == null:
+		return
+	var world_rect := Rect2(Vector2.ZERO, WORLD)
+	var want := view.grow(BG_TRIGGER).intersection(world_rect)
+	if _bg_rect.has_area() and _bg_rect.encloses(want):
+		return
+	_bg_rect = view.grow(BG_MARGIN).intersection(world_rect)
+	_static_bg.view = _bg_rect
+	_static_bg.queue_redraw()
+
+func invalidate_static_bg() -> void:
+	_bg_rect = Rect2()
+	if _static_bg != null:
+		_static_bg.queue_redraw()
+
+func draw_fountain_dynamic() -> void:
+	if view.intersects(Rect2(FOUNTAIN_CENTER - Vector2(130, 130), Vector2(260, 260))):
+		SE.draw_fountain_plaza(self, FOUNTAIN_CENTER, 110.0, clock)
 
 func draw_sorted_items() -> void:
 	var items: Array = []
@@ -24,10 +47,6 @@ func draw_sorted_items() -> void:
 		items.append([float(t[1]), 0, t])
 	for n in npcs:
 		items.append([n.pos.y, 1, n])
-	if multiplayer_manager != null:
-		var remote_players: Dictionary = multiplayer_manager.get_other_players()
-		for remote in remote_players.values():
-			items.append([remote.pos.y, 5, remote])
 	for l in lamps:
 		items.append([l.y, 3, l])
 	for bn in benches:
@@ -52,25 +71,17 @@ func draw_sorted_items() -> void:
 				draw_quiz_marker(n)
 			if n.say_t > 0.0:
 				draw_speech(n)
-		elif it[1] == 5:
-			var remote: Dictionary = it[2]
-			var remote_pos: Vector2 = remote.pos
-			if not view.has_point(remote_pos):
-				continue
-			draw_person(remote_pos, Color("7dc8ff"), Color("3b2a1a"), remote.facing, remote.anim, true, false, false)
-			var peer_id: int = remote.get("id", 0)
-			ctext("Chủ phòng" if peer_id == 1 else "Người chơi %d" % peer_id, remote_pos.x - 36, remote_pos.y - 28, 72, 8, Color("9fe3ff"))
 		else:
 			draw_person(player, Color.WHITE, Color("1b1b1b"), facing, anim, true, false, true)
 			ctext("Bạn", player.x - 15, player.y - 28, 30, 8, Color("ffd23f"))
 
 func draw_sky_effects() -> void:
 	for c in clouds:
+		if not view.grow(c.r).has_point(Vector2(c.x, c.y)):
+			continue
 		draw_set_transform(Vector2(c.x, c.y), 0.0, Vector2(1.0, 0.5))
 		draw_circle(Vector2.ZERO, c.r, Color(0, 0, 0, 0.06))
 		draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
-	for p in petals:
-		rc(p.pos.x, p.pos.y, 2, 2, Color("ff5a4d"))
 
 func draw_minimap() -> void:
 	var o := cam.get_screen_center_position() - Vector2(240, 135) + Vector2(376, 40)
@@ -87,6 +98,3 @@ func draw_minimap() -> void:
 	if int(clock * 3.0) % 2 == 0:
 		rc(o.x + player.x * sc - 1.5, o.y + player.y * sc - 1.5, 3, 3, Color.WHITE)
 	rc(o.x + player.x * sc - 0.5, o.y + player.y * sc - 0.5, 1, 1, Color("e5322d"))
-	if multiplayer_manager != null:
-		for remote in multiplayer_manager.get_other_players().values():
-			rc(o.x + remote.pos.x * sc - 1.0, o.y + remote.pos.y * sc - 1.0, 2, 2, Color("36d9ff"))

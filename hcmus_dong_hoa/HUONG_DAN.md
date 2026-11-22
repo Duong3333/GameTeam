@@ -2,22 +2,9 @@
 
 ## Chạy game
 1. Mở Godot 4.7, bấm Import, chọn file `project.godot` trong thư mục này.
-2. Bấm nút Play (hoặc F5). Dùng **W A S D** để đi, **E** để vào/ra cửa khi đứng gần công trình.
+2. Bấm nút Play (hoặc F5). Dùng **W A S D** hoặc các phím **mũi tên** để đi, **E** để vào/ra cửa khi đứng gần công trình.
 3. Khi Godot lần đầu mở có thể mất vài giây để nhập (import) file font.
 4. Nếu có lỗi đỏ ở ô Output, chép nguyên dòng lỗi gửi lại để sửa.
-
-## Chơi online qua relay server
-1. Khi mở game, chọn **Chơi đơn** hoặc **Multiplayer**. Form nhập server chỉ xuất hiện sau khi chọn Multiplayer; dùng nút **Đổi chế độ** ở góc trên trái để ẩn/mở lại lựa chọn hoặc quay về chơi đơn. Chuyển về chơi đơn sẽ ngắt phòng đang kết nối.
-2. Cần chạy relay server trên máy có IP công khai (ví dụ VPS). Trên máy đã cài Godot 4.7, mở thư mục `hcmus_dong_hoa` và chạy:
-   ```powershell
-   godot --headless --path . -- --multiplayer-server --port=2456
-   ```
-   Nếu không truyền `--port`, server dùng cổng UDP `2456`.
-3. Mở cổng **UDP 2456** trong firewall/security group của máy chủ. Không cần mở cổng trên router của người chơi.
-4. Cả hai người mở cùng phiên bản game, chọn Multiplayer, nhập cùng IP công khai hoặc tên miền của relay server và cùng cổng. Một người bấm **Tạo phòng**, rồi gửi mã phòng hiện trong trạng thái cho bạn.
-5. Người còn lại nhập mã đó và bấm **Tham gia**. `127.0.0.1` chỉ dùng khi game client và relay server chạy trên cùng máy.
-
-Relay server cần luôn chạy trong lúc chơi; chỉ sửa game client không tự cung cấp máy chủ công khai. Bản thử hiện đồng bộ vị trí/hướng nhân vật trong khuôn viên. Phòng bên trong, quiz, NPC, thời gian và tiến trình khác chưa được đồng bộ; chưa có tài khoản hay xác thực.
 
 ## Có gì trong game
 - Bản đồ theo sơ đồ cơ sở: Tòa A, B, C, D, E (dãy phía tây), đài phun nước và vườn, Tòa F, G (phía đông), Nhà Thể Dục, Nhà Điều hành ở phía nam, bãi giữ xe, cổng trường ở Đường T1.
@@ -51,10 +38,12 @@ scripts/
   features/registry.gd     registry gameplay dùng chung (quiz, HUD...)
   features/_mau_feature.gd file mẫu để copy khi làm feature mới (không chạy trong game)
   features/feature.gd      lớp nền cho chức năng mới
-  systems/multiplayer_manager.gd client online, mã phòng và relay server chuyên dụng
   features/building_doors.gd đi vào / ra tòa nhà, nhà thể dục, nhà điều hành, căn tin
   features/math_quiz.gd    quiz luyện tập và kỳ thi với NPC
   features/admin_time.gd   công cụ admin tua tuần, thứ và giờ trong game
+  features/danhnhau.gd     bấm H chọc/trêu NPC (không đối kháng)
+  features/khoc.gd         cơ chế khóc dùng chung cho người chơi và NPC
+  features/daily_summary.gd tổng kết GPA và điểm rèn luyện, tự mở khi sang ngày mới hoặc nhấn F9
   systems/math_questions.gd ngân hàng và bộ tạo câu hỏi quiz
 assets/
   audio/                   bỏ file âm thanh vào đây
@@ -138,6 +127,12 @@ Chép ảnh logo trường (vuông, 32x32 hoặc 64x64) vào thư mục `assets`
 ## Làm việc nhóm bằng Git
 Xem `HUONG_DAN_GIT.md`.
 
+## Đánh trêu chọc NPC và nhân vật khóc
+- Đứng gần NPC rồi bấm **H** để đánh trêu; giữ H để đấm liên hoàn bằng hai tay.
+- NPC bị đánh có thể khóc hoặc giận. NPC giận đủ số cú đánh sẽ nói một tràng rồi bỏ đi tạm thời và xuất hiện lại; Cô Toán không biến mất.
+- Bấm **C** để nhân vật của bạn khóc, bấm lại để nín. Nhân vật cũng tự khóc khi GPA bị tụt.
+- Code ở `scripts/features/danhnhau.gd` và `scripts/features/khoc.gd`. Cả hai feature được đăng ký sau `newcharacters.gd` trong `scripts/features/registry.gd`.
+- Đây là tính năng trêu vui: không có máu, sát thương hoặc chế độ đối kháng.
 
 ## Quiz ôn đề
 - Đến NPC **Cô Toán** có dấu `?` cạnh Tòa F, nhấn **E** để mở quiz rồi chọn Cơ sở lập trình hoặc Vi tích phân 1.
@@ -146,3 +141,7 @@ Xem `HUONG_DAN_GIT.md`.
 - Nhấn **Esc** để mở menu tạm dừng, chọn **Thời gian** để mở bảng Admin nhỏ giữa màn hình; chọn tuần, thứ, giờ rồi nhấn **CHUYỂN TỚI**. Bảng thời gian tạm dừng game; nhấn **ĐÓNG** để quay lại menu Esc.
 - Chỉ câu đã xác minh với `grading_method: exact` được tự chấm. GPA chỉ bị trừ nếu toàn bộ đề tự chấm được; ngân hàng hiện tại còn câu chấm thủ công nên không làm giảm GPA.
 - Xem `HUONG_DAN_QUIZ.md` và `HUONG_DAN_HOC_MATH_QUIZ.md` để biết cách chơi và cách đọc code.
+
+## Nền tĩnh khuôn viên
+- Nền không chuyển động như cỏ, đường, tòa nhà và kiosk được vẽ trên node nền tĩnh, chỉ vẽ lại khi camera gần ra khỏi vùng đệm đã lưu.
+- Đài phun nước, cây, NPC, người chơi, mây và minimap vẫn được vẽ ở lớp động.

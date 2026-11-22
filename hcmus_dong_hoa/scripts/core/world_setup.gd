@@ -163,7 +163,7 @@ func setup_hud() -> void:
 	hud.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	hud.custom_minimum_size = Vector2(300, 0)
 	var hint := make_label(hl, Vector2(6, 254), 9)
-	hint.text = "W A S D: di chuyển   Tab: sổ tay   E: câu cá (gần hồ)   B: sổ cá"
+	hint.text = "W A S D / Mũi tên: di chuyển   Tab: sổ tay   F9: tổng kết ngày"
 
 func make_label(parent: Node, pos: Vector2, sz: int) -> Label:
 	var l := Label.new()

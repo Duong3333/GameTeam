@@ -20,6 +20,7 @@ var stats: Node
 var font: Font
 var canvas: Control
 var popups: Array = []   # mỗi phần tử: {"text": chữ, "color": màu, "t": số giây còn lại}
+var _last_draw_state: Array = []
 
 func _ready() -> void:
 	stats = game.stats
@@ -34,10 +35,28 @@ func _ready() -> void:
 	canvas.draw.connect(_on_draw)   # khi canvas cần vẽ thì gọi _on_draw
 
 func _process(delta: float) -> void:
+	var had_popups := not popups.is_empty()
 	for p in popups:
 		p.t -= delta
 	popups = popups.filter(func(p): return p.t > 0.0)   # bỏ chữ đã hết giờ
-	canvas.queue_redraw()                              # yêu cầu vẽ lại mỗi khung hình
+	var state := _draw_state()
+	if had_popups or state != _last_draw_state:
+		canvas.queue_redraw()
+	_last_draw_state = state
+
+func _draw_state() -> Array:
+	var minute := int(game.game_min)
+	return [
+		game.day,
+		minute,
+		stats.drl_text(),
+		stats.drl_ratio(),
+		stats.gpa_text(),
+		stats.gpa_ratio(),
+		Schedule.date_text(game.day),
+		Schedule.next_class_text(game.day, game.game_min),
+		Schedule.upcoming_midterm_text(game.day)
+	]
 
 func _unhandled_input(event: InputEvent) -> void:
 	if not debug_keys:

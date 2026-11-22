@@ -164,13 +164,6 @@ func draw_front_layer() -> void:
 	var ay := by + 2.5
 	_draw_pixel_atm_logo(ax, ay)
 
-	# 7. Đèn trần buồng ATM ban đêm / chiều tối
-	if "game_min" in game:
-		var hour: float = game.game_min / 60.0
-		if hour > 16.0 or hour < 7.5:
-			# Quầng sáng vàng dịu trước cửa buồng
-			game.draw_circle(Vector2(bx + bw * 0.5, by + bh + 4), 16.0, Color(1.0, 0.95, 0.6, 0.15))
-			game.draw_circle(Vector2(bx + bw * 0.5, by + bh + 4), 8.0, Color(1.0, 0.98, 0.8, 0.25))
 
 	# 8. Prompt tương tác [E] khi người chơi đứng gần
 	if not active and _is_player_near() and not game.is_busy():

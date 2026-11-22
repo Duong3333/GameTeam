@@ -7,23 +7,36 @@ const WATER_MODULE  := preload("res://scripts/maps/ho_nuoc.gd")
 const SE            := preload("res://scripts/maps/scenery_elements.gd")
 const BX            := preload("res://scripts/maps/bai_xe.gd")
 
+# Khi true, draw_ground() bo qua dai phun nuoc (ve bang clock nen khong duoc bake tinh).
+var skip_fountain := false
+
 # ─── NỀN CỎ VÀ HOA ────────────────────────────────────────────────────────────
 func draw_grass() -> void:
-	draw_rect(view, Color("5a9e3e"))
-	for tx in range(floori(view.position.x / 16.0), ceili(view.end.x / 16.0)):
-		for ty in range(floori(view.position.y / 16.0), ceili(view.end.y / 16.0)):
-			if (tx + ty) % 2 == 0:
-				rc(tx * 16, ty * 16, 16, 16, Color(1, 1, 1, 0.03))
-			if hs(tx, ty) < 14:
-				rc(tx * 16 + 3, ty * 16 + 6, 10, 5, Color(0, 0, 0, 0.05))
-	for t in tufts:
-		if view.has_point(t):
-			rc(t.x, t.y, 2, 3, Color("84c764") if int(t.x + t.y) % 2 == 0 else Color("559040"))
-			rc(t.x + 2, t.y + 1, 1, 2, Color("84c764"))
-	for f in flowers:
-		if view.has_point(f[0]):
-			rc(f[0].x, f[0].y, 2, 2, f[1])
-			rc(f[0].x, f[0].y + 2, 1, 2, Color("3f7a35"))
+	if grass_texture == null:
+		# Compatibility fallback if setup was skipped or resources were reset.
+		draw_rect(view, Color("5a9e3e"))
+		for tx in range(floori(view.position.x / 16.0), ceili(view.end.x / 16.0)):
+			for ty in range(floori(view.position.y / 16.0), ceili(view.end.y / 16.0)):
+				if (tx + ty) % 2 == 0:
+					rc(tx * 16, ty * 16, 16, 16, Color(1, 1, 1, 0.03))
+				if hs(tx, ty) < 14:
+					rc(tx * 16 + 3, ty * 16 + 6, 10, 5, Color(0, 0, 0, 0.05))
+		for t in tufts:
+			if view.has_point(t):
+				rc(t.x, t.y, 2, 3, Color("84c764") if int(t.x + t.y) % 2 == 0 else Color("559040"))
+				rc(t.x + 2, t.y + 1, 1, 2, Color("84c764"))
+		for f in flowers:
+			if view.has_point(f[0]):
+				rc(f[0].x, f[0].y, 2, 2, f[1])
+				rc(f[0].x, f[0].y + 2, 1, 2, Color("3f7a35"))
+		return
+	var visible := view.intersection(Rect2(Vector2.ZERO, WORLD))
+	if visible.size.x > 0.0 and visible.size.y > 0.0:
+		draw_texture_rect_region(
+			grass_texture,
+			visible,
+			Rect2(visible.position, visible.size)
+		)
 
 func hedge(x: float, y: float, w: float) -> void:
 	rc(x, y + 1, w, 7, Color("2a6f33"))
@@ -40,27 +53,12 @@ func flowerbed(x: float, y: float, w: float, h: float) -> void:
 			var k := hs(i + int(x), j + int(y))
 			rc(x + 2 + i, y + 2 + j, 2, 2, [Color("ff6b8a"), Color("ffd23f"), Color("ffffff"), Color("ff9a3c")][k % 4])
 
-# ─── ĐÈN ĐƯỜNG CÓ HIỆU ỨNG BAN ĐÊM ─────────────────────────────────────────
+# ─── ĐÈN ĐƯỜNG ───────────────────────────────────────────────────────────────
 func draw_lamp(p: Vector2) -> void:
 	shadow(p + Vector2(3, 0), 5.0)
 	rc(p.x - 1, p.y - 24, 2, 24, Color("3a3f4a"))
 	rc(p.x - 3, p.y - 27, 6, 4, Color("3a3f4a"))
-	var hour := game_min / 60.0
-	if hour <= 15.7:
-		rc(p.x - 2, p.y - 26, 4, 2, Color("c9d3da"))
-		return
-	var power := clampf((hour - 15.7) / 0.6, 0.0, 1.0)
-	var pulse := 1.0 + sin(clock * 3.0 + p.x * 0.1) * 0.04
-	var bulb := p + Vector2(0, -24)
-	draw_colored_polygon(lake_poly(p + Vector2(0, 2), 34.0 * pulse, 13.0 * pulse, 24), Color(1.0, 0.88, 0.45, 0.12 * power))
-	draw_colored_polygon(lake_poly(p + Vector2(0, 2), 21.0 * pulse, 8.0 * pulse, 24), Color(1.0, 0.92, 0.55, 0.18 * power))
-	draw_circle(bulb, 40.0 * pulse, Color(1.0, 0.9, 0.5, 0.07 * power))
-	draw_circle(bulb, 30.0 * pulse, Color(1.0, 0.9, 0.5, 0.10 * power))
-	draw_circle(bulb, 21.0 * pulse, Color(1.0, 0.92, 0.55, 0.16 * power))
-	draw_circle(bulb, 12.0 * pulse, Color(1.0, 0.95, 0.65, 0.30 * power))
-	draw_circle(bulb, 6.0, Color(1.0, 0.98, 0.8, 0.75 * power))
-	rc(p.x - 2, p.y - 26, 4, 2, Color("fff1a8").lerp(Color.WHITE, 0.4 * power))
-	rc(p.x - 1, p.y - 25, 2, 1, Color.WHITE)
+	rc(p.x - 2, p.y - 26, 4, 2, Color("c9d3da"))
 
 func draw_bench(p: Vector2) -> void:
 	shadow(p + Vector2(0, 1), 11.0)
@@ -192,7 +190,8 @@ func draw_ground() -> void:
 		ctext("BÃI GIỮ XE MÁY SỐ 2", p2.position.x, p2.end.y - 10, p2.size.x, 9, Color.WHITE)
 
 	# ── QUẢNG TRƯỜNG ĐÀI PHUN NƯỚC (giữa tòa E và F) ──
-	SE.draw_fountain_plaza(self, FOUNTAIN_CENTER, 110.0, clock)
+	if not skip_fountain:
+		SE.draw_fountain_plaza(self, FOUNTAIN_CENTER, 110.0, clock)
 	# biển "HỒ SINH VIÊN"
 	var sx := FOUNTAIN_CENTER.x
 	var sy := FOUNTAIN_CENTER.y + 128.0
@@ -221,7 +220,6 @@ func draw_ground() -> void:
 		rc(GATE_X, int(GATE_Y) - 20 + i * 7, GATE_W, 3, Color(1, 1, 1, 0.8))
 	paved(Rect2(60, 1300, 100, 60), Color("9096a0"))
 	draw_t1_strip()
-	draw_side_lane()
 	draw_school_gate()
 	# đường phố ngoài cổng
 	asphalt(Rect2(0, GATE_Y + 14, WORLD.x, 36))
@@ -332,16 +330,6 @@ func draw_gate_booth() -> void:
 	rc(r.position.x - 4,  r.position.y - 7, r.size.x + 8, 8, Color("4a4f57"))
 	rc(r.position.x - 4,  r.position.y - 7, r.size.x + 8, 2, Color("6e747b"))
 	ctext("Bảo vệ", r.position.x - 10, r.end.y + 14, 60, 8, Color.WHITE)
-
-func draw_side_lane() -> void:
-	if not view.intersects(LANE_SW.grow(16.0)):
-		return
-	asphalt(LANE_SW)
-	rc(LANE_SW.position.x, LANE_SW.position.y - 2.0, LANE_SW.size.x, 2, Color("b9b2a5"))
-	var mid := LANE_SW.position.y + LANE_SW.size.y / 2.0 - 1.0
-	for x in range(int(LANE_SW.position.x) + 10, int(LANE_SW.end.x) - 20, 36):
-		rc(x, mid, 18, 2, Color("e8e8e8"))
-	paved(Rect2(LANE_SW.position.x, LANE_SW.end.y, LANE_SW.size.x - 10.0, 6), Color("dccaa0"))
 
 func draw_national_flag(top_left: Vector2, w: float = 24.0, h: float = 16.0) -> void:
 	rc(top_left.x, top_left.y, w, h, Color("da251d"))

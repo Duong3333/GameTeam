@@ -7,7 +7,6 @@ extends "res://scripts/maps/campus_overlay.gd"
 
 const Feature := preload("res://scripts/features/feature.gd")
 const AudioManager := preload("res://scripts/systems/audio_manager.gd")
-const MultiplayerManager := preload("res://scripts/systems/multiplayer_manager.gd")
 const Registry := preload("res://scripts/features/registry.gd")
 const MapRegistry := preload("res://scripts/maps/registry.gd")
 const StudentStats := preload("res://scripts/features/student_stats.gd")
@@ -18,19 +17,15 @@ func _ready() -> void:
 	add_child(stats)
 	audio = AudioManager.new()
 	add_child(audio)
-	audio.play_music("xuongrongpiano")
+	# Nhạc piano chỉ phát khi vào Nhà Điều hành (do nha_dieu_hanh.gd kích hoạt).
+	# Ngoài trời không có nhạc nền — chỉ tiếng bước chân và âm thanh khuôn viên.
 	setup_features()
-	multiplayer_manager = MultiplayerManager.new()
-	multiplayer_manager.name = "MultiplayerManager"
-	multiplayer_manager.game = self
-	add_child(multiplayer_manager)
 
 func _physics_process(delta: float) -> void:
-	if multiplayer_manager != null and multiplayer_manager.is_connected_to_session():
-		multiplayer_manager.physics_tick(delta)
-	elif not is_busy():
+	if not is_busy():
 		update_player(delta)
-	update_npcs(delta)
+	if _outdoor_sim_needed():
+		update_npcs(delta)
 
 func _process(delta: float) -> void:
 	game_min += delta * TIME_SCALE
@@ -39,11 +34,28 @@ func _process(delta: float) -> void:
 		day += 1
 	cam.position = player
 	clock += delta
-	update_ambient(delta)
-	update_bikes(delta)
 	update_daylight()
 	update_hud()
-	queue_redraw()
+	# Tối ưu: khi đang ở TRONG một công trình (hội trường B, căn tin, thư viện, phòng học...), nội thất có CanvasLayer
+	# riêng phủ kín màn hình nên không ai nhìn thấy khuôn viên -> không cập nhật mây và không vẽ lại khuôn viên.
+	# Ngoài trời vẫn vẽ mỗi khung hình vì NPC, mây, cờ, nước phun luôn chuyển động.
+	if not _is_indoors():
+		update_ambient(delta)
+		queue_redraw()
+
+# true khi có module bản đồ nào đang ở trạng thái "inside" (xem biến inside trong từng file maps/*.gd)
+func _is_indoors() -> bool:
+	for f in features:
+		if f.get("inside") == true:
+			return true
+	return false
+
+# Có cần cập nhật NPC ngoài trời không? Đang ở trong nhà thì không ai nhìn thấy -> bỏ qua, trừ module có cờ needs_outdoor_npcs (căn tin).
+func _outdoor_sim_needed() -> bool:
+	for f in features:
+		if f.get("inside") == true:
+			return f.get("needs_outdoor_npcs") == true
+	return true
 
 # Tua nhanh để thử/demo: sang n ngày sau, bắt đầu lại từ 7:00
 func skip_days(n: int) -> void:

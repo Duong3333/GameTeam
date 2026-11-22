@@ -4,9 +4,6 @@ extends "res://scripts/maps/campus_setup.gd"
 func rc(x: float, y: float, w: float, h: float, c: Color) -> void:
 	draw_rect(Rect2(x, y, w, h), c)
 
-func hs(a: int, b: int) -> int:
-	return absi((a * 73856093) ^ (b * 19349663)) % 100
-
 func shadow(p: Vector2, rx: float) -> void:
 	draw_set_transform(p, 0.0, Vector2(1.0, 0.4))
 	draw_circle(Vector2.ZERO, rx, Color(0, 0, 0, 0.28))

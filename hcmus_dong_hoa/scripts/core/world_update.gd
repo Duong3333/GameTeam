@@ -3,13 +3,13 @@ extends "res://scripts/core/game_state.gd"
 
 func update_player(delta: float) -> void:
 	var v := Vector2.ZERO
-	if Input.is_physical_key_pressed(KEY_W):
+	if Input.is_physical_key_pressed(KEY_W) or Input.is_physical_key_pressed(KEY_UP):
 		v.y -= 1.0
-	if Input.is_physical_key_pressed(KEY_S):
+	if Input.is_physical_key_pressed(KEY_S) or Input.is_physical_key_pressed(KEY_DOWN):
 		v.y += 1.0
-	if Input.is_physical_key_pressed(KEY_A):
+	if Input.is_physical_key_pressed(KEY_A) or Input.is_physical_key_pressed(KEY_LEFT):
 		v.x -= 1.0
-	if Input.is_physical_key_pressed(KEY_D):
+	if Input.is_physical_key_pressed(KEY_D) or Input.is_physical_key_pressed(KEY_RIGHT):
 		v.x += 1.0
 	if v != Vector2.ZERO:
 		v = v.normalized() * SPEED
@@ -101,8 +101,6 @@ func update_daylight() -> void:
 	var h := game_min / 60.0
 	if h < 8.5:
 		tint.color = Color(0.7, 0.8, 1.0, (8.5 - h) / 1.5 * 0.18)
-	elif h > 15.0:
-		tint.color = Color(1.0, 0.5, 0.15, clampf((h - 15.0) / 2.0, 0.0, 1.0) * 0.3)
 	else:
 		tint.color = Color(1, 1, 1, 0)
 

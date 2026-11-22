@@ -77,6 +77,7 @@ var _face := 1                # 0 xuống, 1 lên, 2 trái, 3 phải (giống ga
 var _anim := 0.0
 var _clock := 0.0
 var _fade := 0.0
+var _piano_beat := 0.0    # bộ đếm nhịp cho SFX tiếng phím đàn
 var _closing := false
 var _banner := 0.0            # thời gian còn lại của biển "NHÀ ĐIỀU HÀNH" khi mới vào
 var _say := ""
@@ -188,8 +189,11 @@ func begin() -> void:
 	_fade = 1.0
 	_banner = 3.0
 	_say_t = 0.0
+	_piano_beat = 0.0
 	_layer.visible = true
 	game.hud.visible = false   # ẩn dòng tên khu vực của thế giới ngoài trời khi đang ở trong sảnh
+	# 🎵 Nhạc piano bắt đầu khi vào sảnh Nhà Điều hành — cô gái đang chơi đàn!
+	game.audio.play_music("xuongrongpiano")
 
 func finish() -> void:
 	super()
@@ -198,6 +202,8 @@ func finish() -> void:
 	_say_t = 0.0
 	_layer.visible = false
 	game.hud.visible = true
+	# 🎵 Nhạc dừng khi ra khỏi sảnh
+	game.audio.stop_music()
 
 func _unhandled_input(event: InputEvent) -> void:
 	if not (event is InputEventKey):
@@ -235,17 +241,24 @@ func _process(delta: float) -> void:
 	else:
 		_fade = maxf(_fade - delta * 3.0, 0.0)
 		_walk(delta)
+		# 🎵 SFX nhịp phím đàn — đồng bộ với animation tay (hy = sin(_clock*1.35))
+		# Tay nhấn xuống khi sin vượt qua 0 theo hướng âm → phát tiếng "click" nhẹ
+		_piano_beat += delta
+		var beat_period := TAU / 1.35  # ~4.65 giây / chu kỳ tay
+		if _piano_beat >= beat_period * 0.5:
+			_piano_beat = fmod(_piano_beat, beat_period * 0.5)
+			game.audio.play_sfx("click")  # dùng lại click.wav có sẵn
 	_painter.queue_redraw()
 
 func _walk(delta: float) -> void:
 	var v := Vector2.ZERO
-	if Input.is_physical_key_pressed(KEY_W):
+	if Input.is_physical_key_pressed(KEY_W) or Input.is_physical_key_pressed(KEY_UP):
 		v.y -= 1.0
-	if Input.is_physical_key_pressed(KEY_S):
+	if Input.is_physical_key_pressed(KEY_S) or Input.is_physical_key_pressed(KEY_DOWN):
 		v.y += 1.0
-	if Input.is_physical_key_pressed(KEY_A):
+	if Input.is_physical_key_pressed(KEY_A) or Input.is_physical_key_pressed(KEY_LEFT):
 		v.x -= 1.0
-	if Input.is_physical_key_pressed(KEY_D):
+	if Input.is_physical_key_pressed(KEY_D) or Input.is_physical_key_pressed(KEY_RIGHT):
 		v.x += 1.0
 	if v == Vector2.ZERO:
 		return

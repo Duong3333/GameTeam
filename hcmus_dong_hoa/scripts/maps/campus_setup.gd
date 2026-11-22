@@ -1,5 +1,13 @@
 extends "res://scripts/maps/campus_update.gd"
-# DỰNG KHUÔN VIÊN GỐC: va chạm bản đồ, cây, NPC, xe máy, đèn, camera và HUD.
+# DỰNG KHUÔN VIÊN GỐC: va chạm bản đồ, cây, NPC, đèn, camera và HUD.
+
+const CLOUD_COUNT := 3   # số đám mây trôi trên khuôn viên (trước đây 8; tăng lên nếu muốn nhiều mây hơn)
+
+var _static_bg
+var _bg_rect := Rect2()
+
+func hs(a: int, b: int) -> int:
+	return absi((a * 73856093) ^ (b * 19349663)) % 100
 
 func setup_world() -> void:
 	load_resources()
@@ -7,11 +15,47 @@ func setup_world() -> void:
 	setup_collision()
 	setup_trees()
 	spawn_npcs()
-	spawn_bikes()
 	setup_decor()
+	_bake_static_grass()
 	setup_camera()
 	setup_overlay()
 	setup_hud()
+
+# Bake the deterministic grass, tufts, and flowers once so the outdoor renderer
+# does not repeat hundreds of draw calls every frame.
+func _bake_static_grass() -> void:
+	var image := Image.create(int(WORLD.x), int(WORLD.y), false, Image.FORMAT_RGBA8)
+	var base := Color("5a9e3e")
+	image.fill(base)
+
+	for tx in range(0, ceili(WORLD.x / 16.0)):
+		for ty in range(0, ceili(WORLD.y / 16.0)):
+			var tile := Rect2i(tx * 16, ty * 16, 16, 16)
+			tile = Rect2i(
+				tile.position,
+				Vector2i(
+					mini(tile.size.x, int(WORLD.x) - tile.position.x),
+					mini(tile.size.y, int(WORLD.y) - tile.position.y)
+				)
+			)
+			if (tx + ty) % 2 == 0:
+				image.fill_rect(tile, base.lerp(Color.WHITE, 0.03))
+			if hs(tx, ty) < 14:
+				image.fill_rect(Rect2i(tx * 16 + 3, ty * 16 + 6, 10, 5), base.lerp(Color.BLACK, 0.05))
+
+	for t in tufts:
+		var p: Vector2 = t
+		var tufty := Color("84c764") if int(p.x + p.y) % 2 == 0 else Color("559040")
+		image.fill_rect(Rect2i(int(p.x), int(p.y), 2, 3), tufty)
+		image.fill_rect(Rect2i(int(p.x) + 2, int(p.y) + 1, 1, 2), Color("84c764"))
+
+	for f in flowers:
+		var p: Vector2 = f[0]
+		var flower: Color = f[1]
+		image.fill_rect(Rect2i(int(p.x), int(p.y), 2, 2), flower)
+		image.fill_rect(Rect2i(int(p.x), int(p.y) + 2, 1, 2), Color("3f7a35"))
+
+	grass_texture = ImageTexture.create_from_image(image)
 
 func setup_map_modules() -> void:
 	pass
@@ -100,11 +144,6 @@ func spawn_npcs() -> void:
 	npcs.append({"pos": QUIZ_NPC_POS, "dir": Vector2.ZERO, "timer": 0.0, "face": 0, "anim": 0.0, "shirt": Color("8e5bd0"), "hair": Color("3b2a1a"), "uni": false, "long": true, "pack": false, "say": "", "say_t": 0.0, "quiz": true})
 	solids.append(Rect2(QUIZ_NPC_POS.x - 5, QUIZ_NPC_POS.y - 4, 10, 4))
 
-func spawn_bikes() -> void:
-	# Chỉ 2 xe máy chạy dọc đường nội bộ (bớt xe không có người lái)
-	bikes.append({"x": 100.0,  "y": 898.0, "dir":  1.0, "sp": 90.0, "col": Color("c0392b")})
-	bikes.append({"x": 1800.0, "y": 905.0, "dir": -1.0, "sp": 85.0, "col": Color("27ae60")})
-
 func setup_decor() -> void:
 	for i in 700:
 		flowers.append([Vector2(rng.randi_range(0, int(WORLD.x) - 4), rng.randi_range(0, int(WORLD.y) - 60)), [Color("ffffff"), Color("ffe066"), Color("ff9ecb"), Color("c9a0ff")][rng.randi_range(0, 3)]])
@@ -129,7 +168,7 @@ func setup_decor() -> void:
 		solids.append(Rect2(l.x - 2, l.y - 3, 4, 3))
 	for b in benches:
 		solids.append(Rect2(b.x - 9, b.y - 5, 18, 5))
-	for i in 8:
+	for i in CLOUD_COUNT:
 		clouds.append({"x": rng.randf_range(0, WORLD.x), "y": rng.randf_range(100, WORLD.y - 100), "r": rng.randf_range(70, 130), "sp": rng.randf_range(6, 14)})
 
 func setup_camera() -> void:
@@ -168,6 +207,35 @@ func setup_overlay() -> void:
 	vg.size = Vector2(480, 270)
 	vg.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	tl.add_child(vg)
+	_setup_static_bg()
+
+# Nen tinh duoc ve tren mot Node2D rieng va chi redraw khi camera gan ra khoi vung da bake.
+func _setup_static_bg() -> void:
+	var script: Script = load("res://scripts/draw/characters.gd")
+	_static_bg = script.new()
+	add_child(_static_bg)
+	_static_bg.show_behind_parent = true
+	_static_bg.font = font
+	_static_bg.logo = logo
+	_static_bg.tufts = tufts
+	_static_bg.flowers = flowers
+	_static_bg.grass_texture = grass_texture
+	_static_bg.BUILDINGS = BUILDINGS
+	_static_bg.KIOSKS = KIOSKS
+	_static_bg.skip_fountain = true
+	_static_bg.draw.connect(_draw_static_bg)
+	_bg_rect = Rect2()
+	_static_bg.queue_redraw()
+
+func _draw_static_bg() -> void:
+	_static_bg.draw_ground()
+	_static_bg.draw_dieuhanh()
+	for b in BUILDINGS:
+		if str(b[0]) == "B":
+			continue
+		_static_bg.draw_building(b)
+	for k in KIOSKS:
+		_static_bg.draw_kiosk(k)
 
 func setup_hud() -> void:
 	var hl := CanvasLayer.new()

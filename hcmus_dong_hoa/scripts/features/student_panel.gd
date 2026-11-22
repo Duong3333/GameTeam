@@ -20,6 +20,7 @@ const RED := Color(1.0, 0.35, 0.35)
 
 var font: Font
 var canvas: Control
+var _last_draw_state: Array = []
 
 func _ready() -> void:
 	font = game.font
@@ -47,10 +48,17 @@ func begin() -> void:
 func finish() -> void:
 	super()
 	canvas.visible = false
+	_last_draw_state = []
 
 func _process(_delta: float) -> void:
 	if active:
-		canvas.queue_redraw()
+		var state := _draw_state()
+		if state != _last_draw_state:
+			canvas.queue_redraw()
+			_last_draw_state = state
+
+func _draw_state() -> Array:
+	return [game.day, int(game.game_min)]
 
 func _on_draw() -> void:
 	var minute := int(game.game_min)
