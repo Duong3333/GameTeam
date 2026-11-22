@@ -36,7 +36,6 @@ var KIOSKS := [
 	["Tự học", 306, 200, Color("3f8fbf"), "Khu vực tự học - ổ điện và wifi."],
 	["Giáo trình", 546, 345, Color("8a5ac0"), "Quầy giáo trình - mua tài liệu học."],
 	["Tự học", 682, 340, Color("3f8fbf"), "Khu vực tự học."],
-	["Hội quán", 1005, 646, Color("3f9c6a"), "Hội quán Khoa học - sinh hoạt câu lạc bộ."],
 	["ATM", 466, 462, Color("8e1f2c"), "Cây ATM."],
 ]
 var ZONES := [

@@ -176,8 +176,9 @@ func draw_front_layer() -> void:
 		if _near_named(l, named):
 			items.append([l.y, 2, l])
 	for b in game.benches:
-		if _near_named(b, named):
-			items.append([b.y, 3, b])
+		var bench_pos: Vector2 = game.get_bench_position(b)
+		if _near_named(bench_pos, named):
+			items.append([bench_pos.y, 3, b])
 	for o in game.npcs:
 		if not o.has("role") and _near_named(o.pos, named):
 			items.append([o.pos.y, 4, o])

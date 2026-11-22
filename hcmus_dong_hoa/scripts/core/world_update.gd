@@ -80,7 +80,7 @@ func update_ambient(delta: float) -> void:
 		c.x += c.sp * delta
 		if c.x > WORLD.x + 150.0:
 			c.x = -150.0
-	if petals.size() < 40 and randf() < 0.5:
+	if SHOW_VEGETATION and petals.size() < 40 and randf() < 0.5:
 		var t: Array = trees[randi() % trees.size()]
 		if t[2] == 1 and absf(t[0] - player.x) < 300.0 and absf(t[1] - player.y) < 200.0:
 			petals.append({"pos": Vector2(t[0] + randf_range(-9, 9), t[1] - randf_range(10, 24)), "life": 0.0, "ph": randf() * 6.0})

@@ -10,7 +10,7 @@ func draw_sorted_items() -> void:
 	for l in lamps:
 		items.append([l.y, 3, l])
 	for bn in benches:
-		items.append([bn.y, 4, bn])
+		items.append([get_bench_position(bn).y, 4, bn])
 	items.append([player.y, 2, null])
 	items.sort_custom(func(a, b): return a[0] < b[0])
 	for it in items:
@@ -20,7 +20,7 @@ func draw_sorted_items() -> void:
 			if view.has_point(it[2]):
 				draw_lamp(it[2])
 		elif it[1] == 4:
-			if view.has_point(it[2]):
+			if view.has_point(get_bench_position(it[2])):
 				draw_bench(it[2])
 		elif it[1] == 1:
 			var n: Dictionary = it[2]

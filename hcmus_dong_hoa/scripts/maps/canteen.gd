@@ -223,7 +223,6 @@ var _nav_main := PackedByteArray()   # 1 = ô thông với cửa chính (tránh 
 
 var _trash := 0              # rác ăn uống đang cầm
 var _cup_stock := CUP_MAX
-var _cup_t := 0.0
 var _fill_t := 0.0
 var _fill_kind := ""
 var _bin_t := 0.0
@@ -2699,21 +2698,59 @@ func _repaint_yard_items() -> void:
 		if area.has_point(Vector2(t[0], t[1])):
 			items.append([float(t[1]), 0, t])
 	for l in game.lamps:
-		if area.has_point(l):
+		if l is Vector2 and area.has_point(l):
 			items.append([l.y, 1, l])
 	for b in game.benches:
-		if area.has_point(b):
-			items.append([b.y, 2, b])
+		var bench_pos: Vector2
+		if b is Vector2:
+			bench_pos = b
+		elif b is Dictionary:
+			var bench_value: Variant = b.get("pos")
+			if bench_value is Vector2:
+				bench_pos = bench_value
+			elif bench_value is Dictionary:
+				bench_pos = Vector2(float(bench_value.get("x", 0.0)), float(bench_value.get("y", 0.0)))
+			else:
+				continue
+		else:
+			continue
+		if area.has_point(bench_pos):
+			items.append([bench_pos.y, 2, bench_pos if b is Dictionary else b])
 	for o in game.npcs:
-		if not o.has("role") and area.has_point(o.pos):
-			items.append([o.pos.y, 3, o])
-	if game.multiplayer_manager != null and game.multiplayer_manager.has_method("get_other_players"):
-		var remote_players: Dictionary = game.multiplayer_manager.get_other_players()
+		if not o.has("role"):
+			var npc_pos: Variant = o.get("pos")
+			var pos: Vector2
+			if npc_pos is Vector2:
+				pos = npc_pos
+			elif npc_pos is Dictionary:
+				pos = Vector2(float(npc_pos.get("x", 0.0)), float(npc_pos.get("y", 0.0)))
+			else:
+				continue
+			if area.has_point(pos):
+				items.append([pos.y, 3, o])
+	var multiplayer_manager: Variant = game.get("multiplayer_manager")
+	if multiplayer_manager != null and multiplayer_manager.has_method("get_other_players"):
+		var remote_players: Dictionary = multiplayer_manager.get_other_players()
 		for remote in remote_players.values():
-			if remote is Dictionary and remote.has("pos") and area.has_point(remote.pos):
-				items.append([remote.pos.y, 5, remote])
-	if area.has_point(game.player) and _seated < 0:   # đang ngồi thì người chơi được vẽ cùng ghế
-		items.append([game.player.y, 4, null])
+			if remote is Dictionary and remote.has("pos"):
+				var remote_pos: Variant = remote["pos"]
+				var pos: Vector2
+				if remote_pos is Vector2:
+					pos = remote_pos
+				elif remote_pos is Dictionary:
+					pos = Vector2(float(remote_pos.get("x", 0.0)), float(remote_pos.get("y", 0.0)))
+				else:
+					continue
+				if area.has_point(pos):
+					remote["pos"] = pos
+					items.append([pos.y, 5, remote])
+	var player_pos: Variant = game.get("player")
+	if player_pos is Vector2 and area.has_point(player_pos) and _seated < 0:
+		items.append([player_pos.y, 4, null])
+	elif player_pos is Dictionary:
+		var px: Vector2 = Vector2(float(player_pos.get("x", 0.0)), float(player_pos.get("y", 0.0)))
+		if area.has_point(px) and _seated < 0:
+			items.append([px.y, 4, null])
 	if STAGE >= 3:
 		for ti in _tables.size():
 			if str(_tables[ti].a) == "out":
@@ -2739,8 +2776,17 @@ func _repaint_yard_items() -> void:
 		for j in range(sn):
 			items.append([s_top + (float(j) + 0.5) / sn * (s_bot - s_top), 15, j])   # dây dọc: từng đoạn theo y màn hình của đoạn
 	for n in _npcs:
-		if str(n.a) == "out" and int(n.seat) < 0 and area.has_point(n.pos):
-			items.append([float(n.pos.y), 11, n])
+		if str(n.a) == "out" and int(n.seat) < 0:
+			var npc_pos: Variant = n.get("pos")
+			var pos: Vector2
+			if npc_pos is Vector2:
+				pos = npc_pos
+			elif npc_pos is Dictionary:
+				pos = Vector2(float(npc_pos.get("x", 0.0)), float(npc_pos.get("y", 0.0)))
+			else:
+				continue
+			if area.has_point(pos):
+				items.append([pos.y, 11, n])
 	var occ := _occ_map("out")
 	items.sort_custom(func(a, b): return a[0] < b[0])
 	for it in items:
@@ -2759,8 +2805,16 @@ func _repaint_yard_items() -> void:
 				if o.say_t > 0.0:
 					game.draw_speech(o)
 			4:
-				game.draw_person(game.player, Color.WHITE, Color("1b1b1b"), game.facing, game.anim, true, false, true)
-				game.ctext("Bạn", game.player.x - 15.0, game.player.y - 28.0, 30, 8, Color("ffd23f"))
+				var draw_player_pos: Variant = game.get("player")
+				var px: Vector2
+				if draw_player_pos is Vector2:
+					px = draw_player_pos
+				elif draw_player_pos is Dictionary:
+					px = Vector2(float(draw_player_pos.get("x", 0.0)), float(draw_player_pos.get("y", 0.0)))
+				else:
+					continue
+				game.draw_person(px, Color.WHITE, Color("1b1b1b"), game.facing, game.anim, true, false, true)
+				game.ctext("Bạn", px.x - 15.0, px.y - 28.0, 30, 8, Color("ffd23f"))
 			6:
 				_draw_table(game, _tables[int(it[2])], int(it[2]))
 			7:
@@ -2783,9 +2837,17 @@ func _repaint_yard_items() -> void:
 				_paint_side_bunting(int(it[2]))
 			5:
 				var remote: Dictionary = it[2]
-				game.draw_person(remote.pos, Color("7dc8ff"), Color("3b2a1a"), remote.facing, remote.anim, true, false, false)
+				var remote_pos: Variant = remote.get("pos")
+				var pos: Vector2
+				if remote_pos is Vector2:
+					pos = remote_pos
+				elif remote_pos is Dictionary:
+					pos = Vector2(float(remote_pos.get("x", 0.0)), float(remote_pos.get("y", 0.0)))
+				else:
+					continue
+				game.draw_person(pos, Color("7dc8ff"), Color("3b2a1a"), remote.facing, remote.anim, true, false, false)
 				var peer_id: int = remote.get("id", 0)
-				game.ctext("Chủ phòng" if peer_id == 1 else "Người chơi %d" % peer_id, remote.pos.x - 36.0, remote.pos.y - 28.0, 72, 8, Color("9fe3ff"))
+				game.ctext("Chủ phòng" if peer_id == 1 else "Người chơi %d" % peer_id, pos.x - 36.0, pos.y - 28.0, 72, 8, Color("9fe3ff"))
 
 # Khung chỉ dẫn phím E phía trên đầu người chơi (ngoài trời): "E: Vào căn tin", sau này cả "E: Ngồi" / "E: Trò chuyện"...
 func _paint_prompt_outdoor() -> void:

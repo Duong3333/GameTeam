@@ -23,8 +23,9 @@ extends "res://scripts/features/feature.gd"
 # đứng yên và game.is_busy() = true), CanvasLayer 5 vẽ sảnh bằng Node2D dùng characters.gd, người chơi vẽ bằng draw_person() của game.
 
 # Khối tòa nhà: khớp với ô "NHÀ THỂ DỤC" trong campus_data.gd
-const RECT := Rect2(1900, 50, 240, 120)
-const ENTRANCE := Vector2(2020, 178)      # điểm đứng trước cửa (giữa đáy tòa nhà, thấp hơn 8 px)
+# Nhà thể dục được đặt cạnh bãi xe số 2 ở phía bắc khuôn viên.
+const RECT := Rect2(1422, 51, 280, 125)
+const ENTRANCE := Vector2(1562, 183)
 const DOOR_RANGE := 34.0                 # đứng cách lối vào tối đa bấm E mới được (px)
 const WALL_COL := Color("efdc96")        # tường kem vàng
 const ROOF_COL := Color("5a7396")        # mái tôn xanh xám
@@ -1732,7 +1733,6 @@ func _paint_dialogue(p: Node2D) -> void:
 func draw_front_layer() -> void:
 	if not game.view.intersects(RECT.grow(60.0)):
 		return
-	_paint_forecourt()
 	_paint_facade()
 	_repaint_front_items()
 	if not game.is_busy() and _near_entrance():
@@ -1747,13 +1747,6 @@ func _paint_tag(text: String, col: Color) -> void:
 	game.rc(px - w / 2.0, py - 9.0, w, 12, Color(0.08, 0.1, 0.18, 0.92))
 	game.ctext(text, px - w / 2.0, py, w, 8, col)
 
-# Sân trước và lối đi lát gạch nối cửa nhà tập xuống sân đài phun nước (y >= 315)
-func _paint_forecourt() -> void:
-	var cx := ENTRANCE.x
-	var beige := Color("dccaa0")
-	game.paved(Rect2(cx - 44.0, RECT.end.y, 88.0, 26.0), Color("c9c3b4"))
-	game.paved(Rect2(cx - 22.0, RECT.end.y + 26.0, 44.0, 315.0 - RECT.end.y - 26.0), beige)
-
 func _repaint_front_items() -> void:
 	var area := Rect2(RECT.position.x - 40.0, RECT.end.y - 4.0, RECT.size.x + 80.0, 100.0)
 	var items: Array = []
@@ -1764,8 +1757,9 @@ func _repaint_front_items() -> void:
 		if area.has_point(l):
 			items.append([l.y, 1, l])
 	for b in game.benches:
-		if area.has_point(b):
-			items.append([b.y, 2, b])
+		var bench_pos: Vector2 = game.get_bench_position(b)
+		if area.has_point(bench_pos):
+			items.append([bench_pos.y, 2, b])
 	for o in game.npcs:
 		if not o.has("role") and area.has_point(o.pos):
 			items.append([o.pos.y, 3, o])

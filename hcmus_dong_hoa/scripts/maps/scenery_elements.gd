@@ -300,8 +300,8 @@ static func draw_white_monument(canvas: CanvasItem, pos: Vector2) -> void:
 			canvas.draw_circle(fp + Vector2(-1,-2), 1.5, Color("ff9ecb"))
 
 # ─── ĐÀI PHUN NƯỚC & HỒ SINH VIÊN (TÁI HIỆN CHUẨN XÁC THEO ẢNH THẬT HCMUS) ──
-static func draw_fountain_plaza(canvas: CanvasItem, center: Vector2, radius: float = 110.0, clock: float = 0.0) -> void:
-	HoNuoc.draw_landscape(canvas, center, clock)
+static func draw_fountain_plaza(canvas: CanvasItem, center: Vector2, radius: float = 110.0, clock: float = 0.0, show_vegetation: bool = true) -> void:
+	HoNuoc.draw_landscape(canvas, center, clock, show_vegetation)
 
 # ─── HELPER NỘI BỘ ─────────────────────────────────────────────────────────
 static func _oval(c: Vector2, rx: float, ry: float, n: int = 32) -> PackedVector2Array:

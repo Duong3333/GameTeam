@@ -85,6 +85,10 @@ func draw_dieuhanh() -> void:
 	var gold := Color("e0b020")
 	rc(x + 9, y + 10, r.size.x, r.size.y, Color(0, 0, 0, 0.16))
 	rc(x, y, r.size.x, r.size.y, Color("dcd9cf"))
+	for i in 6:
+		var legacy_roof_y := y + 42.0 + i * 5.0
+		rc(x - 8 + i * 3, legacy_roof_y, r.size.x + 16 - i * 6, 5, Color("d3d6d0") if i % 2 == 0 else Color("adb3af"))
+		rc(x - 8 + i * 3, legacy_roof_y, r.size.x + 16 - i * 6, 2, Color(0.0, 0.0, 0.0, 0.38))
 	rc(x, y, 46, 76, Color("c9dbc2"))
 	rc(x + r.size.x - 46, y, 46, 76, Color("c9dbc2"))
 	rc(x, y, 46, 4, Color("e4eedf"))
@@ -97,8 +101,8 @@ func draw_dieuhanh() -> void:
 			rc(xx + 1, yy + 1, 10, 3, Color("c8e8f7"))
 	for xx in range(int(x) + 60, int(r.end.x) - 60, 22):
 		rc(xx, y + 18, 3, 52, Color("c07a3a"))
-	rc(x + 8, y + 58, r.size.x - 16, 16, Color("f3ecd0"))
-	ctext("TRƯỜNG ĐẠI HỌC KHOA HỌC TỰ NHIÊN", x + 8, y + 70, r.size.x - 16, 9, gold)
+	rc(x + 8, y + 70, r.size.x - 16, 16, Color("f3ecd0"))
+	ctext("TRƯỜNG ĐẠI HỌC KHOA HỌC TỰ NHIÊN", x + 8, y + 82, r.size.x - 16, 9, gold)
 	rc(x - 10, y + 78, r.size.x + 20, 11, Color("6e747b"))
 	rc(x - 10, y + 78, r.size.x + 20, 3, Color("8d949c"))
 	rc(x - 10, y + 89, r.size.x + 20, 8, Color(0, 0, 0, 0.22))
@@ -109,21 +113,19 @@ func draw_dieuhanh() -> void:
 	ctext("UNIVERSITY OF SCIENCE", x, y + 143, r.size.x, 9, gold)
 	for i in 6:
 		var px := x + 14 + i * (r.size.x - 34) / 5.0
-		rc(px, y + 90, 7, 80, Color("aeb8c4"))
-		rc(px, y + 90, 2, 80, Color("d4dbe3"))
-		rc(px + 5, y + 90, 2, 80, Color("8a94a0"))
-	rc(cx - 30, y + 144, 60, 26, Color("2e3a44"))
-	rc(cx - 28, y + 146, 27, 24, Color("8fc9e6"))
-	rc(cx + 1, y + 146, 27, 24, Color("8fc9e6"))
-	rc(cx - 28, y + 146, 27, 5, Color("c8e8f7"))
-	rc(cx + 1, y + 146, 27, 5, Color("c8e8f7"))
-	rc(cx - 40, y + 124, 10, 38, Color("c0392b"))
-	rc(cx + 30, y + 124, 10, 38, Color("c0392b"))
-	rc(cx - 38, y + 130, 6, 6, gold)
-	rc(cx + 32, y + 130, 6, 6, gold)
+		rc(px, y + 42, 7, int(r.end.y) - int(y) - 42, Color("aeb8c4"))
+		rc(px, y + 42, 2, int(r.end.y) - int(y) - 42, Color("d4dbe3"))
+		rc(px + 5, y + 42, 2, int(r.end.y) - int(y) - 42, Color("8a94a0"))
+	rc(cx - 30, y + 132, 60, 26, Color("2e3a44"))
+	rc(cx - 28, y + 134, 27, 24, Color("8fc9e6"))
+	rc(cx + 1, y + 134, 27, 24, Color("8fc9e6"))
+	rc(cx - 28, y + 134, 27, 5, Color("c8e8f7"))
+	rc(cx + 1, y + 134, 27, 5, Color("c8e8f7"))
+	rc(cx - 40, y + 112, 10, 38, Color("c0392b"))
+	rc(cx + 30, y + 112, 10, 38, Color("c0392b"))
+	rc(cx - 38, y + 118, 6, 6, gold)
+	rc(cx + 32, y + 118, 6, 6, gold)
 	draw_rect(r, Color("2b2b2b"), false, 1.0)
-	for i in 6:
-		rc(x + 18 - i * 2, r.end.y + i * 8, r.size.x - 36 + i * 4, 8, Color("c9c9c9") if i % 2 == 0 else Color("adadad"))
 	rc(x + 14, r.end.y, 3, 48, Color("6e747b"))
 	rc(r.end.x - 17, r.end.y, 3, 48, Color("6e747b"))
 	for bx in [x + 4, x + 34, r.end.x - 34, r.end.x - 4]:
@@ -132,12 +134,6 @@ func draw_dieuhanh() -> void:
 		rc(bx - 5, r.end.y + 17, 10, 2, Color("d98a3d"))
 		draw_circle(Vector2(bx, r.end.y + 12), 8, Color("2a6f33"))
 		draw_circle(Vector2(bx - 2, r.end.y + 10), 5, Color("3c9a40"))
-	var fp := Vector2(x - 30, r.end.y + 30)
-	rc(fp.x, fp.y - 52, 2, 52, Color("c4c8cc"))
-	var wv := sin(clock * 4.0) * 1.5
-	rc(fp.x + 2, fp.y - 52, 22, 14, Color("da251d"))
-	rc(fp.x + 2, fp.y - 52 + wv, 22, 1, Color("f04a42"))
-	rc(fp.x + 11, fp.y - 48, 4, 4, Color("ffde00"))
 
 func draw_kiosk(k: Array) -> void:
 	var p := Vector2(k[1], k[2])

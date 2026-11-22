@@ -6,7 +6,7 @@ var trees: Array = []   # [x, y, loại] 0 thường, 1 phượng, 2 cọ
 var tufts: Array = []
 var npcs: Array = []
 var bikes: Array = []
-var player := Vector2(1210, 1380)  # Spawn giữa cổng chính (giữa GATE_X và GATE_X+GATE_W)
+var player := Vector2(1322, 1380)  # Spawn giữa cổng chính (giữa GATE_X và GATE_X+GATE_W)
 var facing := 1
 var anim := 0.0
 var hidden_arms := 0   # bit 1 = ẩn tay trái, bit 2 = ẩn tay phải của nhân vật chính khi đánh
@@ -29,4 +29,3 @@ var clouds: Array = []
 var rng: RandomNumberGenerator
 var audio: Node          # AudioManager (scripts/systems/audio_manager.gd)
 var features: Array = [] # gameplay dùng chung và module bản đồ đã đăng ký
-var multiplayer_manager: Node = null  # hệ thống multiplayer tùy chọn; null khi chạy chế độ chơi đơn

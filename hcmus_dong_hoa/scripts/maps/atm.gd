@@ -7,7 +7,7 @@ extends "res://scripts/features/feature.gd"
 #   - Đến gần bấm [E]: mở giao diện máy ATM rút tiền, nạp tiền, nhận học bổng sinh viên.
 #   - Tự động liên kết và đồng bộ ví tiền người chơi với Căn tin & game.
 
-const BOOTH_POS   := Vector2(552.0, 560.0)
+const BOOTH_POS   := Vector2(540.0, 782.0)
 const BOOTH_SIZE  := Vector2(36.0, 40.0)
 const BOOTH_RECT  := Rect2(BOOTH_POS, BOOTH_SIZE)
 const PROMPT_DIST := 32.0
