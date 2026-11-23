@@ -127,9 +127,12 @@ func draw_ground() -> void:
 		for y in range(0, int(WORLD.y), 44):
 			rc(1321, y, 3, 24, Color("e8e8e8"))
 	paved(Rect2(1249, 0, 19, 879), beige)
-	# Đường nhựa phía trước Nhà Thể Dục và Bãi xe 2, ngăn với khu hồ.
+	# ── Trục đường ngang phía bắc (từ Căn tin / Tòa C qua ngã tư tới Nhà Thể Dục và Bãi xe 2) ──
+	asphalt(Rect2(669, 191, 599, 63))
 	asphalt(Rect2(1377, 191, WORLD.x - 1377, 63))
+	paved(Rect2(669, 176, 580, 15), beige)
 	paved(Rect2(1377, 176, WORLD.x - 1377, 15), beige)
+	paved(Rect2(1085, 107, 60, 69), beige) # Lối đi bộ nối từ vỉa hè lên sảnh Tòa B4.2
 	asphalt(Rect2(1822, 260, 97, 621), false)
 	paved(Rect2(1804, 260, 18, 619), beige)
 	paved(Rect2(1919, 260, 18, 619), beige)
@@ -165,10 +168,6 @@ func draw_ground() -> void:
 
 	# ── Lối đi bộ gạch beige nội bộ ──
 	paved(Rect2(120, 790, 1130, 20), beige)
-
-	# ── Đường ngang phía bắc, cạnh căn tin và Bãi xe 2 ──
-	asphalt(Rect2(669, 113, 708, 94))
-	paved(Rect2(669, 108, 708, 5), beige)
 
 	# ── Lối đi bao quanh hồ và sân ghế ──
 	paved(Rect2(1377, 260, 445, 24), beige)

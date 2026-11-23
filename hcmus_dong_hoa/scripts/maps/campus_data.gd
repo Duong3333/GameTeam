@@ -35,7 +35,7 @@ var BUILDINGS := [
 	["C", 524, 314, 145, 465, WALL, ROOF, "Tòa C - có Thư viện, Quầy giáo trình và ATM."],
 	["D", 822, 314, 140, 465, WALL, ROOF, "Tòa D - giảng đường, gần nhà ăn và khu tự học."],
 	["E", 1104, 311, 147, 543, WALL, ROOF, "Tòa E - giảng đường lớn."],
-	["F", 1924, 326, 163, 471, WALL, ROOF, "Tòa F - giảng đường."],
+	["F", 1960, 326, 163, 471, WALL, ROOF, "Tòa F - giảng đường."],
 	["G", 2206, 338, 163, 473, Color("dfe3e8"), Color("5d7c99"), "Tòa G - phòng học và phòng thí nghiệm."],
 	["NHÀ THỂ DỤC", 1422, 51, 280, 125, Color("e9efe9"), Color("5f9c6a"), "Nhà Thể Dục - sân tập trong nhà."],
 ]
@@ -107,7 +107,7 @@ var ZONES := [
 	["Cổng trường", Rect2(1098, 1360, 449, 120)],
 	["Đường nội bộ chính (ngang)", Rect2(0, 879, 2500, 211)],
 	["Đường nội bộ chính (dọc)", Rect2(1268, 0, 109, 879)],
-	["Đường trước Nhà Thể Dục và Bãi xe 2", Rect2(1377, 191, WORLD.x - 1377, 63)],
+	["Đường trước Nhà Thể Dục và Bãi xe 2", Rect2(669, 191, WORLD.x - 669, 63)],
 	["Đường cạnh khu hồ", Rect2(1822, 260, 97, 619)],
 ]
 # Hàng dừa vòng quanh đài phun nước (tọa độ tính trong draw_fountain_plaza)

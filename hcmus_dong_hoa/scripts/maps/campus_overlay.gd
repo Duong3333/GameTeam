@@ -103,8 +103,7 @@ func draw_minimap() -> void:
 		Rect2(0, 879, WORLD.x, 211),
 		Rect2(1268, 0, 109, 879),
 		Rect2(1822, 260, 97, 619),
-		Rect2(669, 113, 708, 94),
-		Rect2(1377, 191, WORLD.x - 1377, 63),
+		Rect2(669, 191, WORLD.x - 669, 63),
 		GATE_APPROACH_ROAD,
 	]:
 		_draw_minimap_rect(o, road, sc, road_color)
@@ -115,8 +114,7 @@ func draw_minimap() -> void:
 		Rect2(1249, 0, 19, 879),
 		Rect2(1804, 260, 18, 619),
 		Rect2(1919, 260, 18, 619),
-		Rect2(669, 108, 708, 5),
-		Rect2(1377, 176, WORLD.x - 1377, 15),
+		Rect2(669, 176, WORLD.x - 669, 15),
 		STRIP_T1_LEFT,
 		STRIP_T1,
 		Rect2(0, GATE_Y, GATE_X - 14, 14),
