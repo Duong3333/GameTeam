@@ -82,108 +82,139 @@ func setup_collision() -> void:
 	solids.append(PARKING1_RECT)
 	solids.append(PARKING2_RECT)
 
+func get_vegetation_blocked_areas() -> Array[Rect2]:
+	var list: Array[Rect2] = []
+	for b in BUILDINGS:
+		list.append(Rect2(b[1], b[2], b[3], b[4]).grow(20.0))
+	list.append(DIEUHANH.grow(22.0))
+	list.append(PARKING1_RECT.grow(20.0))
+	list.append(PARKING2_RECT.grow(20.0))
+	list.append(GUARD_BOOTH.grow(20.0))
+	list.append(Rect2(370, 0, 370, 195)) # Căn tin & sân căn tin
+	list.append(Rect2(1030, 0, 170, 120)) # Tòa B4.2
+	list.append(Rect2(1420, 590, 360, 260)) # Sân bê tông hồ nước có ghế đá
+	list.append(Rect2(1460, 310, 275, 275)) # Khu vực hồ nước & đài phun nước
+	list.append(Rect2(250, 530, 230, 130)) # Sân We Love HCMUS & tượng đài
+	list.append(LAWN_B_RECT.grow(12.0))
+
+	# Trục đường ngang & dọc chính và vỉa hè
+	list.append(Rect2(0, 825, WORLD.x, 275))
+	list.append(Rect2(655, 168, WORLD.x - 655, 96))
+	list.append(Rect2(1235, 0, 155, 895))
+	list.append(Rect2(1790, 245, 160, 645))
+	list.append(Rect2(2130, 245, 140, 645))
+	list.append(Rect2(1085, 1075, 435, WORLD.y - 1075))
+
+	# Lối đi bao quanh hồ
+	list.append(Rect2(1365, 245, 470, 48))
+	list.append(Rect2(1365, 845, 470, 40))
+	list.append(Rect2(1365, 245, 45, 640))
+	list.append(Rect2(1785, 245, 45, 640))
+
+	# Lối đi bộ nối giữa các tòa
+	list.append(Rect2(185, 355, 70, 55))
+	list.append(Rect2(335, 445, 55, 85))
+	list.append(Rect2(75, 505, 315, 55))
+	list.append(Rect2(75, 505, 55, 345))
+	list.append(Rect2(465, 355, 70, 55))
+	list.append(Rect2(655, 505, 180, 55))
+	list.append(Rect2(718, 505, 55, 345))
+	list.append(Rect2(948, 505, 170, 55))
+	list.append(Rect2(1005, 505, 55, 345))
+	list.append(Rect2(2010, 785, 60, 60))
+	list.append(Rect2(2330, 795, 60, 50))
+	list.append(Rect2(1070, 95, 90, 90))
+	list.append(Rect2(1995, 1115, 60, 100))
+	list.append(Rect2(105, 775, 1160, 50))
+
+	# Quán xá và nhà dân
+	list.append(Rect2(1560, 1230, 100, 260))
+	list.append(Rect2(50, 1430, 880, 70))
+	return list
+
+func is_point_on_concrete_or_blocked(pt: Vector2) -> bool:
+	if pt.x < 38.0 or pt.x > WORLD.x - 38.0 or pt.y < 38.0 or pt.y > WORLD.y - 38.0:
+		return true
+	for r in get_vegetation_blocked_areas():
+		if r.has_point(pt):
+			return true
+	for s in solids:
+		if s.grow(16.0).has_point(pt):
+			return true
+	return false
+
 func setup_trees() -> void:
 	rng = RandomNumberGenerator.new()
-	rng.seed = 11
+	rng.seed = 88
+	trees.clear()
 	if not SHOW_VEGETATION:
 		return
 
-	# Hàng dừa phía trên các tòa nhà
-	for p in PALMS:
-		trees.append([p[0], p[1], 2])
-
-	# Danh sách các khu vực không được đặt cây (đường sá, vỉa hè, công trình, bãi xe)
-	var blocked_areas: Array[Rect2] = []
-	for b in BUILDINGS:
-		blocked_areas.append(Rect2(b[1], b[2], b[3], b[4]).grow(16.0))
-	blocked_areas.append(DIEUHANH.grow(16.0))
-	blocked_areas.append(PARKING1_RECT.grow(16.0))
-	blocked_areas.append(PARKING2_RECT.grow(16.0))
-	blocked_areas.append(LAKE.grow(20.0))
-	blocked_areas.append(Rect2(0, 835, WORLD.x, 260)) # Trục đường ngang chính và vỉa hè
-	blocked_areas.append(Rect2(669, 176, WORLD.x - 669, 82)) # Trục đường ngang bắc
-	blocked_areas.append(Rect2(1249, 0, 135, 885)) # Trục đường dọc chính
-	blocked_areas.append(Rect2(1804, 250, 140, 635)) # Trục đường cạnh hồ
-	blocked_areas.append(Rect2(2140, 250, 120, 635)) # Trục đường giữa F và G
-	blocked_areas.append(Rect2(GATE_X - 100, GATE_Y - 40, GATE_W + 200, 80)) # Khu cổng trường
-	blocked_areas.append(LAWN_B_RECT.grow(8.0))
-
-	# Các lối đi bộ nối giữa các tòa
-	blocked_areas.append(Rect2(196, 360, 50, 45))
-	blocked_areas.append(Rect2(477, 360, 50, 45))
-	blocked_areas.append(Rect2(669, 510, 160, 45))
-	blocked_areas.append(Rect2(725, 510, 40, 330))
-	blocked_areas.append(Rect2(962, 510, 150, 45))
-	blocked_areas.append(Rect2(1010, 510, 40, 330))
-	blocked_areas.append(Rect2(2020, 790, 40, 50))
-	blocked_areas.append(Rect2(2340, 800, 40, 40))
-
-	var is_point_blocked = func(pt: Vector2) -> bool:
-		if pt.x < 30.0 or pt.x > WORLD.x - 30.0 or pt.y < 30.0 or pt.y > WORLD.y - 30.0:
-			return true
-		for r in blocked_areas:
-			if r.has_point(pt):
-				return true
-		for s in solids:
-			if s.grow(14.0).has_point(pt):
-				return true
-		return false
-
 	var add_tree_safe = func(pos: Vector2, type: int) -> bool:
-		if is_point_blocked.call(pos):
+		if is_point_on_concrete_or_blocked(pos):
 			return false
 		for existing in trees:
-			if Vector2(existing[0], existing[1]).distance_to(pos) < 32.0:
+			if Vector2(existing[0], existing[1]).distance_to(pos) < 38.0:
 				return false
 		trees.append([pos.x, pos.y, type])
 		return true
 
-	# 1. Cụm cây công viên xanh quanh Sân We ❤ HCMUS
-	for x in range(230, 480, 55):
-		for y in [490, 720, 760]:
-			add_tree_safe.call(Vector2(x + rng.randf_range(-10, 10), y + rng.randf_range(-10, 10)), rng.randi_range(0, 2))
+	# Phân bổ cây theo các khu vực thảm cỏ tự nhiên (dùng tọa độ ngẫu nhiên thực sự, hoàn toàn không theo ma trận)
+	var natural_parks := [
+		# 1. Công viên cây xanh quanh Sân We ❤ HCMUS (giữa A, B, C)
+		{"rect": Rect2(220, 470, 270, 290), "count": 8, "types": [0, 2, 0, 1, 2]},
+		# 2. Sân vườn giữa Tòa C và Tòa D (nửa trên)
+		{"rect": Rect2(680, 330, 130, 160), "count": 3, "types": [0, 1]},
+		# 3. Sân vườn giữa Tòa C và Tòa D (nửa dưới)
+		{"rect": Rect2(680, 575, 130, 190), "count": 3, "types": [0, 1, 2]},
+		# 4. Sân vườn giữa Tòa D và Tòa E (nửa trên)
+		{"rect": Rect2(975, 330, 115, 160), "count": 3, "types": [1, 0]},
+		# 5. Sân vườn giữa Tòa D và Tòa E (nửa dưới)
+		{"rect": Rect2(975, 575, 115, 190), "count": 3, "types": [0, 1]},
+		# 6. Dải cỏ xanh phía bắc (trên Tòa C, D, E)
+		{"rect": Rect2(740, 260, 340, 45), "count": 4, "types": [0, 1, 0]},
+		# 7. Vườn cảnh quan phía tây hồ nước
+		{"rect": Rect2(1385, 290, 40, 540), "count": 4, "types": [2, 1, 0]},
+		# 8. Vườn cảnh quan phía đông hồ nước
+		{"rect": Rect2(1765, 290, 30, 540), "count": 4, "types": [2, 0, 1]},
+		# 9. Vườn công viên viền phía đông Tòa G
+		{"rect": Rect2(2450, 335, 25, 475), "count": 6, "types": [1, 0]},
+		# 10. Khu hoa viên phía tây Nhà Điều Hành
+		{"rect": Rect2(1600, 1150, 175, 260), "count": 6, "types": [0, 2, 1]},
+		# 11. Khu hoa viên phía đông Nhà Điều Hành
+		{"rect": Rect2(2250, 1150, 210, 260), "count": 6, "types": [2, 0, 1]},
+	]
 
-	# 2. Cụm cây xanh bóng mát giữa Tòa C và Tòa D
-	for y in [360, 430, 600, 680, 740]:
-		add_tree_safe.call(Vector2(700 + rng.randf_range(-8, 8), y), 1)
-		add_tree_safe.call(Vector2(790 + rng.randf_range(-8, 8), y), 0)
+	for park in natural_parks:
+		var r: Rect2 = park["rect"]
+		var target: int = park["count"]
+		var types: Array = park["types"]
+		var tries := 0
+		var placed := 0
+		while tries < 80 and placed < target:
+			tries += 1
+			var pt := Vector2(rng.randf_range(r.position.x, r.end.x), rng.randf_range(r.position.y, r.end.y))
+			var t_type: int = types[placed % types.size()]
+			if add_tree_safe.call(pt, t_type):
+				placed += 1
 
-	# 3. Cụm cây xanh bóng mát giữa Tòa D và Tòa E
-	for y in [360, 430, 600, 680, 740]:
-		add_tree_safe.call(Vector2(990 + rng.randf_range(-8, 8), y), 0)
-		add_tree_safe.call(Vector2(1075 + rng.randf_range(-8, 8), y), 1)
-
-	# 4. Hàng cây bóng mát & dừa quanh Hồ Nước (phía nam hồ)
-	for x in range(1410, 1790, 60):
-		add_tree_safe.call(Vector2(x, 580), 2)
-		add_tree_safe.call(Vector2(x, 700), 0)
-		add_tree_safe.call(Vector2(x, 780), 1)
-
-	# 5. Dải cây xanh viền phía đông Tòa G (công viên viền đông khuôn viên)
-	for y in range(320, 820, 65):
-		add_tree_safe.call(Vector2(2465 + rng.randf_range(-6, 6), y), rng.randi_range(0, 1))
-
-	# 6. Dải cây xanh cảnh quan khuôn viên Nhà Điều Hành
-	for x in range(1620, 1780, 50):
-		for y in range(1160, 1420, 65):
-			add_tree_safe.call(Vector2(x, y), rng.randi_range(0, 2))
-	for x in range(2250, 2460, 55):
-		for y in range(1160, 1420, 65):
-			add_tree_safe.call(Vector2(x, y), rng.randi_range(0, 2))
-
-	# 7. Rải thêm các bụi cỏ (tufts) tự nhiên khắp khuôn viên
-	for i in 600:
-		var tp := Vector2(rng.randi_range(10, int(WORLD.x) - 10), rng.randi_range(10, int(WORLD.y) - 10))
-		tufts.append(tp)
-
-	# 8. Phủ thêm cây ngẫu nhiên vào các khoảng trống cỏ còn lại
-	var attempts := 0
-	var added := 0
-	while attempts < 300 and added < 60:
-		attempts += 1
-		var candidate := Vector2(rng.randf_range(40, WORLD.x - 40), rng.randf_range(40, WORLD.y - 40))
+	# Rải thêm một số cây rải rác ngẫu nhiên trên các khoảng trống cỏ còn lại
+	var global_tries := 0
+	var global_placed := 0
+	while global_tries < 250 and global_placed < 20:
+		global_tries += 1
+		var candidate := Vector2(rng.randf_range(50, WORLD.x - 50), rng.randf_range(50, WORLD.y - 50))
 		if add_tree_safe.call(candidate, rng.randi_range(0, 2)):
-			added += 1
+			global_placed += 1
+
+	# Bụi cỏ tự nhiên (tufts) chỉ nằm trên nền cỏ
+	tufts.clear()
+	var tuft_tries := 0
+	while tuft_tries < 1500 and tufts.size() < 500:
+		tuft_tries += 1
+		var tp := Vector2(rng.randf_range(20, WORLD.x - 20), rng.randf_range(20, WORLD.y - 20))
+		if not is_point_on_concrete_or_blocked(tp):
+			tufts.append(tp)
 
 	if SHOW_VEGETATION:
 		for t in trees:
@@ -213,8 +244,14 @@ func spawn_npcs() -> void:
 	solids.append(Rect2(QUIZ_NPC_POS.x - 5, QUIZ_NPC_POS.y - 4, 10, 4))
 
 func setup_decor() -> void:
-	for i in 700:
-		flowers.append([Vector2(rng.randi_range(0, int(WORLD.x) - 4), rng.randi_range(0, int(WORLD.y) - 60)), [Color("ffffff"), Color("ffe066"), Color("ff9ecb"), Color("c9a0ff")][rng.randi_range(0, 3)]])
+	flowers.clear()
+	var flower_tries := 0
+	var flower_colors := [Color("ffffff"), Color("ffe066"), Color("ff9ecb"), Color("c9a0ff")]
+	while flower_tries < 1500 and flowers.size() < 500:
+		flower_tries += 1
+		var fp := Vector2(rng.randf_range(20, WORLD.x - 20), rng.randf_range(20, WORLD.y - 60))
+		if not is_point_on_concrete_or_blocked(fp):
+			flowers.append([fp, flower_colors[rng.randi_range(0, 3)]])
 	# Ghế đá theo cặp; mỗi cặp gồm hai đoạn nhỏ ghép đầu-cuối.
 	var bench_pairs := [
 		{"position": Vector2(331, 1118)},

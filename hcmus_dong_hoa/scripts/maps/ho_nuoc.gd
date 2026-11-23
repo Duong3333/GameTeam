@@ -430,11 +430,6 @@ static func _draw_fountain_basin_and_jets(canvas: CanvasItem, c: Vector2, clock:
 # ─── 9. CẢNH QUAN CÂY XANH (HÀNG CAU VUA VÀ GHẾ ĐÁ CÔNG VIÊN) ─────────────────
 static func _draw_park_landscaping(canvas: CanvasItem, c: Vector2, show_vegetation: bool) -> void:
 	if show_vegetation:
-		for row in 3:
-			var py := c.y + R_PLAZA + 8.0 + float(row) * 17.0
-			_draw_palm_tree(canvas, Vector2(c.x - 18.0, py), 0.88)
-			_draw_palm_tree(canvas, Vector2(c.x + 18.0, py), 0.88)
-
 		for k in [1, 3, 5, 7]:
 			var ang: float = float(k) * PI * 0.25
 			var pp := c + Vector2(cos(ang), sin(ang)) * (R_PLAZA + 12.0)

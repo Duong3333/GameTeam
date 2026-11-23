@@ -53,14 +53,14 @@ const GATE_PANEL    := Rect2(GATE_X - 80.0, GATE_Y - 30.0, 68.0, 30.0)
 const GATE_BARRICADES := []
 const PARKING_SIGN  := Vector2(1000.0, 1150.0)
 const UMBRELLA_CART := Vector2(1700.0, 1360.0)
-const STREET_TREES  := [[1250.0, 1270.0, 0], [980.0, 1400.0, 0]]
+const STREET_TREES  := []
 const PARKING_LOT   := Rect2(172.0, 1182.0, 804.0, 258.0)
 const LANE_SW       := Rect2(172.0, 1440.0, 804.0, 30.0)
 const SHRINE_RECT   := Rect2(900.0, 1450.0, 12.0, 10.0)
 const DOG_POS       := Vector2(950.0, 1450.0)
 const VENDOR_CARTS  := [Vector2(1900.0, 1360.0), Vector2(1960.0, 1366.0), Vector2(2020.0, 1360.0)]
 const CART_SIZE     := Vector2(24.0, 12.0)
-const ADMIN_PALMS   := [[2240.0, 1380.0, 2], [2270.0, 1404.0, 2]]
+const ADMIN_PALMS   := []
 const STREET_POLES  := [
 	{"pos": Vector2(1190.0, 1100.0), "mirror": false},
 	{"pos": Vector2(1400.0, 1240.0), "mirror": true},
@@ -112,11 +112,7 @@ var ZONES := [
 	["Đường giữa Tòa F và G", Rect2(2161, 254, 80, 627)],
 ]
 # Hàng dừa vòng quanh đài phun nước (tọa độ tính trong draw_fountain_plaza)
-const PALMS := [
-	[1450, 180], [1500, 180], [1560, 180], [1620, 180],
-	[1710, 180], [1800, 180], [1860, 180],
-	[260, 160],  [310, 160],  [420, 160],  [470, 160],
-]
+const PALMS := []
 
 # Cửa được tính từ kích thước công trình để tự đi theo khi bản đồ thay đổi.
 func get_doorways() -> Array:

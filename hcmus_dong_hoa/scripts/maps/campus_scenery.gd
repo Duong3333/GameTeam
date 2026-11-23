@@ -106,8 +106,10 @@ func draw_ground() -> void:
 		rc(0, 0, border, WORLD.y, Color("3a7a2a"))
 		rc(WORLD.x - border, 0, border, WORLD.y, Color("3a7a2a"))
 		for x in range(10, int(WORLD.x) - 10, 48):
-			SE.draw_broad_tree(self, Vector2(x, 18), 0.7)
-			SE.draw_broad_tree(self, Vector2(x + 20, WORLD.y - 20), 0.7)
+			if x < 1240 or x > 1400:
+				SE.draw_broad_tree(self, Vector2(x, 18), 0.7)
+			if x < 1080 or x > 1530:
+				SE.draw_broad_tree(self, Vector2(x + 20, WORLD.y - 20), 0.7)
 		for y in range(10, int(WORLD.y) - 10, 48):
 			SE.draw_broad_tree(self, Vector2(18, y), 0.7)
 			SE.draw_broad_tree(self, Vector2(WORLD.x - 20, y + 20), 0.7)
@@ -146,17 +148,6 @@ func draw_ground() -> void:
 		GATE_APPROACH_ROAD.size.x,
 		GATE_APPROACH_ROAD.size.y + 2.0
 	), false)
-
-	# ── Dải phân cách trục đường dọc ──
-	if SHOW_VEGETATION:
-		SE.draw_road_divider(self, Vector2(1322, 100), Vector2(1322, 850), 20.0)
-		var dy := 100.0
-		while dy < 840.0:
-			if int(dy / 100) % 2 == 0:
-				SE.draw_pine_tree(self, Vector2(1322, dy), 0.75)
-			else:
-				SE.draw_palm_tree(self, Vector2(1322, dy), 0.70)
-			dy += 100.0
 
 	# ── Vạch qua đường tại các ngã tư lớn ──
 	if SHOW_ROAD_MARKINGS:
