@@ -78,7 +78,13 @@ func setup_collision() -> void:
 	solids.append_array(HoNuoc.collision_rects(FOUNTAIN_CENTER))
 	solids.append(Rect2(0, GATE_Y, GATE_X, 14))
 	solids.append(Rect2(GATE_X + GATE_W, GATE_Y, WORLD.x - GATE_X - GATE_W, 14))
+	# Cột cổng 2 bên và cổng xếp phía trái
+	solids.append(Rect2(GATE_X - 14.0, GATE_Y - 50.0, 16.0, 64.0))
+	solids.append(Rect2(GATE_X + GATE_W - 2.0, GATE_Y - 50.0, 16.0, 64.0))
+	solids.append(Rect2(GATE_PANEL.position.x, GATE_PANEL.position.y, GATE_PANEL.size.x, GATE_PANEL.size.y))
 	solids.append(Rect2(GUARD_BOOTH.position.x, GUARD_BOOTH.position.y, GUARD_BOOTH.size.x, GUARD_BOOTH.size.y))
+	for s in STALLS:
+		solids.append(s["rect"])
 	solids.append(PARKING1_RECT)
 	solids.append(PARKING2_RECT)
 

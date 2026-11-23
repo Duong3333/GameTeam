@@ -304,29 +304,11 @@ func draw_street_cable(a: Vector2, b: Vector2, sag: float) -> void:
 		pts.append(a.lerp(b, t) + Vector2(0.0, sin(PI * t) * sag))
 	draw_polyline(pts, Color("2a2d33"), 1.0)
 
-func draw_parking_signboard(p: Vector2) -> void:
-	if not view.grow(40.0).has_point(p):
-		return
-	shadow(p + Vector2(3, 0), 5.0)
-	rc(p.x - 1, p.y - 16, 2, 16, Color("8f959c"))
-	rc(p.x - 12, p.y - 30, 24, 15, Color("1e5aa8"))
-	rc(p.x - 12, p.y - 30, 24, 2,  Color("4c86d0"))
-	ctext("BÃI GIỮ XE", p.x - 12, p.y - 23, 24, 5, Color.WHITE)
-	rc(p.x - 8, p.y - 19, 12, 2, Color("ff9a3c"))
-	draw_colored_polygon(PackedVector2Array([Vector2(p.x + 8, p.y - 18), Vector2(p.x + 4, p.y - 21), Vector2(p.x + 4, p.y - 15)]), Color("ff9a3c"))
+func draw_parking_signboard(_p: Vector2) -> void:
+	pass
 
 func draw_street_furniture() -> void:
-	for pole in STREET_POLES:
-		draw_street_pole(pole["pos"], pole["mirror"])
-	for t in STREET_TREES:
-		draw_tree(t)
-	draw_parking_signboard(PARKING_SIGN)
-	for c in STREET_CABLES:
-		var a: Vector2 = STREET_POLES[c[0]]["pos"] + Vector2(0.0, -44.0)
-		var b: Vector2 = STREET_POLES[c[1]]["pos"] + Vector2(0.0, -44.0)
-		draw_street_cable(a, b, 6.0)
-		draw_street_cable(a + Vector2(0.0, 3.0), b + Vector2(0.0, 3.0), 7.0)
-	# Cột cờ tại cổng và trước Nhà Điều hành
+	# Cột cờ trang trọng 2 bên cổng
 	SE.draw_flag_pole(self, Vector2(GATE_X - 50, GATE_Y - 60))
 	SE.draw_flag_pole(self, Vector2(GATE_X + GATE_W + 50, GATE_Y - 60))
 
@@ -365,13 +347,6 @@ func draw_national_flag(top_left: Vector2, w: float = 24.0, h: float = 16.0) -> 
 	draw_colored_polygon(pts, Color("ffde00"))
 
 func draw_school_gate() -> void:
-	for px in [GATE_X - 14.0, GATE_X + GATE_W - 2.0]:
-		rc(px, GATE_Y - 50, 16, 64, Color("8e3b32"))
-		rc(px, GATE_Y - 50, 5, 64, Color("a84c42"))
-	rc(GATE_X - 14, GATE_Y - 64, GATE_W + 28, 15, Color("1e5aa8"))
-	rc(GATE_X - 14, GATE_Y - 64, GATE_W + 28, 2, Color("4c86d0"))
-	ctext("HCMUS", GATE_X - 14, GATE_Y - 54, GATE_W + 28, 10, Color.WHITE)
-	draw_folding_gate(GATE_PANEL)
 	var right_x := GATE_X + GATE_W + 14.0
 	var right_w := WORLD.x - right_x
 	rc(0, GATE_Y, GATE_X - 14, 14, Color("b9b2a5"))
@@ -379,8 +354,16 @@ func draw_school_gate() -> void:
 	rc(0, GATE_Y, GATE_X - 14, 3, Color("d6d0c4"))
 	rc(right_x, GATE_Y, right_w, 3, Color("d6d0c4"))
 	draw_gate_booth()
-	for b in GATE_BARRICADES:
-		draw_red_barricade(b)
+
+# Cổng chào HCMUS trên cao: cột và xà ngang được vẽ theo chiều sâu để người chơi đi xuyên qua bên dưới, không bị đi đè lên cổng
+func draw_gate_arch() -> void:
+	for px in [GATE_X - 14.0, GATE_X + GATE_W - 2.0]:
+		rc(px, GATE_Y - 50, 16, 64, Color("8e3b32"))
+		rc(px, GATE_Y - 50, 5, 64, Color("a84c42"))
+	rc(GATE_X - 14, GATE_Y - 64, GATE_W + 28, 15, Color("1e5aa8"))
+	rc(GATE_X - 14, GATE_Y - 64, GATE_W + 28, 2, Color("4c86d0"))
+	ctext("HCMUS", GATE_X - 14, GATE_Y - 54, GATE_W + 28, 10, Color.WHITE)
+	draw_folding_gate(GATE_PANEL)
 
 # ─── HỒ NƯỚC (tái dùng ho_nuoc.gd cho animation phun nước) ──────────────────
 func lake_poly(c: Vector2, rx: float, ry: float, n: int = 40) -> PackedVector2Array:

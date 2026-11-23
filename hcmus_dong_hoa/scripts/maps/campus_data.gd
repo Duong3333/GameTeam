@@ -51,49 +51,33 @@ const STRIP_T1      := Rect2(1507.0, 1129.0, 72.0, GATE_Y - 1129.0)
 const GUARD_BOOTH   := Rect2(1424.0, 1400.0, 36.0, 30.0)
 const GATE_PANEL    := Rect2(GATE_X - 80.0, GATE_Y - 30.0, 68.0, 30.0)
 const GATE_BARRICADES := []
-const PARKING_SIGN  := Vector2(1000.0, 1150.0)
-const UMBRELLA_CART := Vector2(1700.0, 1360.0)
+const PARKING_SIGN  := Vector2(-1000.0, -1000.0)
+const UMBRELLA_CART := Vector2(-1000.0, -1000.0)
 const STREET_TREES  := []
 const PARKING_LOT   := Rect2(172.0, 1182.0, 804.0, 258.0)
 const LANE_SW       := Rect2(172.0, 1440.0, 804.0, 30.0)
-const SHRINE_RECT   := Rect2(900.0, 1450.0, 12.0, 10.0)
-const DOG_POS       := Vector2(950.0, 1450.0)
-const VENDOR_CARTS  := [Vector2(1900.0, 1360.0), Vector2(1960.0, 1366.0), Vector2(2020.0, 1360.0)]
+const SHRINE_RECT   := Rect2(-1000.0, -1000.0, 0.0, 0.0)
+const DOG_POS       := Vector2(-1000.0, -1000.0)
+const VENDOR_CARTS  := []
 const CART_SIZE     := Vector2(24.0, 12.0)
 const ADMIN_PALMS   := []
-const STREET_POLES  := [
-	{"pos": Vector2(1190.0, 1100.0), "mirror": false},
-	{"pos": Vector2(1400.0, 1240.0), "mirror": true},
-	{"pos": Vector2(1400.0, 1360.0), "mirror": false},
-	{"pos": Vector2(1190.0, 1320.0), "mirror": false},
-]
-const STREET_CABLES := [[0, 1], [1, 2], [0, 3], [0, 2], [2, 3]]
+const STREET_POLES  := []
+const STREET_CABLES := []
 const SHOP_X := 1580.0
 const SHOP_W := 60.0
 const SHOP_H := 36.0
 
-# Dãy quán nội bộ trường (khu bên phải cổng). kind: fashion | salon | phone | book | food | drink
-var SHOPS := [
-	{"id": "tien_thanh", "kind": "fashion", "name": "TIẾN THÀNH", "rect": Rect2(SHOP_X, 1250.0, SHOP_W, SHOP_H), "wall": Color("23252b"), "accent": Color("e0b020"), "desc": "Thời trang Tiến Thành - quần áo, nón bảo hiểm."},
-	{"id": "chigano",    "kind": "salon",   "name": "CHIGANO",    "rect": Rect2(SHOP_X, 1292.0, SHOP_W, SHOP_H), "wall": Color("2b2d33"), "accent": Color("c0262d"), "desc": "Chigano Salon - tóc nam nữ."},
-	{"id": "a_bien",     "kind": "phone",   "name": "A BIỂN",     "rect": Rect2(SHOP_X, 1334.0, SHOP_W, SHOP_H), "wall": Color("f3f1ec"), "accent": Color("4aa44f"), "desc": "A Biển - phụ kiện điện thoại, dán cường lực 15K."},
-	{"id": "nha_sach",   "kind": "book",    "name": "NHÀ SÁCH",   "rect": Rect2(SHOP_X, 1376.0, SHOP_W, SHOP_H), "wall": Color("e6d8b0"), "accent": Color("2f7d32"), "desc": "Nhà sách - vở, bút, giáo trình photo."},
-	{"id": "bun_cha",    "kind": "food",    "name": "BÚN CHẢ",    "rect": Rect2(SHOP_X, 1414.0, SHOP_W, SHOP_H), "wall": Color("f2e6c9"), "accent": Color("c0262d"), "desc": "Quán bún chả, sinh tố - ăn nhanh cho sinh viên."},
-	{"id": "quan_nuoc",  "kind": "drink",   "name": "QUÁN NƯỚC",  "rect": Rect2(SHOP_X, 1450.0, 50.0,  28.0),  "wall": Color("f2e6c9"), "accent": Color("3a8f4a"), "desc": "Quán nước dưới gốc cây - trà đá, nước mía."},
-]
+# Dãy quán nội bộ đã được dọn sạch theo yêu cầu
+var SHOPS := []
 
-# Nhà dân mái tôn dọc hẻm phía nam bãi xe.
-var HOUSES := [
-	{"id": "nha_tro",  "name": "NHÀ TRỌ",  "rect": Rect2(60.0,  1450.0, 80.0, 38.0), "wall": Color("e8dcc0"), "roof": Color("8f959c"), "door": Color("5a3a22")},
-	{"id": "tap_hoa",  "name": "TẠP HÓA",  "rect": Rect2(154.0, 1450.0, 72.0, 38.0), "wall": Color("f2e6c9"), "roof": Color("b5651d"), "door": Color("2e3a44")},
-	{"id": "giat_ui",  "name": "GIẶT ỦI",  "rect": Rect2(240.0, 1450.0, 88.0, 38.0), "wall": Color("d9e4d2"), "roof": Color("6e747b"), "door": Color("8e3b32")},
-]
+# Nhà dân đã được xóa theo yêu cầu
+var HOUSES := []
 
-# Quầy vỉa hè. kind: stool | cart | drink
+# Mấy quầy tạp hóa / quán nước sinh viên đặt gọn gàng ở bãi cỏ phía dưới
 var STALLS := [
-	{"id": "an_vat",      "kind": "stool", "rect": Rect2(600.0, 1450.0, 60.0, 30.0), "accent": Color("3a9a63")},
-	{"id": "xe_day",      "kind": "cart",  "rect": Rect2(676.0, 1450.0, 28.0, 16.0), "accent": Color("ffd23f")},
-	{"id": "nuoc_goc_cay","kind": "drink", "rect": Rect2(820.0, 1450.0, 50.0, 30.0), "accent": Color("c0262d")},
+	{"id": "tap_hoa",      "kind": "drink", "rect": Rect2(520.0, 1450.0, 60.0, 28.0), "accent": Color("3a8f4a")},
+	{"id": "an_vat",       "kind": "stool", "rect": Rect2(610.0, 1450.0, 56.0, 28.0), "accent": Color("3a9a63")},
+	{"id": "nuoc_goc_cay", "kind": "drink", "rect": Rect2(700.0, 1450.0, 56.0, 28.0), "accent": Color("c0262d")},
 ]
 
 var ZONES := [
@@ -179,34 +163,13 @@ func admin_hedge_banks() -> Array[Rect2]:
 # Nguồn duy nhất cho va chạm của phần mở rộng (vẽ và chặn dùng chung dữ liệu).
 func frontage_solid_rects() -> Array[Rect2]:
 	var out: Array[Rect2] = []
-	for s in SHOPS:
-		out.append(s["rect"])
-	if SHOW_VEGETATION:
-		for t in STREET_TREES + ADMIN_PALMS:
-			out.append(Rect2(t[0] - 2.0, t[1] - 4.0, 5.0, 4.0))
-	for pole in STREET_POLES:
-		var p: Vector2 = pole["pos"]
-		out.append(Rect2(p.x - 2.0, p.y - 3.0, 4.0, 3.0))
 	out.append(GUARD_BOOTH)
 	out.append(Rect2(GATE_PANEL.position.x, GATE_PANEL.end.y - 6.0, GATE_PANEL.size.x, 6.0))
-	for b in GATE_BARRICADES:
-		out.append(b)
-	for b in admin_barricades():
-		out.append(b)
 	if SHOW_VEGETATION:
 		for b in admin_hedge_banks():
 			out.append(b)
-		for q in admin_topiary_points():
-			out.append(Rect2(q.x - 5.0, q.y - 7.0, 10.0, 7.0))
-	out.append(Rect2(UMBRELLA_CART.x, UMBRELLA_CART.y, 20.0, 10.0))
-	out.append(Rect2(PARKING_SIGN.x - 1.0, PARKING_SIGN.y - 2.0, 3.0, 2.0))
-	for h in HOUSES:
-		out.append(h["rect"])
 	for s in STALLS:
 		out.append(s["rect"])
-	out.append(SHRINE_RECT)
-	for c in VENDOR_CARTS:
-		out.append(Rect2(c, CART_SIZE))
 	return out
 
 

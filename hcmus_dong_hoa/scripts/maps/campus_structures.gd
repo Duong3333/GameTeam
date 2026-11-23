@@ -204,42 +204,13 @@ func draw_frontage_overlay() -> void:
 	draw_t1_shops()
 	draw_dieuhanh_front()
 
-# ---------- HẺM NHÀ DÂN, QUÁN VỈA HÈ ----------
+# ---------- QUÁN VỈA HÈ / QUẦY TẠP HÓA BÃI CỎ PHÍA DƯỚI ----------
 func draw_lane_block() -> void:
-	for h in HOUSES:
-		draw_house(h)
 	for s in STALLS:
 		draw_stall(s)
-	draw_shrine(SHRINE_RECT)
-	draw_dog(DOG_POS)
-	for c in VENDOR_CARTS:
-		draw_vendor_cart(c, Color("e86aa0"), Color("ffd23f"))
 
-func draw_house(h: Dictionary) -> void:
-	var r: Rect2 = h["rect"]
-	if not view.intersects(r.grow(16.0)):
-		return
-	var wall: Color = h["wall"]
-	var roof: Color = h["roof"]
-	var x := r.position.x
-	var y := r.position.y
-	shadow(Vector2(x + r.size.x * 0.5 + 4.0, r.end.y + 1.0), r.size.x * 0.55)
-	rc(x, y + 10, r.size.x, r.size.y - 10, wall)
-	rc(x, r.end.y - 4, r.size.x, 4, wall.darkened(0.15))
-	rc(x - 2, y, r.size.x + 4, 12, roof)
-	for i in range(0, int(r.size.x) + 4, 4):
-		rc(x - 2 + i, y, 1, 12, roof.darkened(0.2))
-	rc(x - 2, y, r.size.x + 4, 2, roof.lightened(0.25))
-	rc(x - 2, y + 12, r.size.x + 4, 2, Color(0, 0, 0, 0.25))
-	rc(x, y + 14, r.size.x, 5, Color("f2e6c9"))
-	ctext(h["name"], x, y + 18, r.size.x, 5, Color("2b2b2b"))
-	rc(x + 6, y + 20, 14, r.size.y - 20, h["door"])
-	if r.size.x >= 56.0:
-		rc(x + 26, y + 21, 12, 7, Color("8fc9e6"))
-		rc(x + 26, y + 21, 12, 2, Color("c8e8f7"))
-	rc(x + r.size.x - 10, r.end.y - 7, 6, 5, Color("b5651d"))
-	draw_circle(Vector2(x + r.size.x - 7.0, r.end.y - 9.0), 3.0, Color("3c9a40"))
-	draw_rect(r, Color("2b2b2b"), false, 1.0)
+func draw_house(_h: Dictionary) -> void:
+	pass
 
 func draw_stall(s: Dictionary) -> void:
 	var r: Rect2 = s["rect"]
@@ -316,8 +287,7 @@ func draw_dog(p: Vector2) -> void:
 
 # ---------- DÃY QUÁN ĐƯỜNG T1 ----------
 func draw_t1_shops() -> void:
-	for s in SHOPS:
-		draw_t1_shop(s)
+	pass
 
 func draw_t1_shop(s: Dictionary) -> void:
 	var r: Rect2 = s["rect"]
@@ -511,15 +481,6 @@ func draw_dieuhanh_front() -> void:
 	if SHOW_VEGETATION:
 		draw_admin_hedge_banks()
 	draw_admin_rails()
-	if SHOW_VEGETATION:
-		for p in admin_topiary_points():
-			draw_admin_topiary(p)
-	for b in admin_barricades():
-		draw_red_barricade(b)
-	if SHOW_VEGETATION:
-		for t in ADMIN_PALMS:
-			draw_tree(t)
-	draw_vendor_cart(UMBRELLA_CART)
 
 # ---------- VA CHẠM MẶT TIỀN ----------
 # Gọi một lần trong _ready(), sau khi dữ liệu đã sẵn sàng:

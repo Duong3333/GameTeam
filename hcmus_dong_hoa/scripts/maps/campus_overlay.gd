@@ -51,6 +51,8 @@ func draw_sorted_items() -> void:
 		items.append([l.y, 3, l])
 	for bn in benches:
 		items.append([get_bench_position(bn).y, 4, bn])
+	# Cổng trường: vẽ cột và xà ngang cổng HCMUS theo chiều sâu y để nhân vật đi xuyên bên dưới
+	items.append([GATE_Y + 14.0, 6, null])
 	items.append([player.y, 2, null])
 	items.sort_custom(func(a, b): return a[0] < b[0])
 	for it in items:
@@ -62,6 +64,9 @@ func draw_sorted_items() -> void:
 		elif it[1] == 4:
 			if view.has_point(get_bench_position(it[2])):
 				draw_bench(it[2])
+		elif it[1] == 6:
+			if view.intersects(Rect2(GATE_X - 100.0, GATE_Y - 70.0, GATE_W + 200.0, 100.0)):
+				draw_gate_arch()
 		elif it[1] == 1:
 			var n: Dictionary = it[2]
 			if not view.has_point(n.pos):
