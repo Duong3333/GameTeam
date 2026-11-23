@@ -71,7 +71,8 @@ func draw_bench(bench: Variant) -> void:
 	var half_bounds := Vector2(11.0, length * 0.5 + 2.0) if vertical else Vector2(length * 0.5 + 2.0, 11.0)
 	if not view.intersects(Rect2(p - half_bounds, half_bounds * 2.0)):
 		return
-	shadow(p + Vector2(0, 1), length * 0.6, PI * 0.5 if vertical else 0.0)
+	if not (bench is Dictionary and bool(bench.get("study_seat", false))):
+		shadow(p + Vector2(0, 1), length * 0.6, PI * 0.5 if vertical else 0.0)
 	draw_set_transform(p, PI * 0.5 if vertical else 0.0, Vector2.ONE)
 	rc(-length * 0.5, -9, length, 3, Color("8a5a32"))
 	rc(-length * 0.5, -6, length, 2, Color("a8733f"))
@@ -130,11 +131,15 @@ func draw_ground() -> void:
 		for y in range(0, int(WORLD.y), 44):
 			rc(1321, y, 3, 24, Color("e8e8e8"))
 	paved(Rect2(1249, 0, 19, 879), beige)
+	# Vỉa hè chạy song song ở mép đông đường dọc; đường ngang sẽ vẽ đè tại giao lộ.
+	paved(Rect2(1377, 0, 18, 881), beige)
 	# ── Trục đường ngang phía bắc (từ Căn tin / Tòa C qua ngã tư tới Nhà Thể Dục và Bãi xe 2) ──
 	asphalt(Rect2(669, 191, 599, 63))
 	asphalt(Rect2(1377, 191, WORLD.x - 1377, 63))
 	paved(Rect2(669, 176, 580, 15), beige)
 	paved(Rect2(1377, 176, WORLD.x - 1377, 15), beige)
+	# Vỉa hè phía nam của đường trước Căn tin / Nhà Thể Dục / Bãi xe 2.
+	paved(Rect2(669, 254, 599, 15), beige)
 	paved(Rect2(1085, 107, 60, 69), beige) # Lối đi bộ nối từ vỉa hè lên sảnh Tòa B4.2
 	asphalt(Rect2(1822, 254, 97, 581), false)
 	paved(Rect2(1804, 254, 18, 581), beige)
@@ -172,9 +177,6 @@ func draw_ground() -> void:
 	# 1. Nối Tòa A sang Hội trường B
 	paved(Rect2(196, 370, 46, 26), beige)
 	# 2. Lối đi từ Hội trường B xuống We Love HCMUS & nối xuống trục chính
-	paved(Rect2(350, 455, 24, 65), beige)
-	paved(Rect2(90, 520, 284, 24), beige)
-	paved(Rect2(90, 520, 24, 315), beige)
 	# 3. Nối Hội trường B sang Tòa C
 	paved(Rect2(477, 370, 47, 26), beige)
 	# 4. Nhánh nối giữa Tòa C và Tòa D (chữ T nối C-D và chạy thẳng xuống đường chính)
@@ -215,6 +217,11 @@ func draw_ground() -> void:
 			lb.position + Vector2(0, lb.size.y), 8.0)
 		SE.draw_trimmed_hedge(self, lb.position + Vector2(lb.size.x, 0),
 			lb.position + Vector2(lb.size.x, lb.size.y), 8.0)
+	# Walk from Hội trường B, turn left before the We Love HCMUS lettering,
+	# then continue down beside the lawn to the lower cross-campus sidewalk.
+	paved(Rect2(350, 455, 24, 65), beige)
+	paved(Rect2(220, 520, 154, 24), beige)
+	paved(Rect2(220, 520, 24, 315), beige)
 
 	# ── BÃI GIỮ XE SỐ 1 (XE MÁY) — module bai_xe.gd ──
 	var p1 := PARKING1_RECT

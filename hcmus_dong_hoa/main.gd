@@ -17,8 +17,8 @@ func _ready() -> void:
 	add_child(stats)
 	audio = AudioManager.new()
 	add_child(audio)
-	# Nhạc piano chỉ phát khi vào Nhà Điều hành (do nha_dieu_hanh.gd kích hoạt).
-	# Ngoài trời không có nhạc nền — chỉ tiếng bước chân và âm thanh khuôn viên.
+	# Start the outdoor theme; the executive building swaps this for piano on entry.
+	audio.play_music("themeMusicInGame")
 	setup_features()
 
 func _physics_process(delta: float) -> void:

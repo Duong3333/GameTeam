@@ -43,6 +43,11 @@ func draw_fountain_dynamic() -> void:
 
 func draw_sorted_items() -> void:
 	var items: Array = []
+	# Draw the desk surfaces inside this world canvas, underneath the ordinary
+	# y-sorted pass. This prevents both the baked layer and furniture shadow nodes
+	# from hiding the desks or the characters sitting at them.
+	for table_center in study_tables:
+		_draw_study_table(table_center)
 	for t in trees:
 		items.append([float(t[1]), 0, t])
 	for n in npcs:
@@ -78,7 +83,9 @@ func draw_sorted_items() -> void:
 			var n: Dictionary = it[2]
 			if not view.has_point(n.pos):
 				continue
-			draw_person(n.pos, n.shirt, n.hair, n.face, n.anim, n.uni, n.long, n.pack)
+			draw_person(n.pos, n.shirt, n.hair, n.face, n.anim, n.uni, n.long, n.pack, n.get("study", false))
+			if n.get("study", false):
+				_draw_study_book(n)
 			if n.get("quiz", false):
 				draw_quiz_marker(n)
 			if n.say_t > 0.0:
@@ -86,6 +93,31 @@ func draw_sorted_items() -> void:
 		else:
 			draw_person(player, Color.WHITE, Color("1b1b1b"), facing, anim, true, false, true)
 			ctext("Bạn", player.x - 15, player.y - 28, 30, 8, Color("ffd23f"))
+
+func _draw_study_book(n: Dictionary) -> void:
+	# Place the open book on the near half of the tabletop for either seating side.
+	var page_y: float = n.pos.y + 16.0 if int(n.face) == 0 else n.pos.y - 27.0
+	var page := Rect2(n.pos.x + 10.0, page_y, 15.0, 10.0)
+	rc(page.position.x - 1.0, page.position.y + 1.0, page.size.x + 2.0, page.size.y + 1.0, Color("49301f"))
+	rc(page.position.x, page.position.y, page.size.x, page.size.y, Color("fff2cf"))
+	rc(page.position.x + 7.0, page.position.y, 1.0, page.size.y, Color("bb9c70"))
+	rc(page.position.x + 2.0, page.position.y + 3.0, 4.0, 1.0, Color("7f8b9a"))
+	rc(page.position.x + 9.0, page.position.y + 3.0, 4.0, 1.0, Color("7f8b9a"))
+
+func _draw_study_table(center: Vector2) -> void:
+	var left := center.x - 56.0
+	var top := center.y - 24.0
+	# Compact wooden apron and two supports, with a clear top face and board grain.
+	rc(left + 8.0, top + 7.0, 10.0, 34.0, Color("54351f"))
+	rc(left + 94.0, top + 7.0, 10.0, 34.0, Color("54351f"))
+	rc(left + 3.0, top + 4.0, 106.0, 38.0, Color("54351f"))
+	rc(left, top + 1.0, 112.0, 39.0, Color("80512e"))
+	rc(left + 2.0, top + 2.0, 108.0, 34.0, Color("a8733f"))
+	rc(left + 5.0, top + 5.0, 102.0, 2.0, Color("c28a52"))
+	rc(left + 6.0, top + 13.0, 100.0, 1.0, Color("8a5b35"))
+	rc(left + 6.0, top + 23.0, 100.0, 1.0, Color("8a5b35"))
+	rc(left + 6.0, top + 31.0, 100.0, 2.0, Color("c28a52"))
+	rc(left + 2.0, top + 2.0, 1.0, 34.0, Color("d09a5d"))
 
 func draw_sky_effects() -> void:
 	for c in clouds:

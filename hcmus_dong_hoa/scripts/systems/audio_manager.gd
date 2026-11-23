@@ -12,11 +12,13 @@ const SFX_CHANNELS := 6
 
 var _sfx_players: Array = []
 var _music: AudioStreamPlayer
+var _loop_music := false
 
 func _ready() -> void:
 	_music = AudioStreamPlayer.new()
 	_music.volume_db = -15.0
 	add_child(_music)
+	_music.finished.connect(_on_music_finished)
 	for i in SFX_CHANNELS:
 		var p := AudioStreamPlayer.new()
 		add_child(p)
@@ -45,8 +47,14 @@ func play_music(sound_name: String) -> void:
 		return
 	if _music.stream == s and _music.playing:
 		return
+	_loop_music = true
 	_music.stream = s
 	_music.play()
 
 func stop_music() -> void:
+	_loop_music = false
 	_music.stop()
+
+func _on_music_finished() -> void:
+	if _loop_music and _music.stream != null:
+		_music.play()

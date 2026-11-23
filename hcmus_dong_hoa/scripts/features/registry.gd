@@ -17,4 +17,5 @@ const LIST := [
 	"res://scripts/features/daily_summary.gd",   # Tổng kết cuối ngày (tự bật khi qua ngày mới hoặc nhấn F9)
 	"res://scripts/features/admin_time.gd",      # Chế độ admin: tua tuần, thứ và giờ từ menu Esc
 	"res://scripts/features/bench_sitting.gd",   # Bấm E để ngồi và đứng dậy khỏi ghế đá
+	"res://scripts/features/chidori.gd",         # Thử nghiệm Chidori: bấm J gần NPC
 ]

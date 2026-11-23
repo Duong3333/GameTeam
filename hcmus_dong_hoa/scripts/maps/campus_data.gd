@@ -99,11 +99,10 @@ var ZONES := [
 const PALMS := []
 
 # Danh sách các đoạn mái vòm hành lang (x_start, x_end, y):
-# Bố cục mới: mái vòm nối liền một dải từ dưới hồ nước tới Tòa G,
-# và đoạn vỉa hè trước Bãi xe số 1.
+# Mái vòm chạy dọc vỉa hè phía trên Bãi xe số 1 và từ hồ nước tới Tòa G.
 const WALKWAY_SECTIONS := [
-	# Đoạn vỉa hè trước Bãi xe số 1
-	{"start_x": 180.0,  "end_x": 976.0,  "y": 1118.0},
+	# Vỉa hè ngang phía trên Bãi xe số 1
+	{"start_x": 180.0, "end_x": 976.0, "y": 1118.0},
 	# Mái vòm nối liền một dải từ dưới hồ nước tới Tòa G
 	{"start_x": 1390.0, "end_x": 2465.0, "y": 844.0},
 ]

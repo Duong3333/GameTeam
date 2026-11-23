@@ -22,6 +22,8 @@ func update_player(delta: float) -> void:
 
 func update_npcs(delta: float) -> void:
 	for n in npcs:
+		if n.get("study", false):
+			continue
 		if n.get("quiz", false):
 			continue
 		n.timer -= delta

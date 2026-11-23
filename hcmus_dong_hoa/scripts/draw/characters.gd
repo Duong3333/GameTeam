@@ -2,7 +2,7 @@ extends "res://scripts/maps/campus_structures.gd"
 # NHÂN VẬT: người (người chơi + NPC), bóng thoại, xe máy.
 
 # nhân vật pixel: áo polo trường (cổ xanh navy sọc trắng, vai trắng, thân và tay navy, logo ngực)
-func draw_person(pos: Vector2, shirt: Color, hair: Color, face: int, step: float, uni: bool, long_hair: bool, pack: bool) -> void:
+func draw_person(pos: Vector2, shirt: Color, hair: Color, face: int, step: float, uni: bool, long_hair: bool, pack: bool, seated: bool = false) -> void:
 	var skin := Color("f1c27d")
 	var ol := Color("1a1a2e")
 	var navy := Color("1b2f6e")
@@ -13,13 +13,19 @@ func draw_person(pos: Vector2, shirt: Color, hair: Color, face: int, step: float
 	var show_l := not (pos == player and (hidden_arms & 1) != 0)
 	var show_r := not (pos == player and (hidden_arms & 2) != 0)
 	shadow(pos + Vector2(0, 1), 8.0)
-	# chân và giày
-	rc(pos.x - 5, pos.y - 7 + sw, 4, 7 - sw, ol)
-	rc(pos.x + 1, pos.y - 7 + (1.0 - sw), 4, 7 - (1.0 - sw), ol)
-	rc(pos.x - 4, pos.y - 6 + sw, 2, 4 - sw, Color("2b2f4a"))
-	rc(pos.x + 2, pos.y - 6 + (1.0 - sw), 2, 4 - (1.0 - sw), Color("2b2f4a"))
-	rc(pos.x - 4, pos.y - 2 + sw * 0.0, 3, 2, Color("f4f4f4"))
-	rc(pos.x + 1, pos.y - 2, 3, 2, Color("f4f4f4"))
+	# Legs tucked under the seat when seated, walking legs otherwise.
+	if seated:
+		rc(pos.x - 7, pos.y - 6, 14, 4, ol)
+		rc(pos.x - 6, pos.y - 5, 12, 2, Color("2b2f4a"))
+		rc(pos.x - 8, pos.y - 3, 7, 2, Color("f4f4f4"))
+		rc(pos.x + 1, pos.y - 3, 7, 2, Color("f4f4f4"))
+	else:
+		rc(pos.x - 5, pos.y - 7 + sw, 4, 7 - sw, ol)
+		rc(pos.x + 1, pos.y - 7 + (1.0 - sw), 4, 7 - (1.0 - sw), ol)
+		rc(pos.x - 4, pos.y - 6 + sw, 2, 4 - sw, Color("2b2f4a"))
+		rc(pos.x + 2, pos.y - 6 + (1.0 - sw), 2, 4 - (1.0 - sw), Color("2b2f4a"))
+		rc(pos.x - 4, pos.y - 2 + sw * 0.0, 3, 2, Color("f4f4f4"))
+		rc(pos.x + 1, pos.y - 2, 3, 2, Color("f4f4f4"))
 	var by := pos.y - bob
 	# ba lô (phía sau lưng)
 	if pack and face == 1:

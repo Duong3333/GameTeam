@@ -47,6 +47,8 @@ func _nearest_bench() -> int:
 	var best_distance := BENCH_RANGE
 	for i in range(game.benches.size()):
 		var bench: Variant = game.benches[i]
+		if bench is Dictionary and bool(bench.get("occupied", false)):
+			continue
 		var bench_pos: Vector2 = game.get_bench_position(bench)
 		var distance: float = game.player.distance_to(bench_pos)
 		if distance <= best_distance:
@@ -72,7 +74,7 @@ func _stand_up() -> bool:
 	var bench_pos: Vector2 = game.get_bench_position(bench)
 	var facing := int(bench.get("face", 2 if _is_vertical(bench) else 0)) if bench is Dictionary else 0
 	var facing_offset: Vector2 = [Vector2(0, 12), Vector2(0, -12), Vector2(-12, 0), Vector2(12, 0)][facing]
-	var side_offset := Vector2(12, 0) if _is_vertical(bench) else Vector2(0, 12)
+	var side_offset := Vector2(0, 28) if bench is Dictionary and bench.get("study_seat", false) else (Vector2(12, 0) if _is_vertical(bench) else Vector2(0, 12))
 	var offsets: Array = [facing_offset, -facing_offset, side_offset, -side_offset]
 	for offset in offsets:
 		var stand_pos: Vector2 = bench_pos + offset

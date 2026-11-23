@@ -5,6 +5,7 @@ const CLOUD_COUNT := 3   # số đám mây trôi trên khuôn viên (trước đ
 
 var _static_bg
 var _bg_rect := Rect2()
+var study_tables: Array[Vector2] = []
 
 func hs(a: int, b: int) -> int:
 	return absi((a * 73856093) ^ (b * 19349663)) % 100
@@ -18,6 +19,7 @@ func setup_world() -> void:
 	setup_decor()
 	_bake_static_grass()
 	setup_camera()
+	setup_stone_bench_area()
 	setup_overlay()
 	setup_hud()
 
@@ -107,6 +109,8 @@ func get_vegetation_blocked_areas() -> Array[Rect2]:
 	# Trục đường ngang & dọc chính và vỉa hè
 	list.append(Rect2(0, 825, WORLD.x, 275))
 	list.append(Rect2(655, 168, WORLD.x - 655, 96))
+	list.append(Rect2(655, 248, 613, 28))
+	list.append(Rect2(1373, 0, 26, 895))
 	list.append(Rect2(1235, 0, 155, 895))
 	list.append(Rect2(1790, 245, 160, 645))
 	list.append(Rect2(2130, 245, 140, 645))
@@ -130,8 +134,8 @@ func get_vegetation_blocked_areas() -> Array[Rect2]:
 	# Lối đi bộ nối giữa các tòa
 	list.append(Rect2(185, 355, 70, 55))
 	list.append(Rect2(335, 445, 55, 85))
-	list.append(Rect2(75, 505, 315, 55))
-	list.append(Rect2(75, 505, 55, 345))
+	list.append(Rect2(205, 505, 170, 55))
+	list.append(Rect2(205, 505, 55, 345))
 	list.append(Rect2(465, 355, 70, 55))
 	list.append(Rect2(655, 505, 180, 55))
 	list.append(Rect2(718, 505, 55, 345))
@@ -286,10 +290,6 @@ func setup_decor() -> void:
 		{"position": Vector2(1468, 1258), "vertical": true, "face": 2},
 		{"position": Vector2(1468, 1320), "vertical": true, "face": 2},
 		{"position": Vector2(1468, 1381), "vertical": true, "face": 2},
-		{"position": Vector2(1507, 629)},
-		{"position": Vector2(1468, 687), "vertical": true, "face": 3},
-		{"position": Vector2(1468, 727), "vertical": true, "face": 3},
-		{"position": Vector2(1468, 768), "vertical": true, "face": 3},
 	]
 	benches.clear()
 	for pair in bench_pairs:
@@ -382,6 +382,36 @@ func _draw_static_bg() -> void:
 		_static_bg.draw_building(b)
 	for k in KIOSKS:
 		_static_bg.draw_kiosk(k)
+
+func setup_stone_bench_area() -> void:
+	# Keep furniture in the world's own draw pass so it is never hidden by the
+	# baked background or painted over characters as a separate child layer.
+	study_tables.clear()
+	for i in 4:
+		var center := Vector2(1509.0 + float(i % 2) * 179.0, 660.0 + float(int(i / 2)) * 110.0)
+		study_tables.append(center)
+		var seat_offset := 24.0 + 13.0 + 8.5
+		var study_side := -1.0 if i % 2 == 0 else 1.0
+		for side in [-1.0, 1.0]:
+			var seat_pos := Vector2(center.x, center.y + side * seat_offset)
+			benches.append({
+				"position": seat_pos, "face": 0 if side < 0.0 else 1,
+				"length": 112.0, "study_seat": true, "occupied": side == study_side,
+			})
+		# Place the seated character's foot anchor on the bench center, slightly
+		# toward the table so the seat plank overlaps the lower legs naturally.
+		var study_pos := Vector2(center.x, center.y + study_side * (24.0 + 13.0 + 8.5 - 5.0))
+		npcs.append({
+			"pos": study_pos, "dir": Vector2.ZERO, "timer": 0.0,
+			"face": 0 if study_side < 0.0 else 1, "anim": 0.0,
+			"shirt": [Color("e07a5f"), Color("81b29a"), Color("f2cc8f"), Color("3d5a80")][i],
+			"hair": [Color("1b1b1b"), Color("3b2a1a"), Color("5a3a22"), Color("1b1b1b")][i],
+			"uni": i % 2 == 0, "long": i == 2, "pack": false,
+			"say": "", "say_t": 0.0, "study": true
+		})
+
+		# Chặn mặt bàn, nhưng để trống mặt ghế cho thao tác ngồi/đứng.
+		solids.append(Rect2(center - Vector2(56.0, 24.0), Vector2(112.0, 48.0)))
 
 func setup_hud() -> void:
 	var hl := CanvasLayer.new()
