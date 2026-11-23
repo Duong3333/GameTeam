@@ -99,15 +99,13 @@ var ZONES := [
 const PALMS := []
 
 # Danh sách các đoạn mái vòm hành lang (x_start, x_end, y):
-# Bố cục mới: chỉ áp dụng đoạn từ dưới hồ nước tới Tòa G,
-# bỏ đoạn từ Tòa A đến E và dời xuống dưới vỉa hè Bãi xe số 1.
+# Bố cục mới: mái vòm nối liền một dải từ dưới hồ nước tới Tòa G,
+# và đoạn vỉa hè trước Bãi xe số 1.
 const WALKWAY_SECTIONS := [
-	# Đoạn vỉa hè trước Bãi xe số 1 (dời từ khu A-E xuống)
+	# Đoạn vỉa hè trước Bãi xe số 1
 	{"start_x": 180.0,  "end_x": 976.0,  "y": 1118.0},
-	# Các đoạn phía đông: từ dưới hồ nước tới Tòa G
-	{"start_x": 1390.0, "end_x": 1800.0, "y": 844.0}, # Khu công viên hồ nước
-	{"start_x": 1935.0, "end_x": 2145.0, "y": 844.0}, # Phía trước Tòa F
-	{"start_x": 2255.0, "end_x": 2465.0, "y": 844.0}, # Phía trước Tòa G
+	# Mái vòm nối liền một dải từ dưới hồ nước tới Tòa G
+	{"start_x": 1390.0, "end_x": 2465.0, "y": 844.0},
 ]
 
 # Cửa được tính từ kích thước công trình để tự đi theo khi bản đồ thay đổi.

@@ -136,13 +136,19 @@ func draw_ground() -> void:
 	paved(Rect2(669, 176, 580, 15), beige)
 	paved(Rect2(1377, 176, WORLD.x - 1377, 15), beige)
 	paved(Rect2(1085, 107, 60, 69), beige) # Lối đi bộ nối từ vỉa hè lên sảnh Tòa B4.2
-	asphalt(Rect2(1822, 254, 97, 627), false)
-	paved(Rect2(1804, 254, 18, 625), beige)
-	paved(Rect2(1919, 254, 18, 625), beige)
-	# ── Trục đường bê tông / nhựa giữa Tòa F và Tòa G ──
-	asphalt(Rect2(2161, 254, 80, 627), false)
-	paved(Rect2(2143, 254, 18, 625), beige)
-	paved(Rect2(2241, 254, 18, 625), beige)
+	asphalt(Rect2(1822, 254, 97, 581), false)
+	paved(Rect2(1804, 254, 18, 581), beige)
+	paved(Rect2(1919, 254, 18, 581), beige)
+	# ── Trục đường bê tông / nhựa giữa Tòa F và Tòa G (dừng trước vỉa hè y=835) ──
+	asphalt(Rect2(2161, 254, 80, 581), false)
+	paved(Rect2(2143, 254, 18, 581), beige)
+	paved(Rect2(2241, 254, 18, 581), beige)
+	# Gờ đá kết thúc đường dọc giao vào vỉa hè
+	rc(1804, 834, 133, 2, Color("b0a898"))
+	rc(2143, 834, 116, 2, Color("b0a898"))
+	# ── Vỉa hè trắng nối liền một dải từ dưới hồ nước tới Tòa G ──
+	var white_pave := Color("f4f1ea")
+	paved(Rect2(1377, 835, WORLD.x - 1377, 44), white_pave)
 	asphalt(Rect2(
 		GATE_APPROACH_ROAD.position.x,
 		GATE_APPROACH_ROAD.position.y - 2.0,
@@ -153,7 +159,6 @@ func draw_ground() -> void:
 	# ── Vạch qua đường tại các ngã tư lớn ──
 	if SHOW_ROAD_MARKINGS:
 		SE.draw_zebra_crossing(self, Vector2(1268, 860), 109.0, 10.0, false)
-		SE.draw_zebra_crossing(self, Vector2(1822, 860), 97.0, 10.0, false)
 		SE.draw_zebra_crossing(self, Vector2(1268, 540), 109.0, 10.0, true)
 
 	if SHOW_VEGETATION:
