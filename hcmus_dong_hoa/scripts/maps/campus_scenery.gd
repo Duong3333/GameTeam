@@ -133,9 +133,13 @@ func draw_ground() -> void:
 	paved(Rect2(669, 176, 580, 15), beige)
 	paved(Rect2(1377, 176, WORLD.x - 1377, 15), beige)
 	paved(Rect2(1085, 107, 60, 69), beige) # Lối đi bộ nối từ vỉa hè lên sảnh Tòa B4.2
-	asphalt(Rect2(1822, 260, 97, 621), false)
-	paved(Rect2(1804, 260, 18, 619), beige)
-	paved(Rect2(1919, 260, 18, 619), beige)
+	asphalt(Rect2(1822, 254, 97, 627), false)
+	paved(Rect2(1804, 254, 18, 625), beige)
+	paved(Rect2(1919, 254, 18, 625), beige)
+	# ── Trục đường bê tông / nhựa giữa Tòa F và Tòa G ──
+	asphalt(Rect2(2161, 254, 80, 627), false)
+	paved(Rect2(2143, 254, 18, 625), beige)
+	paved(Rect2(2241, 254, 18, 625), beige)
 	asphalt(Rect2(
 		GATE_APPROACH_ROAD.position.x,
 		GATE_APPROACH_ROAD.position.y - 2.0,
@@ -169,11 +173,32 @@ func draw_ground() -> void:
 	# ── Lối đi bộ gạch beige nội bộ ──
 	paved(Rect2(120, 790, 1130, 20), beige)
 
-	# ── Lối đi bao quanh hồ và sân ghế ──
-	paved(Rect2(1377, 260, 445, 24), beige)
+	# ── Các đoạn nối bê tông / gạch giữa các tòa nhà (bám theo sơ đồ mặt bằng) ──
+	# 1. Nối Tòa A sang Hội trường B
+	paved(Rect2(196, 370, 46, 26), beige)
+	# 2. Lối đi từ Hội trường B xuống We Love HCMUS & nối xuống trục chính
+	paved(Rect2(350, 455, 24, 65), beige)
+	paved(Rect2(90, 520, 284, 24), beige)
+	paved(Rect2(90, 520, 24, 315), beige)
+	# 3. Nối Hội trường B sang Tòa C
+	paved(Rect2(477, 370, 47, 26), beige)
+	# 4. Nhánh nối giữa Tòa C và Tòa D (chữ T nối C-D và chạy thẳng xuống đường chính)
+	paved(Rect2(669, 520, 153, 26), beige)
+	paved(Rect2(733, 520, 26, 315), beige)
+	# 5. Nhánh nối giữa Tòa D và Tòa E (chữ T nối D-E và chạy thẳng xuống đường chính)
+	paved(Rect2(962, 520, 142, 26), beige)
+	paved(Rect2(1020, 520, 26, 315), beige)
+	# 6. Lối nối sảnh Tòa F và G xuống vỉa hè trục chính
+	paved(Rect2(2028, 797, 26, 38), beige)
+	paved(Rect2(2350, 811, 26, 24), beige)
+	# 7. Lối đi từ cổng trước Nhà Điều Hành lên vỉa hè đường chính
+	paved(Rect2(2010, 1129, 26, 72), beige)
+
+	# ── Lối đi bao quanh hồ và sân ghế (nối khít vào đường ngang ở y=254) ──
+	paved(Rect2(1377, 254, 445, 30), beige)
 	paved(Rect2(1377, 855, 445, 24), beige)
-	paved(Rect2(1377, 260, 24, 619), beige)
-	paved(Rect2(1798, 260, 24, 619), beige)
+	paved(Rect2(1377, 254, 24, 625), beige)
+	paved(Rect2(1798, 254, 24, 625), beige)
 	draw_rect(Rect2(1438, 600, 322, 235), beige)
 	draw_rect(Rect2(1580, 608, 36, 219), Color("4a9a3a"))
 

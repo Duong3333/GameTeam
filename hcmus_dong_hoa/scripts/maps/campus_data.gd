@@ -13,8 +13,8 @@ const QUIZ_NPC_POS := Vector2(1700, 500) # Vị trí NPC Cô Toán cạnh Tòa F
 const DIEUHANH := Rect2(1818, 1201, 411, 150)
 # Tốc độ thời gian: 1 giây thật = TIME_SCALE phút trong game (3.0 -> 1 ngày game dài khoảng 3 phút 20 giây)
 const TIME_SCALE := 3.0
-const SHOW_VEGETATION := false
-const SHOW_ROAD_MARKINGS := false
+const SHOW_VEGETATION := true
+const SHOW_ROAD_MARKINGS := true
 const LAKE := Rect2(1487, 337, 220, 220) # Hồ nước của đài phun nước
 # ─── BỐ CỤC MỚI ─────────────────────────────────────────────────────────────
 const WE_LOVE_POS   := Vector2(364, 572)   # Chữ We ❤ HCMUS - sân cỏ giữa A và C
@@ -36,7 +36,7 @@ var BUILDINGS := [
 	["D", 822, 314, 140, 465, WALL, ROOF, "Tòa D - giảng đường, gần nhà ăn và khu tự học."],
 	["E", 1104, 311, 147, 543, WALL, ROOF, "Tòa E - giảng đường lớn."],
 	["F", 1960, 326, 163, 471, WALL, ROOF, "Tòa F - giảng đường."],
-	["G", 2206, 338, 163, 473, Color("dfe3e8"), Color("5d7c99"), "Tòa G - phòng học và phòng thí nghiệm."],
+	["G", 2282, 338, 163, 473, Color("dfe3e8"), Color("5d7c99"), "Tòa G - phòng học và phòng thí nghiệm."],
 	["NHÀ THỂ DỤC", 1422, 51, 280, 125, Color("e9efe9"), Color("5f9c6a"), "Nhà Thể Dục - sân tập trong nhà."],
 ]
 # [tên, x, y, màu mái, mô tả] : quầy, kiosk nhỏ
@@ -108,7 +108,8 @@ var ZONES := [
 	["Đường nội bộ chính (ngang)", Rect2(0, 879, 2500, 211)],
 	["Đường nội bộ chính (dọc)", Rect2(1268, 0, 109, 879)],
 	["Đường trước Nhà Thể Dục và Bãi xe 2", Rect2(669, 191, WORLD.x - 669, 63)],
-	["Đường cạnh khu hồ", Rect2(1822, 260, 97, 619)],
+	["Đường cạnh khu hồ", Rect2(1822, 254, 97, 627)],
+	["Đường giữa Tòa F và G", Rect2(2161, 254, 80, 627)],
 ]
 # Hàng dừa vòng quanh đài phun nước (tọa độ tính trong draw_fountain_plaza)
 const PALMS := [
