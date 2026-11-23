@@ -87,58 +87,98 @@ func draw_building(b: Array) -> void:
 
 func draw_dieuhanh() -> void:
 	var r := DIEUHANH
-	if not view.intersects(r.grow(80.0)):
+	if not view.intersects(r.grow(120.0)):
 		return
 	var x := r.position.x
 	var y := r.position.y
 	var cx := x + r.size.x / 2.0
-	var gold := Color("e0b020")
+	var gold := Color("f5be27")
 	rc(x + 9, y + 10, r.size.x, r.size.y, Color(0, 0, 0, 0.16))
 	rc(x, y, r.size.x, r.size.y, Color("dcd9cf"))
-	# Cụm mái tầng 2 đi cùng cột và cụm UNIVERSITY OF SCIENCE.
-	for i in 6:
-		var roof_y := y + 42.0 + i * 5.0
-		rc(x - 8 + i * 3, roof_y, r.size.x + 16 - i * 6, 5, Color("d3d6d0") if i % 2 == 0 else Color("adb3af"))
-		rc(x - 8 + i * 3, roof_y, r.size.x + 16 - i * 6, 2, Color(0.0, 0.0, 0.0, 0.38))
+	
+	# Mái trên cùng và góc tường hai bên
 	rc(x, y, 46, 76, Color("c9dbc2"))
 	rc(x + r.size.x - 46, y, 46, 76, Color("c9dbc2"))
 	rc(x, y, 46, 4, Color("e4eedf"))
 	rc(x + r.size.x - 46, y, 46, 4, Color("e4eedf"))
 	rc(x + 60, y + 2, r.size.x - 120, 14, Color("b9c4b0"))
-	for yy in [y + 20, y + 40]:
+	
+	# Cửa sổ tầng 2
+	for yy in [y + 20, y + 38]:
 		for xx in range(int(x) + 6, int(r.end.x) - 10, 18):
 			rc(xx, yy, 12, 10, Color("4a6b82"))
 			rc(xx + 1, yy + 1, 10, 8, Color("8fc9e6"))
 			rc(xx + 1, yy + 1, 10, 3, Color("c8e8f7"))
+	
+	# Nan lam gỗ trang trí tầng 2
 	for xx in range(int(x) + 60, int(r.end.x) - 60, 22):
-		rc(xx, y + 18, 3, 52, Color("c07a3a"))
-	# Biển tiếng Việt nằm dưới mép mái tầng 2, không bị mái che.
-	rc(x + 8, y + 70, r.size.x - 16, 16, Color("f3ecd0"))
-	ctext("TRƯỜNG ĐẠI HỌC KHOA HỌC TỰ NHIÊN", x + 8, y + 82, r.size.x - 16, 9, gold)
-	rc(x - 10, y + 78, r.size.x + 20, 11, Color("6e747b"))
-	rc(x - 10, y + 78, r.size.x + 20, 3, Color("8d949c"))
-	rc(x - 10, y + 89, r.size.x + 20, 8, Color(0, 0, 0, 0.22))
-	for yy in [y + 100, y + 118]:
+		rc(xx, y + 18, 3, 38, Color("c07a3a"))
+	
+	# Mái hiên tầng 2 nhô nhẹ
+	rc(x - 6, y + 56, r.size.x + 12, 4, Color("adb3af"))
+	rc(x - 6, y + 56, r.size.x + 12, 2, Color("d3d6d0"))
+	
+	# Biển hiệu TRƯỜNG ĐẠI HỌC KHOA HỌC TỰ NHIÊN: nền xanh navy đậm viền vàng, chữ vàng nổi bật rõ ràng 100%
+	rc(x + 12, y + 62, r.size.x - 24, 18, Color("142c54"))
+	draw_rect(Rect2(x + 12, y + 62, r.size.x - 24, 18), Color("ffd23f"), false, 1.0)
+	ctext("TRƯỜNG ĐẠI HỌC KHOA HỌC TỰ NHIÊN", x + 12, y + 75, r.size.x - 24, 10, Color("ffd23f"))
+	
+	# Gờ phân tầng (ledge) bên dưới biển tên
+	rc(x - 10, y + 82, r.size.x + 20, 8, Color("6e747b"))
+	rc(x - 10, y + 82, r.size.x + 20, 2, Color("8d949c"))
+	rc(x - 10, y + 90, r.size.x + 20, 4, Color(0, 0, 0, 0.22))
+	
+	# Chữ tiếng Anh: UNIVERSITY OF SCIENCE (nằm ở mảng tường tầng 1 trên hàng cửa sổ, không bị che)
+	ctext("UNIVERSITY OF SCIENCE", x, y + 100, r.size.x, 8, Color("1e3c72"))
+	
+	# Cửa sổ tầng 1 (chừa lối cửa vào ở giữa)
+	for yy in [y + 106, y + 120]:
 		for xx in range(int(x) + 12, int(r.end.x) - 14, 22):
+			if xx >= cx - 46 and xx <= cx + 46:
+				continue
 			rc(xx, yy, 14, 10, Color("4a6b82"))
 			rc(xx + 1, yy + 1, 12, 8, Color("8fc9e6"))
-	ctext("UNIVERSITY OF SCIENCE", x, y + 143, r.size.x, 9, gold)
+	
+	# 6 Cột trụ chạy dọc mặt tiền
 	for i in 6:
 		var px := x + 14 + i * (r.size.x - 34) / 5.0
 		rc(px, y + 42, 7, int(r.end.y) - int(y) - 42, Color("aeb8c4"))
 		rc(px, y + 42, 2, int(r.end.y) - int(y) - 42, Color("d4dbe3"))
 		rc(px + 5, y + 42, 2, int(r.end.y) - int(y) - 42, Color("8a94a0"))
-	rc(cx - 30, y + 132, 60, 26, Color("2e3a44"))
-	rc(cx - 28, y + 134, 27, 24, Color("8fc9e6"))
-	rc(cx + 1, y + 134, 27, 24, Color("8fc9e6"))
-	rc(cx - 28, y + 134, 27, 5, Color("c8e8f7"))
-	rc(cx + 1, y + 134, 27, 5, Color("c8e8f7"))
+	
+	# Cửa chính vào sảnh Nhà Điều Hành
+	rc(cx - 30, y + 124, 60, 26, Color("2e3a44"))
+	rc(cx - 28, y + 126, 27, 24, Color("8fc9e6"))
+	rc(cx + 1, y + 126, 27, 24, Color("8fc9e6"))
+	rc(cx - 28, y + 126, 27, 5, Color("c8e8f7"))
+	rc(cx + 1, y + 126, 27, 5, Color("c8e8f7"))
 	rc(cx - 40, y + 112, 10, 38, Color("c0392b"))
 	rc(cx + 30, y + 112, 10, 38, Color("c0392b"))
 	rc(cx - 38, y + 118, 6, 6, gold)
 	rc(cx + 32, y + 118, 6, 6, gold)
 	draw_rect(r, Color("2b2b2b"), false, 1.0)
-	# Bụi tròn và tay vịn cũ đã được thay bằng draw_dieuhanh_front() (gọi trong draw_frontage_overlay).
+	
+	# Bậc thang phía trước (6 bậc bê tông rộng ra từng bậc)
+	for i in 6:
+		var step_x := x + 18 - i * 3
+		var step_w := r.size.x - 36 + i * 6
+		var step_y := r.end.y + i * 8
+		rc(step_x, step_y, step_w, 7, Color("c4c4c4") if i % 2 == 0 else Color("b0b0b0"))
+		rc(step_x, step_y, step_w, 2, Color(0.0, 0.0, 0.0, 0.55))
+		rc(step_x, step_y + 2, 3, 5, Color(1.0, 1.0, 1.0, 0.25))
+		rc(step_x + step_w - 3, step_y + 2, 3, 5, Color(0.0, 0.0, 0.0, 0.18))
+	
+	# Bậc thềm tam cấp ngay trước cửa ra vào
+	for i in 3:
+		rc(cx - 36 + i * 3, r.end.y + i * 3, 72 - i * 6, 3, Color("e4e4e4") if i % 2 == 0 else Color("d0d0d0"))
+	
+	# Cột cờ Tổ quốc trước sân
+	var fp := Vector2(x - 30, r.end.y + 30)
+	rc(fp.x, fp.y - 52, 2, 52, Color("c4c8cc"))
+	draw_national_flag(Vector2(fp.x + 2.0, fp.y - 52.0))
+	
+	# Vẽ các chi tiết tiền sảnh (tay vịn bậc thang, bồn cây, chậu kiểng, rào chắn)
+	draw_dieuhanh_front()
 
 func draw_kiosk(k: Array) -> void:
 	var p := Vector2(k[1], k[2])

@@ -86,14 +86,15 @@ func get_vegetation_blocked_areas() -> Array[Rect2]:
 	var list: Array[Rect2] = []
 	for b in BUILDINGS:
 		list.append(Rect2(b[1], b[2], b[3], b[4]).grow(20.0))
-	list.append(DIEUHANH.grow(22.0))
+	# Nhà Điều Hành: mở rộng vùng block bao phủ toàn bộ tòa nhà, sảnh trước, bậc thềm, cột cờ và lối tiếp cận
+	list.append(Rect2(1780, 1080, 480, 365))
 	list.append(PARKING1_RECT.grow(20.0))
 	list.append(PARKING2_RECT.grow(20.0))
 	list.append(GUARD_BOOTH.grow(20.0))
 	list.append(Rect2(370, 0, 370, 195)) # Căn tin & sân căn tin
 	list.append(Rect2(1030, 0, 170, 120)) # Tòa B4.2
 	list.append(Rect2(1420, 590, 360, 260)) # Sân bê tông hồ nước có ghế đá
-	list.append(Rect2(1460, 310, 275, 275)) # Khu vực hồ nước & đài phun nước
+	list.append(Rect2(1440, 290, 320, 310)) # Khu vực hồ nước & đài phun nước
 	list.append(Rect2(250, 530, 230, 130)) # Sân We Love HCMUS & tượng đài
 	list.append(LAWN_B_RECT.grow(12.0))
 
@@ -104,6 +105,15 @@ func get_vegetation_blocked_areas() -> Array[Rect2]:
 	list.append(Rect2(1790, 245, 160, 645))
 	list.append(Rect2(2130, 245, 140, 645))
 	list.append(Rect2(1085, 1075, 435, WORLD.y - 1075))
+
+	# Toàn bộ khu Bãi Giữ Xe Số 1 (vỉa hè, hàng ghế, bãi đỗ xe và dải đất bao quanh)
+	list.append(Rect2(0, 1070, 1100, WORLD.y - 1070))
+
+	# Vỉa hè đường chính phía đông (phía trên Nhà Điều Hành và hoa viên)
+	list.append(Rect2(1507, 1080, WORLD.x - 1507, 55))
+
+	# Vỉa hè + crosswalk khu cổng chính (GATE_APPROACH_ROAD & ROAD_T1)
+	list.append(Rect2(1085, 1075, 430, WORLD.y - 1075))
 
 	# Lối đi bao quanh hồ
 	list.append(Rect2(1365, 245, 470, 48))
@@ -362,6 +372,9 @@ func _setup_static_bg() -> void:
 func _draw_static_bg() -> void:
 	_static_bg.draw_ground()
 	_static_bg.draw_dieuhanh()
+	_static_bg.draw_lane_block()
+	_static_bg.draw_street_furniture()
+	_static_bg.draw_t1_shops()
 	for b in BUILDINGS:
 		if str(b[0]) == "B":
 			continue
