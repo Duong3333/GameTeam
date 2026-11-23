@@ -73,11 +73,11 @@ var SHOPS := []
 # Nhà dân đã được xóa theo yêu cầu
 var HOUSES := []
 
-# Mấy quầy tạp hóa / quán nước sinh viên đặt gọn gàng ở bãi cỏ phía dưới
+# Quầy tạp hóa / quán nước sinh viên đặt ngay dưới bãi cỏ dưới bậc thềm Nhà Điều Hành (y≈1415, không đè bậc thang)
 var STALLS := [
-	{"id": "tap_hoa",      "kind": "drink", "rect": Rect2(520.0, 1450.0, 60.0, 28.0), "accent": Color("3a8f4a")},
-	{"id": "an_vat",       "kind": "stool", "rect": Rect2(610.0, 1450.0, 56.0, 28.0), "accent": Color("3a9a63")},
-	{"id": "nuoc_goc_cay", "kind": "drink", "rect": Rect2(700.0, 1450.0, 56.0, 28.0), "accent": Color("c0262d")},
+	{"id": "tap_hoa",      "kind": "drink", "rect": Rect2(1878.0, 1415.0, 56.0, 26.0), "accent": Color("3a8f4a")},
+	{"id": "an_vat",       "kind": "stool", "rect": Rect2(1990.0, 1415.0, 56.0, 26.0), "accent": Color("3a9a63")},
+	{"id": "nuoc_goc_cay", "kind": "drink", "rect": Rect2(2100.0, 1415.0, 56.0, 26.0), "accent": Color("c0262d")},
 ]
 
 var ZONES := [
