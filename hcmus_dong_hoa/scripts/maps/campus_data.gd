@@ -98,6 +98,16 @@ var ZONES := [
 # Hàng dừa vòng quanh đài phun nước (tọa độ tính trong draw_fountain_plaza)
 const PALMS := []
 
+# Danh sách các đoạn mái vòm hành lang (x_start, x_end, y):
+# Dời vào trong vỉa hè gọn gàng, sạch sẽ (y = 844.0, nằm trọn trong vỉa hè y=835..879),
+# chừa lề 17px cách mép đường xe chạy, dừng trước các ngã tư không đè lên mặt đường bê tông.
+const WALKWAY_SECTIONS := [
+	{"start_x": 220.0,  "end_x": 1240.0, "y": 844.0}, # Dãy A - B - C - D - E
+	{"start_x": 1390.0, "end_x": 1800.0, "y": 844.0}, # Khu công viên hồ nước
+	{"start_x": 1935.0, "end_x": 2145.0, "y": 844.0}, # Phía trước Tòa F
+	{"start_x": 2255.0, "end_x": 2465.0, "y": 844.0}, # Phía trước Tòa G
+]
+
 # Cửa được tính từ kích thước công trình để tự đi theo khi bản đồ thay đổi.
 func get_doorways() -> Array:
 	var doors: Array = []

@@ -53,6 +53,10 @@ func draw_sorted_items() -> void:
 		items.append([get_bench_position(bn).y, 4, bn])
 	# Cổng trường: vẽ cột và xà ngang cổng HCMUS theo chiều sâu y để nhân vật đi xuyên bên dưới
 	items.append([GATE_Y + 14.0, 6, null])
+	# Mái vòm hành lang xanh lá: vẽ mái vòm che trên đầu nhân vật khi đi vào trong
+	if SHOW_VEGETATION:
+		for sec in WALKWAY_SECTIONS:
+			items.append([sec.y + WW.WALKWAY_H + 1.0, 7, sec])
 	items.append([player.y, 2, null])
 	items.sort_custom(func(a, b): return a[0] < b[0])
 	for it in items:
@@ -67,6 +71,9 @@ func draw_sorted_items() -> void:
 		elif it[1] == 6:
 			if view.intersects(Rect2(GATE_X - 100.0, GATE_Y - 70.0, GATE_W + 200.0, 100.0)):
 				draw_gate_arch()
+		elif it[1] == 7:
+			var sec: Dictionary = it[2]
+			WW.draw_walkway_roof(self, sec.start_x, sec.end_x, sec.y, view)
 		elif it[1] == 1:
 			var n: Dictionary = it[2]
 			if not view.has_point(n.pos):

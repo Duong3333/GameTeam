@@ -6,6 +6,7 @@ const POLE_STICKERS: Array[Color] = [Color(1.0, 0.82, 0.25), Color(1.0, 0.42, 0.
 const WATER_MODULE  := preload("res://scripts/maps/ho_nuoc.gd")
 const SE            := preload("res://scripts/maps/scenery_elements.gd")
 const BX            := preload("res://scripts/maps/bai_xe.gd")
+const WW            := preload("res://scripts/maps/walkway.gd")
 
 # Khi true, draw_ground() bo qua dai phun nuoc (ve bang clock nen khong duoc bake tinh).
 var skip_fountain := false
@@ -156,10 +157,9 @@ func draw_ground() -> void:
 		SE.draw_zebra_crossing(self, Vector2(1268, 540), 109.0, 10.0, true)
 
 	if SHOW_VEGETATION:
-		# ── Lối đi bộ hành lang có mái nối các tòa nhà ──
-		SE.draw_covered_walkway(self, Vector2(250, 800), Vector2(1260, 800), 14.0)
-		SE.draw_covered_walkway(self, Vector2(120, 848), Vector2(1090, 848), 12.0)
-		SE.draw_covered_walkway(self, Vector2(1555, 848), Vector2(2350, 848), 12.0)
+		# ── Nền gạch & chân trụ mái vòm hành lang (module walkway.gd) ──
+		for sec in WALKWAY_SECTIONS:
+			WW.draw_walkway_ground(self, sec.start_x, sec.end_x, sec.y, view)
 
 	# ── Lối đi bộ gạch beige nội bộ ──
 	paved(Rect2(120, 790, 1130, 20), beige)
