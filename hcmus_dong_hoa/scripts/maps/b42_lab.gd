@@ -3,7 +3,8 @@ extends "res://scripts/features/feature.gd"
 
 # ---------- Tòa nhà ngoài trời ----------
 # Đặt tại phía bắc dãy E theo sơ đồ mới: x=860, y=10, w=120, h=100 (dịch lên để có không gian cổng)
-const RECT := Rect2(860, 10, 120, 100)
+# Tòa B4.2 nằm dọc lối đi phía bắc các tòa chính.
+const RECT := Rect2(1045, 2, 140, 105)
 const DOOR_RANGE := 44.0                 # đứng cách cửa tối đa bấm E mới vào được (px)
 
 const VIEW := Vector2(480, 270)
@@ -221,13 +222,13 @@ func _process(delta: float) -> void:
 
 func _walk(delta: float) -> void:
 	var v := Vector2.ZERO
-	if Input.is_physical_key_pressed(KEY_W):
+	if Input.is_physical_key_pressed(KEY_W) or Input.is_physical_key_pressed(KEY_UP):
 		v.y -= 1.0
-	if Input.is_physical_key_pressed(KEY_S):
+	if Input.is_physical_key_pressed(KEY_S) or Input.is_physical_key_pressed(KEY_DOWN):
 		v.y += 1.0
-	if Input.is_physical_key_pressed(KEY_A):
+	if Input.is_physical_key_pressed(KEY_A) or Input.is_physical_key_pressed(KEY_LEFT):
 		v.x -= 1.0
-	if Input.is_physical_key_pressed(KEY_D):
+	if Input.is_physical_key_pressed(KEY_D) or Input.is_physical_key_pressed(KEY_RIGHT):
 		v.x += 1.0
 	if v == Vector2.ZERO:
 		return
@@ -491,8 +492,9 @@ func _repaint_front_items() -> void:
 		if area.has_point(l):
 			items.append([l.y, 1, l])
 	for b in game.benches:
-		if area.has_point(b):
-			items.append([b.y, 2, b])
+		var bench_pos: Vector2 = game.get_bench_position(b)
+		if area.has_point(bench_pos):
+			items.append([bench_pos.y, 2, b])
 	for o in game.npcs:
 		if not o.has("role") and area.has_point(o.pos):
 			items.append([o.pos.y, 3, o])

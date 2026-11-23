@@ -448,7 +448,7 @@ func _room_key(k: InputEventKey) -> void:
 		_dlg_key(k)
 		return
 	if _sit >= 0:
-		if pk == KEY_E or k.keycode == KEY_ESCAPE or pk == KEY_W or pk == KEY_A or pk == KEY_S or pk == KEY_D:
+		if pk == KEY_E or k.keycode == KEY_ESCAPE or pk == KEY_W or pk == KEY_A or pk == KEY_S or pk == KEY_D or pk == KEY_UP or pk == KEY_DOWN or pk == KEY_LEFT or pk == KEY_RIGHT:
 			_stand_up()
 			get_viewport().set_input_as_handled()
 		elif pk == KEY_Q:
@@ -799,13 +799,13 @@ func _process(delta: float) -> void:
 
 func _walk(delta: float) -> void:
 	var v := Vector2.ZERO
-	if Input.is_physical_key_pressed(KEY_W):
+	if Input.is_physical_key_pressed(KEY_W) or Input.is_physical_key_pressed(KEY_UP):
 		v.y -= 1.0
-	if Input.is_physical_key_pressed(KEY_S):
+	if Input.is_physical_key_pressed(KEY_S) or Input.is_physical_key_pressed(KEY_DOWN):
 		v.y += 1.0
-	if Input.is_physical_key_pressed(KEY_A):
+	if Input.is_physical_key_pressed(KEY_A) or Input.is_physical_key_pressed(KEY_LEFT):
 		v.x -= 1.0
-	if Input.is_physical_key_pressed(KEY_D):
+	if Input.is_physical_key_pressed(KEY_D) or Input.is_physical_key_pressed(KEY_RIGHT):
 		v.x += 1.0
 	_running = false
 	if v == Vector2.ZERO:

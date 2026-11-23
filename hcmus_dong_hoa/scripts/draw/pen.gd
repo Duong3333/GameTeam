@@ -4,11 +4,8 @@ extends "res://scripts/maps/campus_setup.gd"
 func rc(x: float, y: float, w: float, h: float, c: Color) -> void:
 	draw_rect(Rect2(x, y, w, h), c)
 
-func hs(a: int, b: int) -> int:
-	return absi((a * 73856093) ^ (b * 19349663)) % 100
-
-func shadow(p: Vector2, rx: float) -> void:
-	draw_set_transform(p, 0.0, Vector2(1.0, 0.4))
+func shadow(p: Vector2, rx: float, rotation: float = 0.0) -> void:
+	draw_set_transform(p, rotation, Vector2(1.0, 0.4))
 	draw_circle(Vector2.ZERO, rx, Color(0, 0, 0, 0.28))
 	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 
@@ -37,13 +34,15 @@ func paved(r: Rect2, base: Color) -> void:
 		if y >= rr.position.y:
 			rc(rr.position.x, y, rr.size.x, 1, ln)
 
-func asphalt(r: Rect2) -> void:
+func asphalt(r: Rect2, draw_edges: bool = true) -> void:
 	var rr := r.intersection(view)
 	if rr.size.x <= 0.0 or rr.size.y <= 0.0:
 		return
 	draw_rect(rr, Color("565b63"))
-	for t in tufts:
-		if rr.has_point(t):
-			rc(t.x, t.y, 2, 1, Color("6a7078") if int(t.x) % 2 == 0 else Color("4a4f56"))
-	rc(rr.position.x, r.position.y, rr.size.x, 2, Color("7b818a"))
-	rc(rr.position.x, r.end.y - 2, rr.size.x, 2, Color("3f444b"))
+	if SHOW_VEGETATION:
+		for t in tufts:
+			if rr.has_point(t):
+				rc(t.x, t.y, 2, 1, Color("6a7078") if int(t.x) % 2 == 0 else Color("4a4f56"))
+	if draw_edges:
+		rc(rr.position.x, r.position.y, rr.size.x, 2, Color("7b818a"))
+		rc(rr.position.x, r.end.y - 2, rr.size.x, 2, Color("3f444b"))

@@ -7,23 +7,39 @@ const WATER_MODULE  := preload("res://scripts/maps/ho_nuoc.gd")
 const SE            := preload("res://scripts/maps/scenery_elements.gd")
 const BX            := preload("res://scripts/maps/bai_xe.gd")
 
+# Khi true, draw_ground() bo qua dai phun nuoc (ve bang clock nen khong duoc bake tinh).
+var skip_fountain := false
+
 # ─── NỀN CỎ VÀ HOA ────────────────────────────────────────────────────────────
 func draw_grass() -> void:
-	draw_rect(view, Color("5a9e3e"))
-	for tx in range(floori(view.position.x / 16.0), ceili(view.end.x / 16.0)):
-		for ty in range(floori(view.position.y / 16.0), ceili(view.end.y / 16.0)):
-			if (tx + ty) % 2 == 0:
-				rc(tx * 16, ty * 16, 16, 16, Color(1, 1, 1, 0.03))
-			if hs(tx, ty) < 14:
-				rc(tx * 16 + 3, ty * 16 + 6, 10, 5, Color(0, 0, 0, 0.05))
-	for t in tufts:
-		if view.has_point(t):
-			rc(t.x, t.y, 2, 3, Color("84c764") if int(t.x + t.y) % 2 == 0 else Color("559040"))
-			rc(t.x + 2, t.y + 1, 1, 2, Color("84c764"))
-	for f in flowers:
-		if view.has_point(f[0]):
-			rc(f[0].x, f[0].y, 2, 2, f[1])
-			rc(f[0].x, f[0].y + 2, 1, 2, Color("3f7a35"))
+	if grass_texture == null:
+		if not SHOW_VEGETATION:
+			draw_rect(view, Color("5a9e3e"))
+			return
+		# Compatibility fallback if setup was skipped or resources were reset.
+		draw_rect(view, Color("5a9e3e"))
+		for tx in range(floori(view.position.x / 16.0), ceili(view.end.x / 16.0)):
+			for ty in range(floori(view.position.y / 16.0), ceili(view.end.y / 16.0)):
+				if (tx + ty) % 2 == 0:
+					rc(tx * 16, ty * 16, 16, 16, Color(1, 1, 1, 0.03))
+				if hs(tx, ty) < 14:
+					rc(tx * 16 + 3, ty * 16 + 6, 10, 5, Color(0, 0, 0, 0.05))
+		for t in tufts:
+			if view.has_point(t):
+				rc(t.x, t.y, 2, 3, Color("84c764") if int(t.x + t.y) % 2 == 0 else Color("559040"))
+				rc(t.x + 2, t.y + 1, 1, 2, Color("84c764"))
+		for f in flowers:
+			if view.has_point(f[0]):
+				rc(f[0].x, f[0].y, 2, 2, f[1])
+				rc(f[0].x, f[0].y + 2, 1, 2, Color("3f7a35"))
+		return
+	var visible := view.intersection(Rect2(Vector2.ZERO, WORLD))
+	if visible.size.x > 0.0 and visible.size.y > 0.0:
+		draw_texture_rect_region(
+			grass_texture,
+			visible,
+			Rect2(visible.position, visible.size)
+		)
 
 func hedge(x: float, y: float, w: float) -> void:
 	rc(x, y + 1, w, 7, Color("2a6f33"))
@@ -40,37 +56,32 @@ func flowerbed(x: float, y: float, w: float, h: float) -> void:
 			var k := hs(i + int(x), j + int(y))
 			rc(x + 2 + i, y + 2 + j, 2, 2, [Color("ff6b8a"), Color("ffd23f"), Color("ffffff"), Color("ff9a3c")][k % 4])
 
-# ─── ĐÈN ĐƯỜNG CÓ HIỆU ỨNG BAN ĐÊM ─────────────────────────────────────────
+# ─── ĐÈN ĐƯỜNG ───────────────────────────────────────────────────────────────
 func draw_lamp(p: Vector2) -> void:
 	shadow(p + Vector2(3, 0), 5.0)
 	rc(p.x - 1, p.y - 24, 2, 24, Color("3a3f4a"))
 	rc(p.x - 3, p.y - 27, 6, 4, Color("3a3f4a"))
-	var hour := game_min / 60.0
-	if hour <= 15.7:
-		rc(p.x - 2, p.y - 26, 4, 2, Color("c9d3da"))
-		return
-	var power := clampf((hour - 15.7) / 0.6, 0.0, 1.0)
-	var pulse := 1.0 + sin(clock * 3.0 + p.x * 0.1) * 0.04
-	var bulb := p + Vector2(0, -24)
-	draw_colored_polygon(lake_poly(p + Vector2(0, 2), 34.0 * pulse, 13.0 * pulse, 24), Color(1.0, 0.88, 0.45, 0.12 * power))
-	draw_colored_polygon(lake_poly(p + Vector2(0, 2), 21.0 * pulse, 8.0 * pulse, 24), Color(1.0, 0.92, 0.55, 0.18 * power))
-	draw_circle(bulb, 40.0 * pulse, Color(1.0, 0.9, 0.5, 0.07 * power))
-	draw_circle(bulb, 30.0 * pulse, Color(1.0, 0.9, 0.5, 0.10 * power))
-	draw_circle(bulb, 21.0 * pulse, Color(1.0, 0.92, 0.55, 0.16 * power))
-	draw_circle(bulb, 12.0 * pulse, Color(1.0, 0.95, 0.65, 0.30 * power))
-	draw_circle(bulb, 6.0, Color(1.0, 0.98, 0.8, 0.75 * power))
-	rc(p.x - 2, p.y - 26, 4, 2, Color("fff1a8").lerp(Color.WHITE, 0.4 * power))
-	rc(p.x - 1, p.y - 25, 2, 1, Color.WHITE)
+	rc(p.x - 2, p.y - 26, 4, 2, Color("c9d3da"))
 
-func draw_bench(p: Vector2) -> void:
-	shadow(p + Vector2(0, 1), 11.0)
-	rc(p.x - 9, p.y - 9, 18, 3, Color("8a5a32"))
-	rc(p.x - 9, p.y - 6, 18, 2, Color("a8733f"))
-	rc(p.x - 9, p.y - 4, 18, 3, Color("8a5a32"))
-	rc(p.x - 8, p.y - 1, 2, 2, Color("333333"))
-	rc(p.x + 6, p.y - 1, 2, 2, Color("333333"))
+func draw_bench(bench: Variant) -> void:
+	var p := get_bench_position(bench)
+	var vertical := bool(bench.get("vertical", false)) if bench is Dictionary else false
+	var length := float(bench.get("length", 18.0)) if bench is Dictionary else 18.0
+	var half_bounds := Vector2(11.0, length * 0.5 + 2.0) if vertical else Vector2(length * 0.5 + 2.0, 11.0)
+	if not view.intersects(Rect2(p - half_bounds, half_bounds * 2.0)):
+		return
+	shadow(p + Vector2(0, 1), length * 0.6, PI * 0.5 if vertical else 0.0)
+	draw_set_transform(p, PI * 0.5 if vertical else 0.0, Vector2.ONE)
+	rc(-length * 0.5, -9, length, 3, Color("8a5a32"))
+	rc(-length * 0.5, -6, length, 2, Color("a8733f"))
+	rc(-length * 0.5, -4, length, 3, Color("8a5a32"))
+	rc(-length * 0.5 + 1, -1, 2, 2, Color("333333"))
+	rc(length * 0.5 - 3, -1, 2, 2, Color("333333"))
+	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 
 func draw_tree(t: Array) -> void:
+	if not SHOW_VEGETATION:
+		return
 	var p := Vector2(t[0], t[1])
 	if not view.grow(30.0).has_point(p):
 		return
@@ -86,98 +97,105 @@ func draw_tree(t: Array) -> void:
 func draw_ground() -> void:
 	draw_grass()
 	var beige := Color("dccaa0")
+	draw_rect(Rect2(1547, 1129, WORLD.x - 1547, WORLD.y - 1129), Color("5fbb4a"))
 
-	# ── Viền rừng cây bao quanh toàn bản đồ ──
-	var border := 32.0
-	rc(0, 0, WORLD.x, border, Color("3a7a2a"))
-	rc(0, WORLD.y - border, WORLD.x, border, Color("3a7a2a"))
-	rc(0, 0, border, WORLD.y, Color("3a7a2a"))
-	rc(WORLD.x - border, 0, border, WORLD.y, Color("3a7a2a"))
-	# cây đứng dày theo viền
-	for x in range(10, int(WORLD.x) - 10, 48):
-		SE.draw_broad_tree(self, Vector2(x, 18), 0.7)
-		SE.draw_broad_tree(self, Vector2(x + 20, WORLD.y - 20), 0.7)
-	for y in range(10, int(WORLD.y) - 10, 48):
-		SE.draw_broad_tree(self, Vector2(18, y), 0.7)
-		SE.draw_broad_tree(self, Vector2(WORLD.x - 20, y + 20), 0.7)
+	if SHOW_VEGETATION:
+		var border := 32.0
+		rc(0, 0, WORLD.x, border, Color("3a7a2a"))
+		rc(0, WORLD.y - border, WORLD.x, border, Color("3a7a2a"))
+		rc(0, 0, border, WORLD.y, Color("3a7a2a"))
+		rc(WORLD.x - border, 0, border, WORLD.y, Color("3a7a2a"))
+		for x in range(10, int(WORLD.x) - 10, 48):
+			SE.draw_broad_tree(self, Vector2(x, 18), 0.7)
+			SE.draw_broad_tree(self, Vector2(x + 20, WORLD.y - 20), 0.7)
+		for y in range(10, int(WORLD.y) - 10, 48):
+			SE.draw_broad_tree(self, Vector2(18, y), 0.7)
+			SE.draw_broad_tree(self, Vector2(WORLD.x - 20, y + 20), 0.7)
 
-	# ── Đường nội bộ chính (ngang) y≈870–930 ──
-	asphalt(Rect2(0, 870, WORLD.x, 60))
-	# vạch trắng giữa đường ngang
-	for x in range(0, int(WORLD.x), 44):
-		rc(x, 898, 24, 3, Color("e8e8e8"))
-	paved(Rect2(0, 862, WORLD.x, 8), beige)
-	paved(Rect2(0, 930, WORLD.x, 8), beige)
+	# ── Trục đường ngang giữa khuôn viên ──
+	asphalt(Rect2(0, 879, WORLD.x, 211))
+	if SHOW_ROAD_MARKINGS:
+		for x in range(0, int(WORLD.x), 44):
+			rc(x, 982, 24, 3, Color("e8e8e8"))
+	paved(Rect2(0, 835, WORLD.x, 44), beige)
+	paved(Rect2(0, 1090, 1098, 80), beige)
+	paved(Rect2(1507, 1090, WORLD.x - 1507, 39), beige)
 
-	# ── Đường nội bộ chính (dọc) x≈1070–1160 ──
-	asphalt(Rect2(1070, 0, 90, WORLD.y))
-	# vạch trắng giữa đường dọc
-	for y in range(0, int(WORLD.y), 44):
-		rc(1113, y, 3, 24, Color("e8e8e8"))
-	paved(Rect2(1062, 0, 8, WORLD.y), beige)
-	paved(Rect2(1160, 0, 8, WORLD.y), beige)
+	# ── Các nhánh đường dọc kẹp khu hồ ──
+	asphalt(Rect2(1268, 0, 109, 881), false)
+	if SHOW_ROAD_MARKINGS:
+		for y in range(0, int(WORLD.y), 44):
+			rc(1321, y, 3, 24, Color("e8e8e8"))
+	paved(Rect2(1249, 0, 19, 879), beige)
+	# Đường nhựa phía trước Nhà Thể Dục và Bãi xe 2, ngăn với khu hồ.
+	asphalt(Rect2(1377, 191, WORLD.x - 1377, 63))
+	paved(Rect2(1377, 176, WORLD.x - 1377, 15), beige)
+	asphalt(Rect2(1822, 260, 97, 621), false)
+	paved(Rect2(1804, 260, 18, 619), beige)
+	paved(Rect2(1919, 260, 18, 619), beige)
+	asphalt(Rect2(
+		GATE_APPROACH_ROAD.position.x,
+		GATE_APPROACH_ROAD.position.y - 2.0,
+		GATE_APPROACH_ROAD.size.x,
+		GATE_APPROACH_ROAD.size.y + 2.0
+	), false)
 
 	# ── Dải phân cách trục đường dọc ──
-	SE.draw_road_divider(self, Vector2(1115, 100), Vector2(1115, 850), 20.0)
-	# trồng thông xen kẽ cọ dọc dải phân cách
-	var dy := 100.0
-	while dy < 840.0:
-		if int(dy / 100) % 2 == 0:
-			SE.draw_pine_tree(self, Vector2(1115, dy), 0.75)
-		else:
-			SE.draw_palm_tree(self, Vector2(1115, dy), 0.70)
-		dy += 100.0
+	if SHOW_VEGETATION:
+		SE.draw_road_divider(self, Vector2(1322, 100), Vector2(1322, 850), 20.0)
+		var dy := 100.0
+		while dy < 840.0:
+			if int(dy / 100) % 2 == 0:
+				SE.draw_pine_tree(self, Vector2(1322, dy), 0.75)
+			else:
+				SE.draw_palm_tree(self, Vector2(1322, dy), 0.70)
+			dy += 100.0
 
-	# ── Đường vào bãi xe số 1 (nhánh từ đường ngang vào trái) ──
-	asphalt(Rect2(60, 920, 540, 20))
-	paved(Rect2(60, 916, 540, 4), beige)
+	# ── Vạch qua đường tại các ngã tư lớn ──
+	if SHOW_ROAD_MARKINGS:
+		SE.draw_zebra_crossing(self, Vector2(1268, 860), 109.0, 10.0, false)
+		SE.draw_zebra_crossing(self, Vector2(1822, 860), 97.0, 10.0, false)
+		SE.draw_zebra_crossing(self, Vector2(1268, 540), 109.0, 10.0, true)
 
-	# ── Đường vào khu Nhà Điều hành (phải cổng) ──
-	asphalt(Rect2(1160, 930, 540, 20))
-	paved(Rect2(1160, 930, 540, 4), beige)
-
-	# ── Đường vòng quanh khu công viên đài phun nước — ĐÃ XÓA (gây lane thừa) ──
-	# vạch kẻ người đi bộ tại các ngã tư lớn
-	SE.draw_zebra_crossing(self, Vector2(1070, 860), 90.0, 10.0, false)
-	SE.draw_zebra_crossing(self, Vector2(600,  860), 90.0, 10.0, false)
-	SE.draw_zebra_crossing(self, Vector2(1070, 540), 90.0, 10.0, true)
-
-	# ── Lối đi bộ hành lang có mái nối các tòa nhà (hướng ngang) ──
-	SE.draw_covered_walkway(self, Vector2(250, 580), Vector2(1060, 580), 14.0)
-	# ── Hành lang mái vòm thứ 2 phía trên đường ngang chính ──
-	SE.draw_covered_walkway(self, Vector2(120, 848), Vector2(1060, 848), 12.0)
-	SE.draw_covered_walkway(self, Vector2(1160, 848), Vector2(2350, 848), 12.0)
+	if SHOW_VEGETATION:
+		# ── Lối đi bộ hành lang có mái nối các tòa nhà ──
+		SE.draw_covered_walkway(self, Vector2(250, 800), Vector2(1260, 800), 14.0)
+		SE.draw_covered_walkway(self, Vector2(120, 848), Vector2(1090, 848), 12.0)
+		SE.draw_covered_walkway(self, Vector2(1555, 848), Vector2(2350, 848), 12.0)
 
 	# ── Lối đi bộ gạch beige nội bộ ──
-	paved(Rect2(120, 558, 950, 20), beige)   # lối đi ngang trước các tòa
-	# (đã xóa paved trên y=150 vì gây ra lane thừa phía bắc các tòa nhà)
+	paved(Rect2(120, 790, 1130, 20), beige)
 
-	# ── Lối đi bộ gạch vào Tòa B4.2 (thoáng đãng, không bị bãi xe đè) ──
-	paved(Rect2(870, 110, 100, 45), beige)     # sân gạch trước cửa B4.2
-	paved(Rect2(970, 120, 92, 16), beige)      # lối đi bộ nối từ trục đường dọc sang B4.2
+	# ── Đường ngang phía bắc, cạnh căn tin và Bãi xe 2 ──
+	asphalt(Rect2(669, 113, 708, 94))
+	paved(Rect2(669, 108, 708, 5), beige)
 
-	# ── Trục đường ngang trên dẫn vào Nhà Thể Dục và Bãi xe số 2 ──
-	asphalt(Rect2(1160, 50, 1130, 24))         # đường chạy từ trục dọc x=1160 qua Nhà TD tới Bãi xe 2
-	paved(Rect2(1160, 46, 1130, 4), beige)     # viền beige đường trên
+	# ── Lối đi bao quanh hồ và sân ghế ──
+	paved(Rect2(1377, 260, 445, 24), beige)
+	paved(Rect2(1377, 855, 445, 24), beige)
+	paved(Rect2(1377, 260, 24, 619), beige)
+	paved(Rect2(1798, 260, 24, 619), beige)
+	draw_rect(Rect2(1438, 600, 322, 235), beige)
+	draw_rect(Rect2(1580, 608, 36, 219), Color("4a9a3a"))
 
 	# ── Sân cỏ trước Hội trường B (LAWN_B_RECT) — texture cỏ ──
 	var lb := LAWN_B_RECT
 	draw_rect(lb, Color("5fbb4a"))
-	# texture cỏ: checkerboard sáng tối + tua cỏ nhỏ
-	for tx in range(floori(lb.position.x / 10.0), ceili(lb.end.x / 10.0)):
-		for ty in range(floori(lb.position.y / 10.0), ceili(lb.end.y / 10.0)):
-			if (tx + ty) % 3 == 0:
-				rc(tx * 10, ty * 10, 10, 10, Color("4aa840"))
-			elif hs(tx, ty) < 7:
-				rc(tx * 10 + 2, ty * 10 + 3, 3, 4, Color("6acc50"))
+	if SHOW_VEGETATION:
+		for tx in range(floori(lb.position.x / 10.0), ceili(lb.end.x / 10.0)):
+			for ty in range(floori(lb.position.y / 10.0), ceili(lb.end.y / 10.0)):
+				if (tx + ty) % 3 == 0:
+					rc(tx * 10, ty * 10, 10, 10, Color("4aa840"))
+				elif hs(tx, ty) < 7:
+					rc(tx * 10 + 2, ty * 10 + 3, 3, 4, Color("6acc50"))
 	draw_rect(lb, Color("3a9a3a"), false, 2.0)
-	# bờ viền bụi thấp quanh sân
-	SE.draw_trimmed_hedge(self, lb.position + Vector2(0, lb.size.y),
-		lb.position + Vector2(lb.size.x, lb.size.y), 8.0)
-	SE.draw_trimmed_hedge(self, lb.position,
-		lb.position + Vector2(0, lb.size.y), 8.0)
-	SE.draw_trimmed_hedge(self, lb.position + Vector2(lb.size.x, 0),
-		lb.position + Vector2(lb.size.x, lb.size.y), 8.0)
+	if SHOW_VEGETATION:
+		SE.draw_trimmed_hedge(self, lb.position + Vector2(0, lb.size.y),
+			lb.position + Vector2(lb.size.x, lb.size.y), 8.0)
+		SE.draw_trimmed_hedge(self, lb.position,
+			lb.position + Vector2(0, lb.size.y), 8.0)
+		SE.draw_trimmed_hedge(self, lb.position + Vector2(lb.size.x, 0),
+			lb.position + Vector2(lb.size.x, lb.size.y), 8.0)
 
 	# ── BÃI GIỮ XE SỐ 1 (XE MÁY) — module bai_xe.gd ──
 	var p1 := PARKING1_RECT
@@ -192,7 +210,8 @@ func draw_ground() -> void:
 		ctext("BÃI GIỮ XE MÁY SỐ 2", p2.position.x, p2.end.y - 10, p2.size.x, 9, Color.WHITE)
 
 	# ── QUẢNG TRƯỜNG ĐÀI PHUN NƯỚC (giữa tòa E và F) ──
-	SE.draw_fountain_plaza(self, FOUNTAIN_CENTER, 110.0, clock)
+	if not skip_fountain:
+		SE.draw_fountain_plaza(self, FOUNTAIN_CENTER, 110.0, clock, SHOW_VEGETATION)
 	# biển "HỒ SINH VIÊN"
 	var sx := FOUNTAIN_CENTER.x
 	var sy := FOUNTAIN_CENTER.y + 128.0
@@ -208,31 +227,30 @@ func draw_ground() -> void:
 	SE.draw_white_monument(self, MONUMENT_POS)
 
 	# ── BỒN HOA TRANG TRÍ dọc lối đi chính ──
-	flowerbed(DIEUHANH.position.x + 60, DIEUHANH.end.y + 70, 80, 14)
-	flowerbed(DIEUHANH.end.x - 140,     DIEUHANH.end.y + 70, 80, 14)
+	if SHOW_VEGETATION:
+		flowerbed(DIEUHANH.position.x + 60, DIEUHANH.end.y + 70, 80, 14)
+		flowerbed(DIEUHANH.end.x - 140,     DIEUHANH.end.y + 70, 80, 14)
 
 	# ── CỔng trường & đường nội bộ bên dưới ──
-	asphalt(Rect2(GATE_X, GATE_Y - 200, GATE_W, 200))
-	for y in range(int(GATE_Y) - 200, int(GATE_Y), 36):
-		rc(GATE_X + GATE_W / 2.0 - 1, y, 3, 20, Color("e8e8e8"))
-	for i in 8:
-		rc(GATE_X + 6 + i * 15, int(GATE_Y) - 180, 8, 50, Color(1, 1, 1, 0.75))
-	for i in 6:
-		rc(GATE_X, int(GATE_Y) - 20 + i * 7, GATE_W, 3, Color(1, 1, 1, 0.8))
+	if SHOW_ROAD_MARKINGS:
+		for y in range(int(GATE_Y) - 200, int(GATE_Y), 36):
+			rc(GATE_X + GATE_W / 2.0 - 1, y, 3, 20, Color("e8e8e8"))
+		for i in 8:
+			rc(GATE_X + 6 + i * 15, int(GATE_Y) - 180, 8, 50, Color(1, 1, 1, 0.75))
+		for i in 6:
+			rc(GATE_X, int(GATE_Y) - 20 + i * 7, GATE_W, 3, Color(1, 1, 1, 0.8))
 	paved(Rect2(60, 1300, 100, 60), Color("9096a0"))
 	draw_t1_strip()
 	draw_school_gate()
-	# đường phố ngoài cổng
-	asphalt(Rect2(0, GATE_Y + 14, WORLD.x, 36))
-	for x in range(0, int(WORLD.x), 44):
-		rc(x, GATE_Y + 26, 24, 2, Color("e8e8e8"))
 
 # ─── DẢI QUÁN ĐƯỜNG NỘI BỘ, CỔNG TRƯỜNG ─────────────────────────────────────
 func draw_t1_strip() -> void:
-	if not view.intersects(STRIP_T1.grow(16.0)):
-		return
-	paved(STRIP_T1, Color("dccaa0"))
-	rc(STRIP_T1.position.x, STRIP_T1.position.y, 2, STRIP_T1.size.y, Color("b9a77c"))
+	for strip in [STRIP_T1_LEFT, STRIP_T1]:
+		if not view.intersects(strip.grow(16.0)):
+			continue
+		paved(strip, Color("dccaa0"))
+		var curb_x: float = strip.end.x - 2.0 if strip == STRIP_T1_LEFT else strip.position.x
+		rc(curb_x, strip.position.y, 2, strip.size.y, Color("b9a77c"))
 
 func draw_red_barricade(r: Rect2) -> void:
 	var red := Color("d8352b")
@@ -293,20 +311,9 @@ func draw_street_furniture() -> void:
 		var b: Vector2 = STREET_POLES[c[1]]["pos"] + Vector2(0.0, -44.0)
 		draw_street_cable(a, b, 6.0)
 		draw_street_cable(a + Vector2(0.0, 3.0), b + Vector2(0.0, 3.0), 7.0)
-	# Thêm cột đèn và cột cờ dọc các trục chính
-	var lamp_x := 160.0
-	while lamp_x < 1060.0:
-		SE.draw_street_lamp(self, Vector2(lamp_x, 866))
-		lamp_x += 160.0
-	var lamp_x2 := 1200.0
-	while lamp_x2 < 2370.0:
-		SE.draw_street_lamp(self, Vector2(lamp_x2, 866))
-		lamp_x2 += 160.0
 	# Cột cờ tại cổng và trước Nhà Điều hành
 	SE.draw_flag_pole(self, Vector2(GATE_X - 50, GATE_Y - 60))
 	SE.draw_flag_pole(self, Vector2(GATE_X + GATE_W + 50, GATE_Y - 60))
-	SE.draw_flag_pole(self, Vector2(DIEUHANH.position.x + 20, DIEUHANH.position.y - 10))
-	SE.draw_flag_pole(self, Vector2(DIEUHANH.end.x - 20, DIEUHANH.position.y - 10))
 
 func draw_folding_gate(r: Rect2) -> void:
 	var rail  := Color("6e747b")
@@ -322,7 +329,6 @@ func draw_folding_gate(r: Rect2) -> void:
 
 func draw_gate_booth() -> void:
 	var r := GUARD_BOOTH
-	shadow(Vector2(r.position.x + 18.0, r.end.y + 2.0), 24.0)
 	rc(r.position.x, r.position.y, r.size.x, r.size.y, Color("c4c8cc"))
 	rc(r.position.x, r.position.y, 3, r.size.y, Color(1, 1, 1, 0.25))
 	rc(r.position.x + 3, r.position.y + 6, 14, 10, Color("8fc9e6"))

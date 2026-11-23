@@ -21,9 +21,6 @@ func _ready() -> void:
 	layer.visible = false
 
 func open_admin() -> void:
-	if game.multiplayer_manager != null and game.multiplayer_manager.is_connected_to_session():
-		status_label.text = "Không thể tua thời gian khi đang chơi Multiplayer."
-		return
 	was_paused = get_tree().paused
 	_sync_controls()
 	layer.visible = true

@@ -218,6 +218,7 @@ func sit_down(idx: int) -> void:
 	face = 0
 	moving = false
 	pos = seats[idx] + Vector2(6.0, 22.0)   # chân người ngồi (camera bám theo)
+	_canvas.queue_redraw()
 
 func stand_up() -> void:
 	if seat_idx < 0:
@@ -225,6 +226,7 @@ func stand_up() -> void:
 	pos = stand_pos_for(seat_idx)
 	seat_idx = -1
 	face = 0
+	_canvas.queue_redraw()
 
 # Đứng gần thảm đỏ ở cửa sau thì bấm E để ra ngoài.
 func near_exit() -> bool:
@@ -254,6 +256,7 @@ func _unhandled_input(event: InputEvent) -> void:
 				finish()
 			elif pos.distance_to(MC_POS) < 60.0:
 				mc_line = (mc_line + 1) % MC_LINES.size()
+				_canvas.queue_redraw()
 		get_viewport().set_input_as_handled()
 	elif not game.is_busy() and _near_door_outside():
 		begin()
@@ -263,7 +266,9 @@ func _process(delta: float) -> void:
 	if not inside:
 		return
 	time += delta
+	var old_seat_blend := seat_blend
 	seat_blend = lerpf(seat_blend, 1.0 if seat_idx >= 0 else 0.0, 1.0 - exp(-delta * 5.0))   # chuyển góc nhìn mượt khi ngồi / đứng dậy
+	var redraw := absf(seat_blend - old_seat_blend) > 0.001
 	var dir := Vector2.ZERO
 	if Input.is_physical_key_pressed(KEY_W) or Input.is_physical_key_pressed(KEY_UP):
 		dir.y += 1.0   # lật dọc: lên màn hình = về phía sân khấu (y gốc tăng)
@@ -276,12 +281,14 @@ func _process(delta: float) -> void:
 	if seat_idx >= 0:
 		# đang ngồi: đứng yên, chỉ bấm F để đứng dậy (phím di chuyển không làm gì)
 		moving = false
-		_canvas.queue_redraw()
+		if redraw:
+			_canvas.queue_redraw()
 		return
 	moving = false
 	if dir != Vector2.ZERO:
 		dir = dir.normalized()
 		moving = true
+		redraw = true
 		if absf(dir.x) > absf(dir.y):
 			face = 3 if dir.x > 0.0 else 2
 		else:
@@ -291,8 +298,10 @@ func _process(delta: float) -> void:
 			pos.x += step.x
 		if is_walkable(pos + Vector2(0.0, step.y)):
 			pos.y += step.y
+	var old_sit_target := sit_target
 	sit_target = find_sit_target()
-	_canvas.queue_redraw()
+	if redraw or sit_target != old_sit_target:
+		_canvas.queue_redraw()
 
 # ======================= VẼ NGOÀI TRỜI =======================
 
@@ -431,6 +440,7 @@ class HallCanvas extends Node2D:
 	const H := HoiTruongB
 	var hall: HoiTruongB
 	var view := Rect2()
+	var visible_rect := Rect2()
 
 	var HB_NAVY := Color("22336b")
 	var HB_KRAFT := Color("b88a50")
@@ -891,7 +901,9 @@ class HallCanvas extends Node2D:
 		view = Rect2(Vector2.ZERO, get_viewport_rect().size)
 		draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 		draw_rect(view.grow(16.0), Color("14161a"))
-		draw_set_transform(_origin(), 0.0, Vector2.ONE)
+		var origin := _origin()
+		draw_set_transform(origin, 0.0, Vector2.ONE)
+		visible_rect = Rect2(-origin - Vector2(24.0, 24.0), view.size + Vector2(48.0, 48.0))
 		mirror = true
 		dy = 0.0
 		draw_hall_b_walls()
@@ -1205,11 +1217,20 @@ class HallCanvas extends Node2D:
 			rc(s.x - 11, yy, 3, 14, light)
 
 	# ---------- các bậc khán phòng, bàn gỗ, sinh viên, ghế trống ----------
+	func rect_visible(r: Rect2) -> bool:
+		return r.intersects(visible_rect)
+
+	func seated_npc_visible(p: Vector2) -> bool:
+		# Ghế sinh viên được lật dọc; culling dùng toạ độ thực sau phép lật.
+		return rect_visible(Rect2(p.x - 10.0, H.SIZE.y - p.y - 24.0, 20.0, 30.0))
+
 	func draw_hall_b_tiers() -> void:
 		var w := H.SIZE.x - 44.0
 		var seats := H.student_seats()
 		for tier in range(H.TIERS - 1, -1, -1):   # từ sát sân khấu (trên màn hình) xuống phía cửa
 			var y0 := H.TIER_Y0 + tier * H.TIER_H
+			if not rect_visible(Rect2(22.0, H.SIZE.y - y0 - H.TIER_H, w, H.TIER_H + 28.0)):
+				continue
 			var tier_col := Color("ebe3cd") if tier % 2 == 0 else Color("e1d8bf")
 			rc(22, y0, w, H.TIER_H, tier_col)
 			rc(22, y0, w, 1, Color("c9c0a6"))
@@ -1226,10 +1247,14 @@ class HallCanvas extends Node2D:
 			# đồ trên bàn
 			for n in range(tier * 18, tier * 18 + 18):
 				var q := seats[n]
+				if not seated_npc_visible(q):
+					continue
 				draw_desk_items(q, (not H.seat_empty(q)) or n == hall.seat_idx)
 			# người ngồi / ghế trống / người chơi đang ngồi (18 chỗ), ngồi sau bàn nên vẽ sau
 			for n in range(tier * 18, tier * 18 + 18):
 				var p := seats[n]
+				if not seated_npc_visible(p):
+					continue
 				if n == hall.seat_idx:
 					draw_chair(p, false)
 					up_begin(p.y + 11.5)
@@ -1245,6 +1270,9 @@ class HallCanvas extends Node2D:
 	func draw_hall_b_head_tables() -> void:
 		var teachers := H.teacher_seats()
 		up_begin(296.0)   # cả khối bàn đoàn (y 270-322) chỉ dịch lên vị trí lật, không lật hình
+		if not rect_visible(rt(22.0, 270.0, 516.0, 52.0)):
+			up_end()
+			return
 		for tx in [28.0, 328.0]:
 			# mặt bàn trải khăn trắng
 			rc(tx, 292, 204, 8, Color("ffffff"))

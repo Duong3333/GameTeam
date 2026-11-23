@@ -2,13 +2,13 @@ extends "res://scripts/features/feature.gd"
 # CĂN TIN HCMUS ĐÔNG HÒA (toàn bộ nằm trong file này).
 #
 # Ngoài trời : tòa căn tin kem có cửa kính, mái hiên xanh, bảng "CĂN TIN HCMUS", sân sỏi trắng xám với bàn ghế sắt đen
-#              (tay vịn cam), mái che kính + cờ đuôi nheo, cây cọ. Nằm phía sau (phía bắc) Tòa D và Tòa E,
-#              giữa D và E, sát phía tây Tòa B4.2 (B4.2 ở x 722-838, y 40-252; căn tin x 566-706, cách B4.2 16px).
+#              (tay vịn cam), mái che kính + cờ đuôi nheo, cây cọ. Nằm phía bắc các tòa C/D, sân kết thúc ở y=180.
 # Bên trong  : quầy bán hàng có menu, tủ kính, nhân viên áo xanh, khu thanh toán; khu ăn uống bàn gỗ cam + ghế sắt xám,
 #              cột trắng, đèn trần; sinh viên ngồi ăn, trò chuyện, xếp hàng, đi giữa các bàn.
-# Tương tác  : phím E (một lần bấm chỉ làm MỘT việc, xem _pick_action): đóng/tiếp hội thoại > đứng dậy > NPC (trò chuyện /
-#              nhân viên: mua đồ) > ghế (ngồi) > cửa (vào / ra). Trong cửa hàng: W S chọn món, A D số lượng,
-#              E / Enter mua, Q đóng (Esc do menu tạm dừng của game dùng).
+# Tương tác  : phím E (một lần bấm chỉ làm MỘT việc, xem _pick_action): đóng/tiếp hội thoại > đứng dậy > NPC (trò chuyện)
+#              > ghế (ngồi) > cửa (vào / ra). Q hoặc Esc đóng hội thoại.
+#              Đã bỏ cho người chơi: dùng bàn, đặt / lấy đồ, thực đơn, mua đồ, máy nước, cốc nhựa, thùng rác, ăn uống.
+#              (NPC vẫn ngồi, ăn, bỏ rác như cũ để căn tin có không khí. Biến money vẫn giữ vì ATM dùng làm ví tiền.)
 # Đăng ký   : 1 dòng trong scripts/maps/registry.gd. Không có script phụ nào khác.
 #
 # Dùng lại của game: BUILDINGS (va chạm, minimap, tên khu vực), ZONES, solids, trees, draw_person/draw_speech/rc/ctext/
@@ -27,17 +27,16 @@ extends "res://scripts/features/feature.gd"
 const STAGE := 6
 
 # ---------- Ngoài trời (tọa độ thế giới) ----------
-# Đã kiểm tra bằng mô phỏng: cách B4.2 16px (đủ cho người đi qua), sân sát đỉnh Tòa C/D (y 240), hai khe C-D (x 537-576)
-# và D-E (x 676-712) vẫn thông xuống đường nội bộ, từ sân đi tới cửa B4.2 được.
-const BUILDING := Rect2(566, 52, 140, 96)    # x 566-706, y đáy = 148 (nằm sau khe giữa D và E)
-const YARD := Rect2(384, 148, 338, 90)       # sân sỏi, y 148-238
-const DOOR_OUT := Vector2(636, 158)          # giữa mặt tiền (cùng x với cửa của mẫu tòa nhà chung)
-const SPAWN_OUT := Vector2(636, 174)
-const CANOPY := Rect2(664, 152, 58, 84)      # mái che kính phía đông: nền x 664-722, y 152-236 (cột cao 34px)
+# Khu canteen nằm phía bắc các tòa C/D; toàn bộ sân kết thúc trước y=180 để không đè lên mái tòa.
+const BUILDING := Rect2(566, 0, 140, 96)
+const YARD := Rect2(384, 96, 338, 84)
+const DOOR_OUT := Vector2(636, 106)
+const SPAWN_OUT := Vector2(636, 122)
+const CANOPY := Rect2(664, 100, 58, 80)      # mái che kính phía đông: nền x 664-722, y 100-180 (cột cao 34px)
 const CANOPY_H := 34.0
-const POSTS := [Vector2(664, 152), Vector2(720, 152), Vector2(664, 236), Vector2(720, 236)]   # chân 4 cột mái kính
-const PARASOLS := [Vector2(440, 172), Vector2(440, 232)]   # chân cột dù xanh lớn (dù cao 40px)
-const POTS := [Vector2(618, 153), Vector2(654, 153)]       # chậu cây cảnh hai bên thềm cửa
+const POSTS := [Vector2(664, 100), Vector2(720, 100), Vector2(664, 180), Vector2(720, 180)]
+const PARASOLS := [Vector2(440, 120), Vector2(440, 172)]   # chân cột dù xanh lớn (dù cao 40px)
+const POTS := [Vector2(618, 101), Vector2(654, 101)]
 const DOOR_RANGE := 28.0
 const SEAT_RANGE := 24.0
 const TALK_RANGE := 26.0
@@ -46,10 +45,10 @@ const TABLE_MAX := 5            # số món tối đa trên một bàn
 const SIT_GRACE := 0.3          # vừa ngồi xong chưa cho đứng dậy bằng phím di chuyển
 const YARD_NPC_SPEED := 24.0
 const NAV_CELL := 4.0           # lưới tìm đường cho NPC sân: mỗi ô 4px, ô bị chặn theo đúng game.blocked()
-const NAV_RECT := Rect2(372, 140, 360, 108)
+const NAV_RECT := Rect2(372, 88, 360, 108)
 const NAV_DIRS := [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1), Vector2i(1, 1), Vector2i(-1, 1), Vector2i(1, -1), Vector2i(-1, -1)]
-const YARD_WALK := Rect2(388, 152, 330, 82)   # NPC sân chỉ được đứng/đi trong khung này (nằm gọn trong sân sỏi, không chạm tòa B4.2)
-const BIG_TREE := Vector2(528, 150)           # gốc cây lớn thay hai cây cọ cũ (x 500 và 558)
+const YARD_WALK := Rect2(388, 100, 330, 76)   # NPC sân chỉ được đứng/đi trong khung sân sỏi
+const BIG_TREE := Vector2(528, 98)            # gốc cây lớn thay hai cây cọ cũ (x 500 và 558)
 # trọng số hành vi [ngồi, nói chuyện, đi dạo, đứng nghỉ] theo tính cách NPC
 const KIND_W := {"sitter": [0.60, 0.10, 0.15, 0.15], "social": [0.25, 0.40, 0.15, 0.20], "roamer": [0.20, 0.10, 0.55, 0.15]}
 # 5 ô trên mặt bàn (tâm x, đáy y so với tâm bàn): 3 ô hàng trước, 2 ô hàng sau, không ô nào đè lên ô khác
@@ -112,8 +111,10 @@ const Schedule := preload("res://scripts/features/schedule_data.gd")
 const STAFF_Y := 65.0
 const SERVE_SLOT := Vector2(126, 102)   # chỗ khách đứng mua ngay trước thu ngân; hàng xếp dọc xuống dưới
 const QUEUE_STEP := 14.0
-const QUEUE_MAX := 5
-const VIS_MAX := 6
+const QUEUE_MAX := 2   # hàng chờ mua tối đa (trước đây 5)
+const AI_STEP := 1.0 / 30.0   # AI NPC căn tin chạy 30 lần/giây thay vì mỗi khung hình (giảm tải CPU)
+const AI_FAR := 450.0         # người chơi ở xa căn tin hơn mức này (và không ở trong nhà): nhân viên / khách ngồi sân tạm nghỉ
+const VIS_MAX := 2     # số khách vãng lai trong căn tin cùng lúc (trước đây 6)
 const VIS_SPEED := 26.0
 const BIN_USE := Vector2(33, 160)
 const CUP_POS := Vector2(284, 86)
@@ -178,6 +179,7 @@ const C_STEEL_HI := Color("5b636e")
 const C_STAFF := Color("2f8f4a")
 
 var inside := false
+var needs_outdoor_npcs := true   # khách căn tin là NPC ngoài trời (game.npcs): main.gd vẫn phải cập nhật NPC khi đang ở trong căn tin
 var money := 0               # số dư hiện tại (không bao giờ âm), đổi qua _money_add / _money_spend
 var _paid_weeks: Array = []  # các tuần trong game đã nhận tiền sinh hoạt
 var _buy_lock := 0.0
@@ -192,8 +194,10 @@ var _pos := START_POS
 var _face := 1
 var _anim := 0.0
 var _clock := 0.0
+var _ai_acc := 0.0
 var _fade := 0.0
 var _closing := false
+var _sit_t := 0.0              # thời gian đã ngồi (chống đứng dậy ngay khi vừa ngồi)
 var _seated := -1            # chỉ số ghế người chơi đang ngồi (-1 = đứng)
 var _tables: Array = []      # {a, c(Vector2), hw(float)}
 var _seats: Array = []       # {a, c, pos, face, stand, side, taken("" | "npc" | "player"), res(NPC đang giữ chỗ, -1 = không), tab}
@@ -203,45 +207,15 @@ var _rng := RandomNumberGenerator.new()
 var _dlg_open := false
 var _dlg_npc := -1
 var _dlg_n := 0
-var _shop_open := false
-var _shop_staff := -1
-var _sel := 0
-var _qty: Array = []
-var _shop_msg := ""
-var _shop_msg_t := 0.0
 var _dlg_root: Control
 var _dlg_name: Label
 var _dlg_text: Label
 var _dlg_hint: Label
-var _shop_root: Control
-var _shop_title: Label
-var _shop_say: Label
-var _shop_money: Label
-var _shop_bag: Label
-var _shop_note: Label
-var _rows: Array = []        # mỗi hàng: {panel, name, price, qty}
 var _toast: Label
 var _toast_t := 0.0
 var _inv: Dictionary = {}     # túi đồ người chơi: id -> số lượng (dùng chung cho cửa hàng, bàn, cốc, máy nước)
-var _give_ok := false
-var _tbl_inv: Array = []
-var _tbl_bag: Label
 var _dlg_btn: Button
-var _sit_t := 0.0              # thời gian đã ngồi (chống đứng dậy ngay khi vừa ngồi)
 var _tops: Array = []          # mỗi bàn: 5 ô vật phẩm (id món hoặc ""), giữ nguyên trong cả phiên chơi
-var _tbl_layer: CanvasLayer
-var _tbl_root: Control
-var _tbl_title: Label
-var _tbl_note: Label
-var _tbl_l: Array = []         # 5 hàng danh sách "mang theo"
-var _tbl_r: Array = []         # 5 hàng "trên bàn"
-var _tbl_open := false
-var _tbl_i := -1               # bàn đang mở
-var _tbl_col := 0              # 0 = cột mang theo, 1 = cột trên bàn
-var _tbl_sel := 0
-var _tbl_ssel := 0
-var _tbl_off := 0
-var _tbl_msg_t := 0.0
 var _nav_w := 0
 var _nav_h := 0
 var _nav_block := PackedByteArray()
@@ -249,17 +223,10 @@ var _nav_main := PackedByteArray()   # 1 = ô thông với cửa chính (tránh 
 
 var _trash := 0              # rác ăn uống đang cầm
 var _cup_stock := CUP_MAX
-var _cup_t := 0.0
 var _fill_t := 0.0
 var _fill_kind := ""
 var _bin_t := 0.0
 var _bin_i := 2
-var _hold_lbl: Label
-var _hold_panel: Panel
-var _dlg_sel := 0
-var _dlg_staff := false
-var _dlg_btns: Array = []
-var _ask_i := 0
 var _cash_i := 1
 var _queue: Array = []
 var _serving := -1
@@ -281,17 +248,13 @@ func _ready() -> void:
 	_rng.seed = 2468
 	# Đăng ký trước setup_collision(): va chạm, minimap, tên khu vực tự có từ BUILDINGS / ZONES.
 	game.BUILDINGS.append(["CĂN TIN", BUILDING.position.x, BUILDING.position.y, BUILDING.size.x, BUILDING.size.y, C_WALL, Color("4f7a2a"), "Căn tin HCMUS - cơm, mì, bánh mì, trà. Bấm E ở cửa để vào."])
-	game.ZONES.append(["Sân căn tin HCMUS - bàn ghế sắt ngoài trời", Rect2(368, 40, 366, 208)])
+	game.ZONES.append(["Sân căn tin HCMUS - bàn ghế sắt ngoài trời", Rect2(368, 0, 366, 180)])
 	if STAGE >= 3:
 		_build_outdoor()
-		_build_table_ui()
 	if STAGE >= 4:
 		_build_indoor()
 	if STAGE >= 5:
 		_spawn_npcs()
-	if STAGE >= 6:
-		for i in MENU.size():
-			_qty.append(1)
 	_eco_init()   # sau khi _tops đã có (bàn ngoài sân / trong nhà) và trước khi dựng giao diện
 	_build_overlay_nodes()
 	if STAGE >= 6:
@@ -355,15 +318,15 @@ func _build_outdoor() -> void:
 	# cụm tây 2x2 (dưới dù xanh), cụm giữa 2 bàn, cụm đông dưới mái kính. Hàng trên: ghế W E S (S nhìn ra lối đi);
 	# hàng dưới: ghế W E N. Chừa khoảng trống x 554-598 ở hàng dưới cho lối đi từ khe C-D, và đường từ cửa chính đi xuống.
 	for tx in [410.0, 470.0]:
-		_add_table("out", tx, 164.0, 12.0, [["W", 0.0], ["E", 0.0], ["S", 0.0]])
-		_add_table("out", tx, 224.0, 12.0, [["W", 0.0], ["E", 0.0], ["N", 0.0]])
+		_add_table("out", tx, 112.0, 12.0, [["W", 0.0], ["E", 0.0], ["S", 0.0]])
+		_add_table("out", tx, 172.0, 12.0, [["W", 0.0], ["E", 0.0], ["N", 0.0]])
 	for tx in [530.0, 590.0]:
-		_add_table("out", tx, 164.0, 12.0, [["W", 0.0], ["E", 0.0], ["S", 0.0]])
-	_add_table("out", 694.0, 164.0, 12.0, [["W", 0.0], ["E", 0.0], ["S", 0.0]])
-	_add_table("out", 636.0, 224.0, 12.0, [["W", 0.0], ["E", 0.0], ["N", 0.0]])
+		_add_table("out", tx, 112.0, 12.0, [["W", 0.0], ["E", 0.0], ["S", 0.0]])
+	_add_table("out", 694.0, 112.0, 12.0, [["W", 0.0], ["E", 0.0], ["S", 0.0]])
+	_add_table("out", 636.0, 172.0, 12.0, [["W", 0.0], ["E", 0.0], ["N", 0.0]])
 	# cây cọ hai góc trái: vào game.trees để game tự vẽ theo chiều sâu và tự thêm va chạm
 	# (hai cây cọ cũ ở x 500 và x 558 đã bỏ, thay bằng một cây lớn BIG_TREE vẽ trong _draw_big_tree)
-	for t in [[378, 156, 2], [378, 232, 2]]:
+	for t in [[378, 104, 2], [378, 176, 2]]:
 		game.trees.append(t)
 	game.solids.append(Rect2(BIG_TREE.x - 5.0, BIG_TREE.y - 4.0, 10, 5))   # chỉ gốc thân cây có va chạm, tán lá đi xuyên được
 	# cột mái kính, cột dù, chậu cây: vật cản nhỏ ở chân
@@ -415,9 +378,9 @@ func _rand_name() -> String:
 
 func _spawn_npcs() -> void:
 	# 4C: trong nhà chỉ có nhân viên sau quầy; khách là NPC của trường đi vào (xem _vis_*).
-	var staff_names := ["Cô Hoa (bếp)", "Cô Lan (thu ngân)", "Chú Tâm (bếp)"]
-	var sx := [60.0, 126.0, 192.0]
-	for i in 3:
+	var staff_names := ["Cô Hoa (bếp)", "Cô Lan (thu ngân)"]   # trước đây có thêm Chú Tâm (bếp)
+	var sx := [60.0, 126.0]
+	for i in 2:
 		var s := _new_npc("in", Vector2(sx[i], STAFF_Y), "staff", 0, staff_names[i])
 		_npcs.append(s)
 	_cash_i = 1
@@ -485,6 +448,8 @@ func _agent_near(n: Dictionary, np: Vector2) -> bool:
 func _update_npcs(delta: float) -> void:
 	_visit_tick(delta)
 	_util_tick(delta)
+	# nhân viên và khách ngồi sân chỉ cần chạy khi người chơi đủ gần để nhìn thấy; khách vãng lai ("vis") luôn chạy
+	var near: bool = inside or _dlg_open or game.player.distance_to(BUILDING.get_center()) < AI_FAR
 	for k in _npcs.size():
 		var n: Dictionary = _npcs[k]
 		n.say_t = maxf(float(n.say_t) - delta, 0.0)
@@ -506,9 +471,11 @@ func _update_npcs(delta: float) -> void:
 			"walk":
 				_walk_npc(n, delta)
 			"staff":
-				_sway_staff(n, delta)
+				if near:
+					_sway_staff(n, delta)
 			"diner":
-				_diner_update(n, delta)
+				if near:
+					_diner_update(n, delta)
 			"vis":
 				_vis_update(n, delta)
 	if not _vis_gone.is_empty():
@@ -570,205 +537,18 @@ func _walk_npc(n: Dictionary, delta: float) -> void:
 	else:
 		n.face = 1 if d.y < 0.0 else 0
 
-func _dlg_paint() -> void:
-	for i in _dlg_btns.size():
-		var b: Button = _dlg_btns[i]
-		b.modulate = Color(1.0, 0.92, 0.55) if i == _dlg_sel else Color.WHITE
-
 func _dlg_key(code: int) -> bool:
 	if code == KEY_ESCAPE or code == KEY_Q:
 		_close_dialog()
-		return true
-	if _dlg_staff:
-		match code:
-			KEY_A, KEY_LEFT:
-				_dlg_sel = posmod(_dlg_sel - 1, _dlg_btns.size())
-			KEY_D, KEY_RIGHT:
-				_dlg_sel = posmod(_dlg_sel + 1, _dlg_btns.size())
-			KEY_E, KEY_ENTER, KEY_KP_ENTER:
-				_dlg_choose(_dlg_sel)
-				return true
-			KEY_1, KEY_2, KEY_3, KEY_4:
-				_dlg_choose(code - KEY_1)
-				return true
-			_:
-				return false
-		_dlg_paint()
 		return true
 	if code == KEY_E or code == KEY_ENTER or code == KEY_KP_ENTER:
 		_dlg_advance()
 		return true
 	return false
 
-func _dlg_choose(k: int) -> void:
-	_dlg_sel = k
-	match k:
-		0:
-			var si := _dlg_npc
-			_close_dialog()
-			_open_shop(si)
-			return
-		1:
-			_dlg_text.text = str(ASK_LINES[_ask_i % ASK_LINES.size()])
-			_ask_i += 1
-		2:
-			var msg := _give_cup()
-			if _give_ok:
-				_dlg_text.text = "Cốc nhựa của căn tin đây em. Ra máy nước cạnh quầy để lấy nước nhé."
-				_sfx("correct")
-			else:
-				_dlg_text.text = msg
-				_sfx("wrong")
-		3:
-			_close_dialog()
-			return
-	_dlg_paint()
-
-func _hold_text() -> String:
-	var out := "Túi %d/%d" % [_inv_total(), BAG_CAP]
-	for id in ["coc_nhua", "coc_nuoc", "coc_da_dung", "binh_nuoc", "binh_nuoc_day"]:
-		if _inv_has(id) > 0:
-			out += "   " + str(ITEMS[id].n)
-	if _trash > 0:
-		out += "   Rác x%d" % _trash
-	return out
-
-func _refresh_hold() -> void:
-	if _hold_lbl == null:
-		return
-	_hold_lbl.text = _hold_text()
-	_hold_lbl.visible = inside
-	_hold_panel.visible = inside
-
-func _util_pick() -> Dictionary:
-	if not inside or _seated >= 0:
-		return {}
-	var best := {}
-	var bd := UTIL_RANGE
-	for u in [["water", WATER_USE], ["cup", CUP_USE], ["bin", BIN_USE]]:
-		var d := _pos.distance_to(u[1])
-		if u[0] == "bin":
-			d = minf(d, _bin_dist())
-		if d < bd:
-			bd = d
-			best = {"kind": u[0], "d": d}
-	return best
-
-# khoảng cách từ người chơi tới thân dãy thùng rác (ba thùng cao ~19, rộng 28); đứng phía nào cũng chạm được
-func _bin_dist() -> float:
-	var r := Rect2(IN_BINS.x - 6.0, IN_BINS.y - 19.0, 28.0, 20.0)
-	var q := Vector2(clampf(_pos.x, r.position.x, r.end.x), clampf(_pos.y, r.position.y, r.end.y))
-	return _pos.distance_to(q)
-
-func _use_water() -> void:
-	if _inv_has("coc_nhua") > 0:
-		_fill_kind = "coc_nhua"
-	elif _inv_has("binh_nuoc") > 0:
-		_fill_kind = "binh_nuoc"
-	elif _inv_has("coc_nuoc") > 0 or _inv_has("binh_nuoc_day") > 0:
-		_toast_msg("Bạn đã có nước rồi. Hãy uống bớt trước khi lấy thêm.")
-		_sfx("wrong")
-		return
-	elif _inv_has("coc_da_dung") > 0:
-		_toast_msg("Ly nhựa đã dùng rồi, hãy bỏ vào thùng rác.")
-		_sfx("wrong")
-		return
-	else:
-		_toast_msg("Bạn cần có cốc nhựa hoặc bình nước để lấy nước.")
-		_sfx("wrong")
-		return
-	_fill_t = FILL_TIME
-	_sfx("click")
-
-# phát 1 cốc nhựa của căn tin vào túi đồ; trả về thông báo, _give_ok cho biết thành công hay không
-
-func _take_cup() -> void:
-	var msg := _give_cup()
-	_toast_msg(msg)
-	_sfx("correct" if _give_ok else "wrong")
-
-func _use_bin() -> void:
-	var cups := 0
-	var wet := false
-	for id in ["coc_nhua", "coc_nuoc", "coc_da_dung"]:
-		var c := _inv_has(id)
-		if c > 0:
-			cups += c
-			if id == "coc_nuoc":
-				wet = true
-			_inv_remove(id, c)
-	var msg := ""
-	if cups > 0:
-		msg = "Đã đổ nước và bỏ ly nhựa vào thùng rác." if wet else "Đã bỏ ly nhựa vào thùng rác."
-	if _trash > 0:
-		msg = "Đã bỏ ly và rác vào thùng rác." if cups > 0 else "Đã bỏ rác vào thùng rác."
-		_trash = 0
-	elif cups == 0:
-		if _inv_has("binh_nuoc") > 0 or _inv_has("binh_nuoc_day") > 0:
-			_toast_msg("Bình nước cá nhân không phải rác, hãy giữ lại nhé.")
-		else:
-			_toast_msg("Bạn không có rác để bỏ.")
-		_sfx("wrong")
-		return
-	_bin_t = 0.7
-	_bin_i = 2
-	_toast_msg(msg)
-	_refresh_hold()
-	_sfx("correct")
-
-# phím R khi đang ngồi: ăn/uống món trong túi trước, nếu không có thì món trên bàn đang ngồi
-
-func _consume() -> void:
-	var pick := ""
-	for id in ["coc_nuoc", "binh_nuoc_day"]:
-		if pick == "" and _inv_has(id) > 0:
-			pick = id
-	if pick == "":
-		for id in _inv_ids():
-			if _edible(id):
-				pick = id
-				break
-	if pick != "":
-		var msg := _use_msg(pick)
-		if _use_inv(pick):
-			_toast_msg(msg)
-			_refresh_hold()
-			_sfx("correct")
-			return
-	if _seated >= 0:
-		var ti := int(_seats[_seated].tab)
-		var slots: Array = _tops[ti]
-		for j in range(TABLE_MAX):
-			var sid := str(slots[j])
-			if sid != "" and _edible(sid):
-				var msg2 := _use_msg(sid)
-				if _use_slot(ti, j):
-					_toast_msg(msg2 + " (món trên bàn)")
-					_refresh_hold()
-					_sfx("correct")
-					return
-	_toast_msg("Bạn không có gì để ăn uống.")
-	_sfx("wrong")
-
+# Chỉ còn làm nắp thùng rác (NPC khách bỏ rác) tự đóng lại
 func _util_tick(delta: float) -> void:
 	_bin_t = maxf(_bin_t - delta, 0.0)
-	_cup_t += delta
-	if _cup_t >= CUP_REFILL:
-		_cup_t = 0.0
-		if _cup_stock < CUP_MAX:
-			_cup_stock += 1
-	if _fill_t > 0.0:
-		_fill_t -= delta
-		if _fill_t <= 0.0:
-			_fill_t = 0.0
-			if _fill_kind == "coc_nhua" and _inv_remove("coc_nhua"):
-				_inv_add("coc_nuoc")
-				_toast_msg("Đã lấy nước vào ly nhựa.")
-			elif _fill_kind == "binh_nuoc" and _inv_remove("binh_nuoc"):
-				_inv_add("binh_nuoc_day")
-				_toast_msg("Đã đổ đầy bình nước cá nhân.")
-			_refresh_hold()
-			_sfx("correct")
 
 # ======================= 4C: KHÁCH TỪ SÂN TRƯỜNG VÀO CĂN TIN =======================
 # Khách là chính NPC của game (game.npcs): đi theo lưới dẫn đường tới cửa căn tin; vào trong thì được cất khỏi game.npcs
@@ -1452,116 +1232,6 @@ func _inv_remove(id: String, n: int = 1) -> bool:
 		_inv.erase(id)
 	return true
 
-# các id đang có trong túi, theo thứ tự danh mục
-
-func _inv_ids() -> Array:
-	var out: Array = []
-	for id in ITEM_LIST:
-		if _inv_has(str(id)) > 0:
-			out.append(str(id))
-	return out
-
-func _edible(id: String) -> bool:
-	if not ITEMS.has(id) or NOT_EDIBLE.has(id):
-		return false
-	return USE_MAP.has(id) or int(ITEMS[id].c) <= 1
-
-# dùng xong 1 món: trả về id còn lại ("" nếu món biến mất)
-
-func _use_result(id: String) -> String:
-	if USE_MAP.has(id):
-		return str(USE_MAP[id])
-	return ""
-
-func _use_msg(id: String) -> String:
-	match id:
-		"coc_nuoc":
-			return "Bạn uống hết ly nước. Ly nhựa đã dùng, hãy bỏ vào thùng rác."
-		"binh_nuoc_day":
-			return "Bạn uống nước trong bình. Bình đã cạn, ra máy nước để đổ đầy."
-	return "Bạn đã dùng 1 %s. Nhớ bỏ rác vào thùng rác." % str(ITEMS[id].n)
-
-# dùng món trong túi (không bao giờ làm mất món nếu chưa dùng được)
-
-func _use_inv(id: String) -> bool:
-	if not _edible(id) or not _inv_remove(id):
-		return false
-	var r := _use_result(id)
-	if r != "":
-		_inv_add(r)   # thay đúng 1 món bằng 1 món nên luôn còn chỗ
-	else:
-		_trash += 1
-	return true
-
-# dùng món đang đặt trên bàn
-
-func _use_slot(ti: int, j: int) -> bool:
-	var slots: Array = _tops[ti]
-	var id := str(slots[j])
-	if id == "" or not _edible(id):
-		return false
-	var r := _use_result(id)
-	slots[j] = r
-	if r == "":
-		_trash += 1
-	return true
-
-func _can_fill() -> bool:
-	return _inv_has("coc_nhua") > 0 or _inv_has("binh_nuoc") > 0
-
-func _give_cup() -> String:
-	_give_ok = false
-	if _inv_has("coc_nhua") > 0 or _inv_has("binh_nuoc") > 0 or _inv_has("binh_nuoc_day") > 0:
-		return "Bạn đã có cốc hoặc bình rồi, không cần lấy thêm."
-	if _cup_stock <= 0:
-		return "Hết cốc nhựa rồi, đợi nhân viên bổ sung nhé."
-	if not _inv_add("coc_nhua"):
-		return "Túi đồ đã đầy, không thể nhận thêm cốc nhựa."
-	_cup_stock -= 1
-	_give_ok = true
-	_refresh_hold()
-	return "Đã nhận 1 cốc nhựa dùng một lần (còn %d)." % _cup_stock
-
-func _tbl_use() -> void:
-	if not _tbl_open or _tbl_i < 0:
-		return
-	if _tbl_col == 0:
-		if _tbl_inv.is_empty():
-			_tbl_say("Túi đồ không có món nào để dùng.", false)
-			return
-		var id := str(_tbl_inv[clampi(_tbl_sel, 0, _tbl_inv.size() - 1)])
-		if not _edible(id):
-			_tbl_say("%s không thể ăn hoặc uống." % str(ITEMS[id].n), false)
-			return
-		var msg := _use_msg(id)
-		if _use_inv(id):
-			_tbl_say(msg, true)
-	else:
-		var j := clampi(_tbl_ssel, 0, TABLE_MAX - 1)
-		var sid := str(_tops[_tbl_i][j])
-		if sid == "":
-			_tbl_say("Ô này đang trống.", false)
-			return
-		if not _edible(sid):
-			_tbl_say("%s không thể ăn hoặc uống." % str(ITEMS[sid].n), false)
-			return
-		var msg2 := _use_msg(sid)
-		if _use_slot(_tbl_i, j):
-			_tbl_say(msg2, true)
-	_tbl_refresh()
-
-func _tbl_click_use(kind: int, i: int) -> void:
-	_tbl_col = kind
-	if kind == 0:
-		_tbl_sel = _tbl_off + i
-	else:
-		_tbl_ssel = i
-	_tbl_use()
-
-# trả về true nếu phím đã được dùng
-
-# ======================= VÒNG ĐỜI: begin / finish / trạng thái active =======================
-
 func begin() -> void:
 	super()
 
@@ -1570,7 +1240,7 @@ func finish() -> void:
 
 # active = true khi bất cứ phần nào của căn tin đang giữ người chơi (trong nhà, hội thoại, cửa hàng, đang ngồi)
 func _sync_active() -> void:
-	var want := inside or _dlg_open or _shop_open or _tbl_open or _seated >= 0
+	var want := inside or _dlg_open or _seated >= 0
 	if want and not active:
 		begin()
 	elif not want and active:
@@ -1677,18 +1347,12 @@ func _build_ui() -> void:
 	if PAYMENT:
 		_panel(root, Rect2(336, 2, 140, 15), Color(0.05, 0.08, 0.14, 0.85), Color("e0b020"))
 		_wallet = _lbl(root, "", Vector2(338, 2), Vector2(136, 15), 8, Color("ffe28a"), HORIZONTAL_ALIGNMENT_CENTER)
-	_hold_panel = _panel(root, Rect2(4, 2, 300, 15), Color(0.05, 0.08, 0.14, 0.88), Color("e0b020"))
-	_hold_lbl = _lbl(root, "", Vector2(8, 2), Vector2(292, 15), 8, Color("cfe8ff"))
-	_hold_panel.visible = false
-	_hold_lbl.visible = false
 	# thông báo nổi
 	_toast = _lbl(root, "", Vector2(90, 20), Vector2(300, 14), 9, Color.WHITE, HORIZONTAL_ALIGNMENT_CENTER)
 	_toast.visible = false
 	_toast.add_theme_color_override("font_outline_color", Color.BLACK)
 	_toast.add_theme_constant_override("outline_size", 4)
 	_build_dialog_ui(root)
-	_build_shop_ui(root)
-	_refresh_shop()
 
 # ---------- hệ thống căn chỉnh chung (toạ độ viewport 480x270) ----------
 # Mọi giao diện căn tin dùng chung: khung 400 rộng, lề 8, thanh tiêu đề 20, nút cao 16.
@@ -1725,103 +1389,22 @@ func _build_dialog_ui(root: Control) -> void:
 	_dlg_root.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_dlg_root.visible = false
 	root.add_child(_dlg_root)
-	# vùng: thẻ tên / lời thoại / lưới 2x2 nút / dải dưới (hướng dẫn + nút đóng)
+	# vùng: thẻ tên / lời thoại / dải dưới (hướng dẫn + nút đóng)
 	var px := 30.0
 	var pw := 420.0
 	var ix := px + UI_PAD
 	var iw := pw - 2.0 * UI_PAD
-	var py := 144.0
-	_panel(_dlg_root, Rect2(px, py, pw, 116.0), UI_FRAME, Color("e0b020"))
+	var py := 180.0
+	_panel(_dlg_root, Rect2(px, py, pw, 76.0), UI_FRAME, Color("e0b020"))
 	_panel(_dlg_root, Rect2(ix, py - 8.0, 140, 16), Color("1b2f6e"), Color("e0b020"))
 	_dlg_name = _lblr(_dlg_root, "", Rect2(ix, py - 8.0, 140, 16), 9, Color("ffe28a"), HORIZONTAL_ALIGNMENT_CENTER)
 	var ty := py + 12.0
 	_dlg_text = _lblr(_dlg_root, "", Rect2(ix, ty, iw, 36), 9, Color.WHITE)
 	_dlg_text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_dlg_text.vertical_alignment = VERTICAL_ALIGNMENT_TOP
-	_dlg_btns.clear()
-	var names := ["1  Xem thực đơn", "2  Hỏi món ăn", "3  Nhận cốc nhựa", "4  Kết thúc (Esc)"]
-	var bw := (iw - UI_GAP) / 2.0
-	var by0 := ty + 36.0 + UI_GAP
-	for i in 4:
-		var bx := ix + float(i % 2) * (bw + UI_GAP)
-		var by := by0 + floorf(float(i) / 2.0) * (UI_BTN_H + 3.0)
-		_dlg_btns.append(_btn(_dlg_root, str(names[i]), Rect2(bx, by, bw, UI_BTN_H), _dlg_choose.bind(i), 8))
-	var fy := by0 + 2.0 * UI_BTN_H + 3.0 + UI_GAP
+	var fy := ty + 36.0 + UI_GAP
 	_dlg_hint = _lblr(_dlg_root, "", Rect2(ix, fy, iw - UI_BTN_CLOSE_W - UI_GAP, UI_BTN_H), 7, Color("9fd3f0"))
 	_dlg_btn = _btn(_dlg_root, "Đóng (Esc)", Rect2(ix + iw - UI_BTN_CLOSE_W, fy, UI_BTN_CLOSE_W, UI_BTN_H), _close_dialog, 7)
-
-func _build_shop_ui(root: Control) -> void:
-	_shop_root = Control.new()
-	_shop_root.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	_shop_root.mouse_filter = Control.MOUSE_FILTER_STOP   # chặn chuột lọt xuống thế giới
-	_shop_root.visible = false
-	root.add_child(_shop_root)
-	var dim := ColorRect.new()
-	dim.color = Color(0, 0, 0, 0.45)
-	dim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	dim.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_shop_root.add_child(dim)
-	# vùng từ trên xuống: tiêu đề / lời nhân viên / tên cột / 7 hàng món / ghi chú + giá + túi / hướng dẫn + nút đóng
-	var py := 6.0
-	var ix := UI_X + UI_PAD
-	var iw := UI_W - 2.0 * UI_PAD
-	var row_h := 20.0
-	var pitch := row_h + 1.0
-	var n := MENU.size()
-	var say_y := py + UI_BAR + 3.0
-	var head_y := say_y + 13.0 + 2.0
-	var rows_y := head_y + 11.0 + 2.0
-	var zone_y := rows_y + float(n) * pitch - 1.0 + UI_GAP
-	var zone_h := 30.0
-	var bar_y := zone_y + zone_h + UI_GAP
-	var frame_h := bar_y + UI_BTN_H + UI_PAD - py
-	_shop_title = _ui_frame(_shop_root, py, frame_h, 11)
-	_shop_title.text = "CĂN TIN HCMUS"
-	_shop_say = _lblr(_shop_root, "", Rect2(ix, say_y, iw, 13), 8, Color("cfe8ff"), HORIZONTAL_ALIGNMENT_CENTER)
-	# cột (toạ độ tương đối trong hàng): icon / tên / giá / số lượng / mua / trong túi
-	var c_icon := 4.0
-	var c_name := 34.0
-	var c_price_r := 198.0
-	var c_minus := 208.0
-	var c_qty := c_minus + 16.0
-	var c_plus := c_qty + 24.0
-	var c_buy := c_plus + 16.0 + 10.0
-	var c_own_r := iw - 4.0
-	var hc := Color("8fa6c8")
-	_lblr(_shop_root, "MÓN", Rect2(ix + c_name, head_y, 100, 12), 7, hc)
-	_lblr(_shop_root, "GIÁ", Rect2(ix + c_price_r - 60.0, head_y, 60, 12), 7, hc, HORIZONTAL_ALIGNMENT_RIGHT)
-	_lblr(_shop_root, "SỐ LƯỢNG", Rect2(ix + c_minus, head_y, 56, 12), 7, hc, HORIZONTAL_ALIGNMENT_CENTER)
-	_lblr(_shop_root, "TRONG TÚI", Rect2(ix + c_own_r - 58.0, head_y, 58, 12), 7, hc, HORIZONTAL_ALIGNMENT_RIGHT)
-	_rows.clear()
-	for i in n:
-		var y := rows_y + float(i) * pitch
-		var bg := ColorRect.new()
-		bg.position = Vector2(ix, y)
-		bg.size = Vector2(iw, row_h)
-		bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		_shop_root.add_child(bg)
-		var icon := Control.new()
-		icon.position = Vector2(ix + c_icon, y + 1.0)
-		icon.size = Vector2(24, 18)
-		icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		_shop_root.add_child(icon)
-		icon.draw.connect(_draw_icon.bind(icon, str(MENU[i].id)))
-		_lblr(_shop_root, str(MENU[i].name), Rect2(ix + c_name, y, 100, row_h), 9, Color.WHITE)
-		_lblr(_shop_root, _fmt(int(MENU[i].price)), Rect2(ix + c_price_r - 60.0, y, 60, row_h), 9, Color("ffe28a"), HORIZONTAL_ALIGNMENT_RIGHT)
-		_btn_in(_shop_root, "-", ix + c_minus, y, 16, row_h, _on_qty.bind(i, -1))
-		var q := _lblr(_shop_root, "1", Rect2(ix + c_qty, y, 24, row_h), 9, Color.WHITE, HORIZONTAL_ALIGNMENT_CENTER)
-		_btn_in(_shop_root, "+", ix + c_plus, y, 16, row_h, _on_qty.bind(i, 1))
-		_btn_in(_shop_root, "Mua", ix + c_buy, y, 44, row_h, _on_buy.bind(i))
-		var o := _lblr(_shop_root, "", Rect2(ix + c_own_r - 58.0, y, 58, row_h), 8, Color("9fe3a8"), HORIZONTAL_ALIGNMENT_RIGHT)
-		_rows.append({"bg": bg, "qty": q, "owned": o})
-	# vùng ghi chú: dòng thông báo / dòng giá (trái) + túi đồ (phải)
-	_panel(_shop_root, Rect2(ix, zone_y, iw, zone_h), UI_ZONE, Color("2d4a7a"))
-	_shop_note = _lblr(_shop_root, "", Rect2(ix + 4.0, zone_y + 2.0, iw - 8.0, 13), 8, Color.WHITE, HORIZONTAL_ALIGNMENT_CENTER)
-	_shop_money = _lblr(_shop_root, "", Rect2(ix + 4.0, zone_y + 16.0, iw - 8.0 - 84.0, 12), 7, Color("9fd3f0"))
-	_shop_bag = _lblr(_shop_root, "", Rect2(ix + iw - 4.0 - 80.0, zone_y + 16.0, 80, 12), 7, Color("ffe28a"), HORIZONTAL_ALIGNMENT_RIGHT)
-	# dải dưới: hướng dẫn (trái) / nút đóng (phải), không chồng nhau
-	_lblr(_shop_root, "W S chọn món   A D số lượng   E mua   Q đóng", Rect2(ix, bar_y, iw - UI_BTN_CLOSE_W - UI_GAP, UI_BTN_H), 7, Color("9fd3f0"))
-	_btn(_shop_root, "Đóng (Q)", Rect2(ix + iw - UI_BTN_CLOSE_W, bar_y, UI_BTN_CLOSE_W, UI_BTN_H), _close_shop, 8)
 
 # ======================= PHÍM E: MỘT LẦN BẤM = MỘT VIỆC =======================
 
@@ -1832,29 +1415,10 @@ func _unhandled_input(event: InputEvent) -> void:
 	if not k.pressed or k.echo:
 		return
 	var code: int = k.physical_keycode
-	# 0) giao diện bàn đang mở: nhận W S A D E Enter Q (Esc để nguyên cho menu tạm dừng của game)
-	if _tbl_open:
-		if _tbl_key(code):
-			get_viewport().set_input_as_handled()
-		return
-	# 1) cửa hàng đang mở: chỉ nhận phím của cửa hàng (Esc để nguyên cho menu tạm dừng của game)
-	if _shop_open:
-		if _shop_key(code):
-			get_viewport().set_input_as_handled()
-		return
 	# 2) hội thoại đang mở: E tiếp / đóng, Q đóng
 	if _dlg_open:
 		if _dlg_key(code):
 			get_viewport().set_input_as_handled()
-		return
-	# đang ngồi ngoài sân: T mở bàn của ghế này (E dành cho đứng dậy)
-	if code == KEY_T and _seated >= 0 and not _closing:
-		_open_table(int(_seats[_seated].tab))
-		get_viewport().set_input_as_handled()
-		return
-	if code == KEY_R and _seated >= 0 and not _closing:
-		_consume()
-		get_viewport().set_input_as_handled()
 		return
 	if code != KEY_E:
 		return
@@ -1872,10 +1436,10 @@ func _unhandled_input(event: InputEvent) -> void:
 	_do_action(act)
 	get_viewport().set_input_as_handled()
 
-# Thứ tự ưu tiên: cửa hàng / hội thoại / bàn đang mở (chặn hết) > đang ngồi (đứng dậy) > NPC (nói chuyện, mua đồ)
-# > ghế (ngồi) > bàn (đặt đồ) > cửa. Ghế và bàn so theo khoảng cách; ngang nhau thì ghế thắng.
+# Thứ tự ưu tiên: hội thoại / đang đóng (chặn hết) > đang ngồi (đứng dậy) > NPC (nói chuyện) > ghế (ngồi) > cửa (vào / ra).
+# NPC và ghế so theo khoảng cách; ngang nhau thì NPC thắng.
 func _pick_action() -> Dictionary:
-	if _shop_open or _dlg_open or _tbl_open or _closing or _fill_t > 0.0:
+	if _dlg_open or _closing:
 		return {}
 	if _seated >= 0:
 		return {"kind": "stand"}
@@ -1883,28 +1447,16 @@ func _pick_action() -> Dictionary:
 	var pp := _pp()
 	var ni := _npc_near(a)
 	var si := _seat_near(a)
-	var ti := _table_near()
-	var ut := _util_pick()
-	if ni >= 0 or si >= 0 or ti >= 0 or not ut.is_empty():
+	if ni >= 0 or si >= 0:
 		var nd := 9999.0
 		var sd := 9999.0
-		var td := 9999.0
-		var ud := 9999.0
 		if ni >= 0:
 			nd = pp.distance_to(_talk_pt(_npcs[ni]))
 		if si >= 0:
 			sd = _seat_dist(si, pp)
-		if ti >= 0:
-			td = _table_dist(ti, pp)
-		if not ut.is_empty():
-			ud = float(ut.d)
-		if ud < nd and ud < sd and ud < td:
-			return {"kind": str(ut.kind)}
-		if ni >= 0 and nd <= sd and nd <= td:
+		if ni >= 0 and nd <= sd:
 			return {"kind": "talk", "i": ni}
-		if si >= 0 and sd <= td + 6.0:
-			return {"kind": "sit", "i": si}
-		return {"kind": "table", "i": ti}
+		return {"kind": "sit", "i": si}
 	if inside:
 		if _pos.distance_to(DOOR_IN) < 26.0:
 			return {"kind": "exit"}
@@ -1920,14 +1472,6 @@ func _do_action(act: Dictionary) -> void:
 			_open_dialog(int(act.i))
 		"sit":
 			_sit(int(act.i))
-		"table":
-			_open_table(int(act.i))
-		"water":
-			_use_water()
-		"cup":
-			_take_cup()
-		"bin":
-			_use_bin()
 		"enter":
 			_enter_inside()
 		"exit":
@@ -1939,21 +1483,11 @@ func _prompt_text() -> String:
 		return ""
 	match str(act.kind):
 		"stand":
-			return "E: Đứng dậy   T: Dùng bàn   R: Ăn uống"
+			return "E: Đứng dậy"
 		"talk":
-			if bool(_npcs[int(act.i)].staff):
-				return "E: Nói chuyện với nhân viên"
 			return "E: Trò chuyện"
 		"sit":
 			return "E: Ngồi"
-		"table":
-			return "E: Dùng bàn (%d/%d món)" % [_tbl_count(int(act.i)), TABLE_MAX]
-		"water":
-			return "E: Lấy nước" if _can_fill() else "E: Máy nước"
-		"cup":
-			return "E: Lấy cốc nhựa (%d)" % _cup_stock
-		"bin":
-			return "E: Bỏ rác"
 		"enter":
 			return "E: Vào căn tin"
 		"exit":
@@ -1970,7 +1504,6 @@ func _enter_inside() -> void:
 	_fade = 1.0
 	_layer.visible = true
 	_refresh_hud()
-	_refresh_hold()
 	_sync_active()
 	_sfx("click")
 
@@ -1978,7 +1511,6 @@ func _leave_inside() -> void:
 	inside = false
 	_closing = false
 	_layer.visible = false
-	_refresh_hold()
 	game.player = _find_free("out", SPAWN_OUT)
 	game.facing = 0
 	_refresh_hud()
@@ -2000,6 +1532,8 @@ func _npc_near(a: String) -> int:
 	for i in _npcs.size():
 		var n: Dictionary = _npcs[i]
 		if n.a != a:
+			continue
+		if a == "out" and n.mode == "diner":
 			continue
 		var d := pp.distance_to(_talk_pt(n))
 		if d < bd:
@@ -2061,6 +1595,14 @@ func _stand_up() -> void:
 	_seated = -1
 	_sync_active()
 
+func _move_key_down() -> bool:
+	return (
+		Input.is_physical_key_pressed(KEY_W) or Input.is_physical_key_pressed(KEY_UP)
+		or Input.is_physical_key_pressed(KEY_A) or Input.is_physical_key_pressed(KEY_LEFT)
+		or Input.is_physical_key_pressed(KEY_S) or Input.is_physical_key_pressed(KEY_DOWN)
+		or Input.is_physical_key_pressed(KEY_D) or Input.is_physical_key_pressed(KEY_RIGHT)
+	)
+
 # ======================= HỘI THOẠI =======================
 
 func _open_dialog(i: int) -> void:
@@ -2068,22 +1610,12 @@ func _open_dialog(i: int) -> void:
 	_dlg_open = true
 	_dlg_npc = i
 	_dlg_n = 0
-	_dlg_sel = 0
 	n.talk = 10.0
 	if int(n.seat) < 0:
 		n.face = _face_toward(n.pos, _pp())
 	_dlg_name.text = str(n.name)
-	_dlg_staff = bool(n.staff)
-	for b in _dlg_btns:
-		b.visible = _dlg_staff
-	_dlg_btn.visible = not _dlg_staff
 	_dlg_root.visible = true
-	if _dlg_staff:
-		_dlg_text.text = str(STAFF_GREET[_rng.randi_range(0, STAFF_GREET.size() - 1)])
-		_dlg_hint.text = "A D chọn   E xác nhận   1-4 chọn nhanh   Esc đóng"
-		_dlg_paint()
-	else:
-		_show_line()
+	_show_line()
 	_sync_active()
 	_sfx("click")
 
@@ -2114,89 +1646,6 @@ func _close_dialog() -> void:
 	_sync_active()
 
 # ======================= CỬA HÀNG =======================
-
-func _open_shop(staff_i: int) -> void:
-	_shop_open = true
-	_shop_staff = staff_i
-	_sel = 0
-	for i in _qty.size():
-		_qty[i] = 1
-	var n: Dictionary = _npcs[staff_i]
-	n.talk = 12.0
-	n.face = 0
-	_shop_say.text = str(n.name) + ": " + str(STAFF_LINES[_rng.randi_range(0, STAFF_LINES.size() - 1)])
-	_shop_msg = ""
-	_shop_root.visible = true
-	_refresh_shop()
-	_sync_active()
-	_sfx("click")
-
-func _close_shop() -> void:
-	if not _shop_open:
-		return
-	if _shop_staff >= 0 and _shop_staff < _npcs.size():
-		_npcs[_shop_staff].talk = 1.0
-	_shop_open = false
-	_shop_staff = -1
-	_shop_root.visible = false
-	_sync_active()
-
-# trả về true nếu phím đã được dùng
-func _shop_key(code: int) -> bool:
-	match code:
-		KEY_W, KEY_UP:
-			_sel = posmod(_sel - 1, MENU.size())
-		KEY_S, KEY_DOWN:
-			_sel = posmod(_sel + 1, MENU.size())
-		KEY_A, KEY_LEFT:
-			_on_qty(_sel, -1)
-		KEY_D, KEY_RIGHT:
-			_on_qty(_sel, 1)
-		KEY_E, KEY_ENTER, KEY_KP_ENTER:
-			_on_buy(_sel)
-		KEY_Q, KEY_ESCAPE:
-			_close_shop()
-			return true
-		_:
-			return false
-	_refresh_shop()
-	return true
-
-func _on_qty(i: int, d: int) -> void:
-	if not _shop_open or i < 0 or i >= _qty.size():
-		return
-	_sel = i
-	_qty[i] = clampi(int(_qty[i]) + d, 1, MAX_QTY)   # không cho số lượng âm hoặc vượt giới hạn
-	_refresh_shop()
-
-func _on_buy(i: int) -> void:
-	if not _shop_open or i < 0 or i >= MENU.size():
-		return
-	_sel = i
-	if _buy_lock > 0.0:
-		return   # vừa mua xong: bỏ qua lần bấm lặp
-	_buy_lock = BUY_LOCK
-	var item: Dictionary = MENU[i]
-	var id := str(item.id)
-	var q := clampi(int(_qty[i]), 1, MAX_QTY)
-	var cost: int = int(item.price) * q
-	# kiểm tra đủ mọi điều kiện TRƯỚC khi đổi bất cứ thứ gì
-	if not ITEMS.has(id):
-		_say_shop("Giao dịch thất bại, bạn chưa bị trừ tiền.", false)
-	elif _inv_total() + q > BAG_CAP:
-		_say_shop("Túi đồ không đủ chỗ cho %d %s (còn %d chỗ). Bạn chưa bị trừ tiền." % [q, str(item.name), BAG_CAP - _inv_total()], false)
-	elif money < cost:
-		_say_shop("Không đủ tiền! Cần " + _fmt(cost) + ", bạn có " + _fmt(money) + ".", false)
-	elif not _inv_add(id, q):
-		_say_shop("Giao dịch thất bại, bạn chưa bị trừ tiền.", false)
-	elif not _money_spend(cost):
-		_inv_remove(id, q)   # hoàn tác: không có vật phẩm nào được giữ lại nếu không trừ được tiền
-		_say_shop("Giao dịch thất bại, bạn chưa bị trừ tiền.", false)
-	else:
-		_say_shop("Đã mua %d %s (-%s). Số dư: %s" % [q, str(item.name), _fmt(cost), _fmt(money)], true)
-		_toast_msg("Mua %d %s  -%s" % [q, str(item.name), _fmt(cost)])
-		_eco_save()
-	_refresh_shop()
 
 # ---------- giai đoạn 5: tiền, tiền sinh hoạt tuần, lưu / tải ----------
 
@@ -2260,14 +1709,6 @@ func _eco_load(cfg: ConfigFile) -> void:
 	else:
 		for sid in START_ITEMS:
 			_inv[sid] = 1
-	var tops: Variant = cfg.get_value("eco", "tops", null)
-	if tops is Array:
-		for ti in mini(tops.size(), _tops.size()):
-			var row: Variant = tops[ti]
-			if row is Array:
-				for j in mini(row.size(), TABLE_MAX):
-					var tid := str(row[j])
-					_tops[ti][j] = tid if ITEMS.has(tid) else ""
 
 func _eco_signature() -> String:
 	return "%d|%s|%s|%s|%d" % [money, str(_paid_weeks), str(_inv), str(_tops), _trash]
@@ -2310,74 +1751,12 @@ func _notification(what: int) -> void:
 	if what == NOTIFICATION_WM_CLOSE_REQUEST:
 		_eco_save()
 
-func _say_shop(t: String, ok: bool) -> void:
-	_shop_msg = t
-	_shop_msg_t = 4.0
-	_shop_note.add_theme_color_override("font_color", Color("9fe3a8") if ok else Color("ff8a80"))
-	_sfx("correct" if ok else "wrong")
-
 func _toast_msg(t: String) -> void:
 	_toast.text = t
 	_toast.visible = true
 	_toast_t = 2.5
 
-func _refresh_shop() -> void:
-	_money_refresh()
-	var total: int = int(MENU[_sel].price) * int(_qty[_sel])
-	_shop_money.text = "Số dư: %s   Tổng: %s" % [_fmt(money), _fmt(total)]
-	_shop_bag.text = "Túi đồ: %d/%d" % [_inv_total(), BAG_CAP]
-	_shop_note.text = _shop_msg
-	for i in _rows.size():
-		var r: Dictionary = _rows[i]
-		r.bg.color = Color("2a3f6b") if i == _sel else Color(1, 1, 1, 0.05)
-		r.qty.text = str(_qty[i])
-		var have: int = _inv_has(str(MENU[i].id))
-		r.owned.text = ("x" + str(have)) if have > 0 else ""
-
 # ---------- giao diện bàn: túi đồ <-> mặt bàn dùng chung một nguồn dữ liệu (_inv / _tops) ----------
-
-# minh họa món ăn pixel (vẽ lên Control của hàng)
-func _draw_icon(c, id: String) -> void:
-	var o := Color("1a1a2e")
-	c.draw_rect(Rect2(0, 0, 24, 18), Color("e9e2cf"))
-	match id:
-		"com_ga", "com_suon":
-			c.draw_rect(Rect2(2, 9, 20, 7), Color("f4f4f4"))
-			c.draw_rect(Rect2(2, 15, 20, 1), Color("b9b9b9"))
-			c.draw_rect(Rect2(3, 6, 18, 5), Color("fbfbf0"))
-			if id == "com_ga":
-				c.draw_rect(Rect2(10, 4, 10, 6), Color("c9852f"))
-				c.draw_rect(Rect2(11, 4, 8, 2), Color("e3a74b"))
-			else:
-				c.draw_rect(Rect2(9, 4, 12, 6), Color("8a4a24"))
-				c.draw_rect(Rect2(11, 5, 3, 3), Color("e8d6b8"))
-			c.draw_rect(Rect2(4, 5, 5, 4), Color("4f9a3a"))
-		"mi_xao":
-			c.draw_rect(Rect2(2, 9, 20, 7), Color("f4f4f4"))
-			c.draw_rect(Rect2(3, 5, 18, 6), Color("d9a441"))
-			for i in 5:
-				c.draw_rect(Rect2(4 + i * 3, 5 + (i % 2) * 2, 2, 1), Color("a8741f"))
-			c.draw_rect(Rect2(6, 4, 3, 3), Color("4f9a3a"))
-			c.draw_rect(Rect2(14, 5, 3, 3), Color("c0392b"))
-		"banh_mi":
-			c.draw_rect(Rect2(3, 6, 18, 8), o)
-			c.draw_rect(Rect2(4, 7, 16, 6), Color("d9a05b"))
-			c.draw_rect(Rect2(4, 7, 16, 2), Color("ecc17f"))
-			c.draw_rect(Rect2(6, 10, 12, 2), Color("4f9a3a"))
-			c.draw_rect(Rect2(8, 11, 8, 1), Color("c0392b"))
-		"tra_dao", "tra_tac":
-			var tea := Color("f2a65a") if id == "tra_dao" else Color("d9c24a")
-			c.draw_rect(Rect2(8, 4, 8, 13), o)
-			c.draw_rect(Rect2(9, 5, 6, 11), tea)
-			c.draw_rect(Rect2(9, 5, 6, 2), Color("ffffffaa"))
-			c.draw_rect(Rect2(13, 1, 2, 5), Color("c0392b"))
-			c.draw_rect(Rect2(10, 10, 2, 2), Color("ffe0b0") if id == "tra_dao" else Color("8fc43a"))
-		_:
-			c.draw_rect(Rect2(9, 3, 6, 2), Color("2f6bd0"))
-			c.draw_rect(Rect2(8, 5, 8, 12), o)
-			c.draw_rect(Rect2(9, 6, 6, 10), Color("bfe6ff"))
-			c.draw_rect(Rect2(9, 9, 6, 3), Color("2f6bd0"))
-	c.draw_rect(Rect2(0, 0, 24, 18), o, false, 1.0)
 
 # ======================= MỖI KHUNG HÌNH =======================
 
@@ -2388,18 +1767,12 @@ func _process(delta: float) -> void:
 		_toast_t -= delta
 		if _toast_t <= 0.0:
 			_toast.visible = false
-	if _shop_msg_t > 0.0:
-		_shop_msg_t -= delta
-		if _shop_msg_t <= 0.0:
-			_shop_msg = ""
-			_shop_note.text = ""
-	if _tbl_msg_t > 0.0:
-		_tbl_msg_t -= delta
-		if _tbl_msg_t <= 0.0 and _tbl_note != null:
-			_tbl_note.text = ""
-	_update_npcs(delta)
+	_ai_acc += delta
+	if _ai_acc >= AI_STEP:
+		_update_npcs(_ai_acc)
+		_ai_acc = 0.0
 	# đang ngồi: bấm phím di chuyển để đứng dậy (người chơi không chạy khi đang ngồi vì active = true)
-	if _seated >= 0 and not _tbl_open and not _dlg_open and not _shop_open:
+	if _seated >= 0 and not _dlg_open:
 		_sit_t += delta
 		if _sit_t > SIT_GRACE and _move_key_down():
 			_stand_up()
@@ -2412,19 +1785,19 @@ func _process(delta: float) -> void:
 			return
 	else:
 		_fade = maxf(_fade - delta * 3.0, 0.0)
-		if _seated < 0 and not _dlg_open and not _shop_open and _fill_t <= 0.0:
+		if _seated < 0 and not _dlg_open:
 			_walk(delta)
 	_painter.queue_redraw()
 
 func _walk(delta: float) -> void:
 	var v := Vector2.ZERO
-	if Input.is_physical_key_pressed(KEY_W):
+	if Input.is_physical_key_pressed(KEY_W) or Input.is_physical_key_pressed(KEY_UP):
 		v.y -= 1.0
-	if Input.is_physical_key_pressed(KEY_S):
+	if Input.is_physical_key_pressed(KEY_S) or Input.is_physical_key_pressed(KEY_DOWN):
 		v.y += 1.0
-	if Input.is_physical_key_pressed(KEY_A):
+	if Input.is_physical_key_pressed(KEY_A) or Input.is_physical_key_pressed(KEY_LEFT):
 		v.x -= 1.0
-	if Input.is_physical_key_pressed(KEY_D):
+	if Input.is_physical_key_pressed(KEY_D) or Input.is_physical_key_pressed(KEY_RIGHT):
 		v.x += 1.0
 	if v == Vector2.ZERO:
 		return
@@ -3325,20 +2698,59 @@ func _repaint_yard_items() -> void:
 		if area.has_point(Vector2(t[0], t[1])):
 			items.append([float(t[1]), 0, t])
 	for l in game.lamps:
-		if area.has_point(l):
+		if l is Vector2 and area.has_point(l):
 			items.append([l.y, 1, l])
 	for b in game.benches:
-		if area.has_point(b):
-			items.append([b.y, 2, b])
+		var bench_pos: Vector2
+		if b is Vector2:
+			bench_pos = b
+		elif b is Dictionary:
+			var bench_value: Variant = b.get("pos")
+			if bench_value is Vector2:
+				bench_pos = bench_value
+			elif bench_value is Dictionary:
+				bench_pos = Vector2(float(bench_value.get("x", 0.0)), float(bench_value.get("y", 0.0)))
+			else:
+				continue
+		else:
+			continue
+		if area.has_point(bench_pos):
+			items.append([bench_pos.y, 2, bench_pos if b is Dictionary else b])
 	for o in game.npcs:
-		if not o.has("role") and area.has_point(o.pos):
-			items.append([o.pos.y, 3, o])
-	if game.multiplayer_manager != null:
-		for remote in game.multiplayer_manager.get_other_players().values():
-			if area.has_point(remote.pos):
-				items.append([remote.pos.y, 5, remote])
-	if area.has_point(game.player) and _seated < 0:   # đang ngồi thì người chơi được vẽ cùng ghế
-		items.append([game.player.y, 4, null])
+		if not o.has("role"):
+			var npc_pos: Variant = o.get("pos")
+			var pos: Vector2
+			if npc_pos is Vector2:
+				pos = npc_pos
+			elif npc_pos is Dictionary:
+				pos = Vector2(float(npc_pos.get("x", 0.0)), float(npc_pos.get("y", 0.0)))
+			else:
+				continue
+			if area.has_point(pos):
+				items.append([pos.y, 3, o])
+	var multiplayer_manager: Variant = game.get("multiplayer_manager")
+	if multiplayer_manager != null and multiplayer_manager.has_method("get_other_players"):
+		var remote_players: Dictionary = multiplayer_manager.get_other_players()
+		for remote in remote_players.values():
+			if remote is Dictionary and remote.has("pos"):
+				var remote_pos: Variant = remote["pos"]
+				var pos: Vector2
+				if remote_pos is Vector2:
+					pos = remote_pos
+				elif remote_pos is Dictionary:
+					pos = Vector2(float(remote_pos.get("x", 0.0)), float(remote_pos.get("y", 0.0)))
+				else:
+					continue
+				if area.has_point(pos):
+					remote["pos"] = pos
+					items.append([pos.y, 5, remote])
+	var player_pos: Variant = game.get("player")
+	if player_pos is Vector2 and area.has_point(player_pos) and _seated < 0:
+		items.append([player_pos.y, 4, null])
+	elif player_pos is Dictionary:
+		var px: Vector2 = Vector2(float(player_pos.get("x", 0.0)), float(player_pos.get("y", 0.0)))
+		if area.has_point(px) and _seated < 0:
+			items.append([px.y, 4, null])
 	if STAGE >= 3:
 		for ti in _tables.size():
 			if str(_tables[ti].a) == "out":
@@ -3364,8 +2776,17 @@ func _repaint_yard_items() -> void:
 		for j in range(sn):
 			items.append([s_top + (float(j) + 0.5) / sn * (s_bot - s_top), 15, j])   # dây dọc: từng đoạn theo y màn hình của đoạn
 	for n in _npcs:
-		if str(n.a) == "out" and int(n.seat) < 0 and area.has_point(n.pos):
-			items.append([float(n.pos.y), 11, n])
+		if str(n.a) == "out" and int(n.seat) < 0:
+			var npc_pos: Variant = n.get("pos")
+			var pos: Vector2
+			if npc_pos is Vector2:
+				pos = npc_pos
+			elif npc_pos is Dictionary:
+				pos = Vector2(float(npc_pos.get("x", 0.0)), float(npc_pos.get("y", 0.0)))
+			else:
+				continue
+			if area.has_point(pos):
+				items.append([pos.y, 11, n])
 	var occ := _occ_map("out")
 	items.sort_custom(func(a, b): return a[0] < b[0])
 	for it in items:
@@ -3384,8 +2805,16 @@ func _repaint_yard_items() -> void:
 				if o.say_t > 0.0:
 					game.draw_speech(o)
 			4:
-				game.draw_person(game.player, Color.WHITE, Color("1b1b1b"), game.facing, game.anim, true, false, true)
-				game.ctext("Bạn", game.player.x - 15.0, game.player.y - 28.0, 30, 8, Color("ffd23f"))
+				var draw_player_pos: Variant = game.get("player")
+				var px: Vector2
+				if draw_player_pos is Vector2:
+					px = draw_player_pos
+				elif draw_player_pos is Dictionary:
+					px = Vector2(float(draw_player_pos.get("x", 0.0)), float(draw_player_pos.get("y", 0.0)))
+				else:
+					continue
+				game.draw_person(px, Color.WHITE, Color("1b1b1b"), game.facing, game.anim, true, false, true)
+				game.ctext("Bạn", px.x - 15.0, px.y - 28.0, 30, 8, Color("ffd23f"))
 			6:
 				_draw_table(game, _tables[int(it[2])], int(it[2]))
 			7:
@@ -3408,9 +2837,17 @@ func _repaint_yard_items() -> void:
 				_paint_side_bunting(int(it[2]))
 			5:
 				var remote: Dictionary = it[2]
-				game.draw_person(remote.pos, Color("7dc8ff"), Color("3b2a1a"), remote.facing, remote.anim, true, false, false)
+				var remote_pos: Variant = remote.get("pos")
+				var pos: Vector2
+				if remote_pos is Vector2:
+					pos = remote_pos
+				elif remote_pos is Dictionary:
+					pos = Vector2(float(remote_pos.get("x", 0.0)), float(remote_pos.get("y", 0.0)))
+				else:
+					continue
+				game.draw_person(pos, Color("7dc8ff"), Color("3b2a1a"), remote.facing, remote.anim, true, false, false)
 				var peer_id: int = remote.get("id", 0)
-				game.ctext("Chủ phòng" if peer_id == 1 else "Người chơi %d" % peer_id, remote.pos.x - 36.0, remote.pos.y - 28.0, 72, 8, Color("9fe3ff"))
+				game.ctext("Chủ phòng" if peer_id == 1 else "Người chơi %d" % peer_id, pos.x - 36.0, pos.y - 28.0, 72, 8, Color("9fe3ff"))
 
 # Khung chỉ dẫn phím E phía trên đầu người chơi (ngoài trời): "E: Vào căn tin", sau này cả "E: Ngồi" / "E: Trò chuyện"...
 func _paint_prompt_outdoor() -> void:
@@ -3785,41 +3222,12 @@ func _draw_pot(q: Vector2) -> void:
 func _seat_free(i: int) -> bool:
 	return str(_seats[i].taken) == "" and int(_seats[i].res) < 0
 
-func _move_key_down() -> bool:
-	return Input.is_physical_key_pressed(KEY_W) or Input.is_physical_key_pressed(KEY_A) or Input.is_physical_key_pressed(KEY_S) or Input.is_physical_key_pressed(KEY_D)
-
 func _late_init() -> void:
 	_build_nav()
 	_spawn_yard_npcs()
 	_rng.randomize()
 
 # ---------- bàn: tìm bàn gần nhất, số món ----------
-
-func _table_rect(ti: int) -> Rect2:
-	var t: Dictionary = _tables[ti]
-	var c: Vector2 = t.c
-	var hw: float = t.hw
-	return Rect2(c.x - hw - 1.0, c.y - 6.0, hw * 2.0 + 2.0, 18.0)
-
-func _table_dist(ti: int, pp: Vector2) -> float:
-	var r := _table_rect(ti)
-	var dx := maxf(maxf(r.position.x - pp.x, 0.0), pp.x - r.end.x)
-	var dy := maxf(maxf(r.position.y - pp.y, 0.0), pp.y - r.end.y)
-	return sqrt(dx * dx + dy * dy)
-
-func _table_near() -> int:
-	var best := -1
-	var bd := TABLE_RANGE
-	var pp := _pp()
-	var want := "in" if inside else "out"
-	for i in _tables.size():
-		if str(_tables[i].a) != want:
-			continue
-		var d := _table_dist(i, pp)
-		if d < bd:
-			bd = d
-			best = i
-	return best
 
 # ======================= 4C: DỤNG CỤ (máy nước, cốc, thùng rác, ăn uống) =======================
 
@@ -3831,10 +3239,6 @@ func _tbl_count(ti: int) -> int:
 		if str(id) != "":
 			n += 1
 	return n
-
-# Chỉ món có trong danh mục mới đặt được (không cho đặt thứ không phù hợp)
-func _item_ok(id: String) -> bool:
-	return ITEMS.has(id) and ITEM_LIST.has(id)
 
 # ---------- vẽ vật phẩm trên mặt bàn ----------
 
@@ -3858,251 +3262,6 @@ func _draw_table_items(g, c: Vector2, ti: int) -> void:
 			_draw_item(g, id, c.x + o.x, c.y + o.y)
 
 # ---------- giao diện bàn ----------
-
-func _build_table_ui() -> void:
-	_tbl_layer = CanvasLayer.new()
-	_tbl_layer.layer = 8
-	add_child(_tbl_layer)
-	_tbl_root = Control.new()
-	_tbl_root.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	_tbl_root.mouse_filter = Control.MOUSE_FILTER_STOP   # chặn chuột lọt xuống thế giới
-	_tbl_root.visible = false
-	_tbl_layer.add_child(_tbl_root)
-	var dim := ColorRect.new()
-	dim.color = Color(0, 0, 0, 0.4)
-	dim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	dim.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_tbl_root.add_child(dim)
-	# vùng từ trên xuống: tiêu đề / tên 2 cột / 5 hàng / thông báo / hướng dẫn / (túi đồ + nút đóng)
-	var py := 8.0
-	var ix := UI_X + UI_PAD
-	var iw := UI_W - 2.0 * UI_PAD
-	var col_w := (iw - UI_GAP) / 2.0
-	var row_pitch := TBL_ROW_H + 2.0
-	var head_y := py + UI_BAR + 4.0
-	var rows_y := head_y + 12.0 + 2.0
-	var note_y := rows_y + 5.0 * row_pitch - 2.0 + UI_GAP
-	var info_y := note_y + 18.0 + UI_GAP
-	var bar_y := info_y + 32.0 + UI_GAP
-	var frame_h := bar_y + UI_BTN_H + 2.0 + UI_PAD - py
-	_tbl_title = _ui_frame(_tbl_root, py, frame_h, 10)
-	_lblr(_tbl_root, "MANG THEO", Rect2(ix + 3.0, head_y, col_w - 6.0, 12), 8, Color("9fd3f0"))
-	_lblr(_tbl_root, "TRÊN BÀN", Rect2(ix + col_w + UI_GAP + 3.0, head_y, col_w - 6.0, 12), 8, Color("9fd3f0"))
-	_tbl_l.clear()
-	_tbl_r.clear()
-	for i in 5:
-		var y := rows_y + float(i) * row_pitch
-		_tbl_l.append(_tbl_make_row(ix, y, col_w, 0, i, "Đặt"))
-		_tbl_r.append(_tbl_make_row(ix + col_w + UI_GAP, y, col_w, 1, i, "Lấy"))
-	_panel(_tbl_root, Rect2(ix, note_y, iw, 18), UI_ZONE, Color("2d4a7a"))
-	_tbl_note = _lblr(_tbl_root, "", Rect2(ix + 4.0, note_y, iw - 8.0, 18), 8, Color.WHITE, HORIZONTAL_ALIGNMENT_CENTER)
-	_panel(_tbl_root, Rect2(ix, info_y, iw, 32), UI_ZONE, Color("2d4a7a"))
-	_lblr(_tbl_root, "W S chọn   A D đổi cột   E đặt / lấy   R ăn uống   Q đóng", Rect2(ix + 4.0, info_y + 2.0, iw - 8.0, 13), 7, Color("9fd3f0"), HORIZONTAL_ALIGNMENT_CENTER)
-	_lblr(_tbl_root, "Mỗi bàn tối đa %d món. Món chưa dùng vẫn nằm trên bàn khi bạn rời đi." % TABLE_MAX, Rect2(ix + 4.0, info_y + 17.0, iw - 8.0, 13), 7, Color("cfe8ff"), HORIZONTAL_ALIGNMENT_CENTER)
-	_tbl_bag = _lblr(_tbl_root, "", Rect2(ix, bar_y, iw - UI_BTN_CLOSE_W - UI_GAP, UI_BTN_H + 2.0), 8, Color("ffe28a"))
-	_btn(_tbl_root, "Đóng (Q)", Rect2(ix + iw - UI_BTN_CLOSE_W, bar_y + 1.0, UI_BTN_CLOSE_W, UI_BTN_H), _close_table, 8)
-
-# kind 0 = hàng danh mục trong túi, 1 = ô trên bàn; idx = số hàng nhìn thấy
-# hàng: [icon] [tên / loại] ........ [Đặt|Lấy] [Dùng]; vùng chữ tự co theo bề rộng cột
-func _tbl_make_row(x: float, y: float, w: float, kind: int, idx: int, btn_text: String) -> Dictionary:
-	var bg := ColorRect.new()
-	bg.position = Vector2(x, y)
-	bg.size = Vector2(w, TBL_ROW_H)
-	bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_tbl_root.add_child(bg)
-	var icon := Control.new()
-	icon.position = Vector2(x + 3.0, y + 1.0)
-	icon.size = Vector2(24, TBL_ROW_H - 2.0)
-	icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_tbl_root.add_child(icon)
-	icon.draw.connect(_tbl_icon_draw.bind(icon, kind, idx))
-	var use_x := x + w - 3.0 - UI_BTN_W
-	var act_x := use_x - 3.0 - UI_BTN_W
-	var tx := x + 31.0
-	var tw := act_x - 3.0 - tx
-	var nm := _lblr(_tbl_root, "", Rect2(tx, y + 1.0, tw, 13), 8, Color.WHITE)
-	var tag := _lblr(_tbl_root, "", Rect2(tx, y + 13.0, tw, 10), 6, Color("8fa6c8"))
-	var cb: Callable = _tbl_click_place.bind(idx) if kind == 0 else _tbl_click_take.bind(idx)
-	var ucb: Callable = _tbl_click_use.bind(kind, idx)
-	var b := _btn_in(_tbl_root, btn_text, act_x, y, UI_BTN_W, TBL_ROW_H, cb, 7)
-	var u := _btn_in(_tbl_root, "Dùng", use_x, y, UI_BTN_W, TBL_ROW_H, ucb, 7)
-	return {"bg": bg, "icon": icon, "name": nm, "tag": tag, "btn": b, "use": u}
-
-func _tbl_row_id(kind: int, idx: int) -> String:
-	if kind == 0:
-		var k := _tbl_off + idx
-		if k < 0 or k >= _tbl_inv.size():
-			return ""
-		return str(_tbl_inv[k])
-	if _tbl_i < 0 or idx < 0 or idx >= TABLE_MAX:
-		return ""
-	return str(_tops[_tbl_i][idx])
-
-func _tbl_icon_draw(c: Control, kind: int, idx: int) -> void:
-	c.draw_rect(Rect2(0, 0, 24, 22), Color(1, 1, 1, 0.10))
-	var id := _tbl_row_id(kind, idx)
-	if id == "" or not ITEMS.has(id):
-		return
-	var d: Dictionary = ITEMS[id]
-	for r in d.px:
-		c.draw_rect(Rect2(12.0 + float(r[0]) * 2.0, 19.0 + float(r[1]) * 2.0, float(r[2]) * 2.0, float(r[3]) * 2.0), Color(str(r[4])))
-
-func _open_table(ti: int) -> void:
-	if _tbl_open or _tbl_root == null or ti < 0 or ti >= _tops.size():
-		return
-	_tbl_open = true
-	_tbl_i = ti
-	_tbl_col = 0
-	_tbl_sel = 0
-	_tbl_ssel = 0
-	_tbl_off = 0
-	_tbl_note.text = ""
-	_tbl_root.visible = true
-	_tbl_refresh()
-	_sync_active()
-	_sfx("click")
-
-func _close_table() -> void:
-	if not _tbl_open:
-		return
-	_tbl_open = false
-	_tbl_i = -1
-	_tbl_root.visible = false
-	_sync_active()
-
-func _tbl_refresh() -> void:
-	if _tbl_i < 0:
-		return
-	var cnt := _tbl_count(_tbl_i)
-	_tbl_title.text = "%s  -  %d/%d món" % ["BÀN TRONG NHÀ" if str(_tables[_tbl_i].a) == "in" else "BÀN NGOÀI TRỜI", cnt, TABLE_MAX]
-	_tbl_inv = _inv_ids()
-	var n := _tbl_inv.size()
-	_tbl_sel = clampi(_tbl_sel, 0, maxi(n - 1, 0))
-	if _tbl_sel < _tbl_off:
-		_tbl_off = _tbl_sel
-	elif _tbl_sel > _tbl_off + 4:
-		_tbl_off = _tbl_sel - 4
-	_tbl_off = clampi(_tbl_off, 0, maxi(n - 5, 0))
-	for i in _tbl_l.size():
-		var r: Dictionary = _tbl_l[i]
-		var id := _tbl_row_id(0, i)
-		if id == "":
-			r.name.text = "(trống)"
-			r.tag.text = ""
-		else:
-			r.name.text = str(ITEMS[id].n)
-			r.tag.text = "%s  x%d" % [str(ITEM_CATS[int(ITEMS[id].c)]), _inv_has(id)]
-		r.bg.color = Color("2a3f6b") if (_tbl_col == 0 and _tbl_off + i == _tbl_sel and id != "") else Color(1, 1, 1, 0.05)
-		r.btn.disabled = id == "" or cnt >= TABLE_MAX
-		r.use.disabled = id == "" or not _edible(id)
-		r.icon.queue_redraw()
-	for j in _tbl_r.size():
-		var r2: Dictionary = _tbl_r[j]
-		var sid := _tbl_row_id(1, j)
-		r2.name.text = str(ITEMS[sid].n) if sid != "" else "(trống)"
-		r2.tag.text = str(ITEM_CATS[int(ITEMS[sid].c)]) if sid != "" else "ô %d" % (j + 1)
-		r2.bg.color = Color("2a3f6b") if (_tbl_col == 1 and j == _tbl_ssel) else Color(1, 1, 1, 0.05)
-		r2.btn.disabled = sid == ""
-		r2.use.disabled = sid == "" or not _edible(sid)
-		r2.icon.queue_redraw()
-	_tbl_bag.text = "Túi đồ: %d/%d" % [_inv_total(), BAG_CAP]
-	_refresh_hold()
-
-func _tbl_say(t: String, ok: bool) -> void:
-	_tbl_note.text = t
-	_tbl_note.add_theme_color_override("font_color", Color("9fe3a8") if ok else Color("ff8a80"))
-	_tbl_msg_t = 3.5
-	_sfx("correct" if ok else "wrong")
-
-func _tbl_place() -> void:
-	if not _tbl_open or _tbl_i < 0:
-		return
-	if _tbl_inv.is_empty():
-		_tbl_say("Túi đồ không có món nào để đặt.", false)
-		return
-	var id := str(_tbl_inv[clampi(_tbl_sel, 0, _tbl_inv.size() - 1)])
-	if not _item_ok(id):
-		_tbl_say("Vật phẩm này không phù hợp để đặt lên bàn.", false)
-		return
-	var slots: Array = _tops[_tbl_i]
-	var slot_i := -1
-	for k in [0, 1, 2, 3, 4]:
-		if str(slots[k]) == "":
-			slot_i = k
-			break
-	if slot_i < 0:
-		_tbl_say("Bàn đã đầy (%d/%d)! Hãy lấy bớt một món." % [TABLE_MAX, TABLE_MAX], false)
-		return
-	if not _inv_remove(id):   # chuyển thật sự từ túi sang bàn, không tạo bản sao
-		_tbl_say("Không tìm thấy món này trong túi.", false)
-		return
-	slots[slot_i] = id
-	var cnt := _tbl_count(_tbl_i)
-	var nm := str(ITEMS[id].n)
-	if cnt >= TABLE_MAX:
-		_tbl_say("Đã đặt %s. Bàn đã đầy (%d/%d)." % [nm, cnt, TABLE_MAX], true)
-	else:
-		_tbl_say("Đã đặt %s lên bàn (%d/%d)." % [nm, cnt, TABLE_MAX], true)
-	_tbl_refresh()
-
-func _tbl_take() -> void:
-	if not _tbl_open or _tbl_i < 0:
-		return
-	var slots: Array = _tops[_tbl_i]
-	var j := clampi(_tbl_ssel, 0, TABLE_MAX - 1)
-	var id := str(slots[j])
-	if id == "":
-		_tbl_say("Ô này đang trống.", false)
-		return
-	# chỉ xóa khỏi bàn sau khi đã bỏ được vào túi
-	if not _inv_add(id):
-		_tbl_say("Túi đồ đã đầy (%d/%d), món vẫn còn trên bàn." % [_inv_total(), BAG_CAP], false)
-		return
-	slots[j] = ""
-	_tbl_say("Đã lấy %s vào túi (%d/%d)." % [str(ITEMS[id].n), _tbl_count(_tbl_i), TABLE_MAX], true)
-	_tbl_refresh()
-
-func _tbl_click_place(i: int) -> void:
-	_tbl_col = 0
-	_tbl_sel = _tbl_off + i
-	_tbl_place()
-
-func _tbl_click_take(j: int) -> void:
-	_tbl_col = 1
-	_tbl_ssel = j
-	_tbl_take()
-
-# trả về true nếu phím đã được dùng
-func _tbl_key(code: int) -> bool:
-	match code:
-		KEY_W, KEY_UP:
-			if _tbl_col == 0:
-				_tbl_sel = posmod(_tbl_sel - 1, maxi(_tbl_inv.size(), 1))
-			else:
-				_tbl_ssel = posmod(_tbl_ssel - 1, TABLE_MAX)
-		KEY_S, KEY_DOWN:
-			if _tbl_col == 0:
-				_tbl_sel = posmod(_tbl_sel + 1, maxi(_tbl_inv.size(), 1))
-			else:
-				_tbl_ssel = posmod(_tbl_ssel + 1, TABLE_MAX)
-		KEY_A, KEY_LEFT:
-			_tbl_col = 0
-		KEY_D, KEY_RIGHT:
-			_tbl_col = 1
-		KEY_E, KEY_ENTER, KEY_KP_ENTER:
-			if _tbl_col == 0:
-				_tbl_place()
-			else:
-				_tbl_take()
-		KEY_R:
-			_tbl_use()
-		KEY_Q, KEY_ESCAPE:
-			_close_table()
-			return true
-		_:
-			return false
-	_tbl_refresh()
-	return true
 
 # ---------- lưới tìm đường cho NPC sân ----------
 
@@ -4345,7 +3504,7 @@ func _spawn_yard_npcs() -> void:
 		out_ids[i] = out_ids[j]
 		out_ids[j] = tmp
 	var kinds := ["sitter", "social", "sitter", "roamer", "social", "roamer", "roamer", "sitter"]
-	for k in mini(4, out_ids.size()):
+	for k in mini(2, out_ids.size()):   # khách ngồi sân: 2 (trước đây 4)
 		var si: int = out_ids[k]
 		var s: Dictionary = _seats[si]
 		var n := _new_diner(s.pos, int(s.face))
@@ -4356,7 +3515,7 @@ func _spawn_yard_npcs() -> void:
 		n.ph_t = _rng.randf_range(5.0, 30.0)
 		s["taken"] = "npc"
 		_npcs.append(n)
-	for k in 4:
+	for k in 1:   # khách đi lại ngoài sân: 1 (trước đây 4)
 		var w := _new_diner(_random_free_spot(), _rng.randi_range(0, 3))
 		w.kind = kinds[4 + k]
 		w.ph = "idle"

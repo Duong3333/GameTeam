@@ -75,7 +75,7 @@ const C_BENCH_WOOD   := Color("9c6b3e") # Ghế đá / gỗ công viên
 const C_BENCH_LEG    := Color("4a3c28") # Chân ghế
 
 # ─── HÀM CHÍNH: VẼ TOÀN BỘ CÔNG TRÌNH HỒ NƯỚC ĐỒNG TÂM ──────────────────────────
-static func draw_landscape(canvas: CanvasItem, center: Vector2, clock: float = 0.0) -> void:
+static func draw_landscape(canvas: CanvasItem, center: Vector2, clock: float = 0.0, show_vegetation: bool = true) -> void:
 	var c := center
 	var bbox := Rect2(c - Vector2(170, 170), Vector2(340, 340))
 	if "view" in canvas and not canvas.view.grow(40.0).intersects(bbox):
@@ -97,16 +97,17 @@ static func draw_landscape(canvas: CanvasItem, center: Vector2, clock: float = 0
 	_draw_radial_bridges(canvas, c)
 
 	# 6. Bề mặt đi bộ & vành cây cảnh uốn lượn trên vòng thành đá phân cách
-	_draw_stone_divider_walkway_and_hedges(canvas, c)
+	if show_vegetation:
+		_draw_stone_divider_walkway_and_hedges(canvas, c)
 
 	# 7. Đảo tròn ở chính giữa có bồn cây cảnh và luống hoa
-	_draw_central_island(canvas, c)
+	_draw_central_island(canvas, c, show_vegetation)
 
 	# 8. Bể phun nước cyan và cột đài phun nước trung tâm sinh động
 	_draw_fountain_basin_and_jets(canvas, c, clock)
 
 	# 9. Cảnh quan cây xanh (hàng cau vua thẳng tắp, ghế đá, hàng rào tỉa)
-	_draw_park_landscaping(canvas, c)
+	_draw_park_landscaping(canvas, c, show_vegetation)
 
 # ─── 1. VÒNG QUẢNG TRƯỜNG CÔNG VIÊN & LỐI TIẾP CẬN 4 HƯỚNG ────────────────────
 static func _draw_plaza_and_avenues(canvas: CanvasItem, c: Vector2) -> void:
@@ -334,7 +335,7 @@ static func _draw_stone_divider_walkway_and_hedges(canvas: CanvasItem, c: Vector
 			canvas.draw_rect(Rect2(hp.x + 0.4, hp.y - 0.8, 1.4, 1.4), Color("ffd60a"))
 
 # ─── 7. ĐẢO TRÒN Ở CHÍNH GIỮA CÓ CÂY CẢNH VÀ HOA ──────────────────────────────
-static func _draw_central_island(canvas: CanvasItem, c: Vector2) -> void:
+static func _draw_central_island(canvas: CanvasItem, c: Vector2, show_vegetation: bool) -> void:
 	# Bóng bờ kè đảo đổ xuống vành nước trong
 	_draw_circle_poly(canvas, c + Vector2(0, 3.2), R_ISLAND + 2.2, Color(0, 0, 0, 0.35), 32)
 
@@ -348,28 +349,29 @@ static func _draw_central_island(canvas: CanvasItem, c: Vector2) -> void:
 
 	# VÀNH ĐAI CÂY CẢNH CẮT TỈA HÌNH KHUYÊN TRÊN ĐẢO (Circular Hedge Ring)
 	# Bao quanh bồn phun nước, chừa 8 cửa mở tương ứng 8 cây cầu hướng tâm
-	var r_island_hedge := R_ISLAND - 7.5 # ≈ 30.5px
-	for i in 24:
-		var ang := float(i) * TAU / 24.0
+	if show_vegetation:
+		var r_island_hedge := R_ISLAND - 7.5
+		for i in 24:
+			var ang := float(i) * TAU / 24.0
 
-		var is_door := false
-		for k in 8:
-			var bridge_ang := float(k) * PI * 0.25
-			if absf(fposmod(ang - bridge_ang + PI, TAU) - PI) < 0.20:
-				is_door = true
-				break
-		if is_door:
-			continue
+			var is_door := false
+			for k in 8:
+				var bridge_ang := float(k) * PI * 0.25
+				if absf(fposmod(ang - bridge_ang + PI, TAU) - PI) < 0.20:
+					is_door = true
+					break
+			if is_door:
+				continue
 
-		var hp := c + Vector2(cos(ang), sin(ang)) * r_island_hedge
-		canvas.draw_circle(hp + Vector2(0, 1.4), 3.6, C_HEDGE_DARK)
-		canvas.draw_circle(hp, 3.2, C_HEDGE_MID)
-		canvas.draw_circle(hp + Vector2(-0.8, -0.8), 1.6, C_HEDGE_LIGHT)
+			var hp := c + Vector2(cos(ang), sin(ang)) * r_island_hedge
+			canvas.draw_circle(hp + Vector2(0, 1.4), 3.6, C_HEDGE_DARK)
+			canvas.draw_circle(hp, 3.2, C_HEDGE_MID)
+			canvas.draw_circle(hp + Vector2(-0.8, -0.8), 1.6, C_HEDGE_LIGHT)
 
-		if i % 2 == 0:
-			canvas.draw_rect(Rect2(hp.x - 0.5, hp.y - 1.2, 1.4, 1.4), Color("ff334b"))
-		else:
-			canvas.draw_rect(Rect2(hp.x + 0.5, hp.y - 0.8, 1.4, 1.4), Color("ffcc00"))
+			if i % 2 == 0:
+				canvas.draw_rect(Rect2(hp.x - 0.5, hp.y - 1.2, 1.4, 1.4), Color("ff334b"))
+			else:
+				canvas.draw_rect(Rect2(hp.x + 0.5, hp.y - 0.8, 1.4, 1.4), Color("ffcc00"))
 
 # ─── 8. BỂ PHUN NƯỚC CYAN VÀ ĐÀI PHUN NƯỚC TRUNG TÂM ──────────────────────────
 # Bám sát ảnh thực tế: Lòng bể nước màu xanh cyan/ngọc biển rực rỡ nổi bật
@@ -426,28 +428,26 @@ static func _draw_fountain_basin_and_jets(canvas: CanvasItem, c: Vector2, clock:
 		canvas.draw_rect(Rect2(sp_x, sp_y, 1.4, 1.4), Color(1.0, 1.0, 1.0, 1.0 - ph))
 
 # ─── 9. CẢNH QUAN CÂY XANH (HÀNG CAU VUA VÀ GHẾ ĐÁ CÔNG VIÊN) ─────────────────
-static func _draw_park_landscaping(canvas: CanvasItem, c: Vector2) -> void:
-	# Hai hàng cây cau vua thẳng tắp đối xứng dọc lối vào Nam (chuẩn ảnh thực tế!)
-	for row in 3:
-		var py := c.y + R_PLAZA + 8.0 + float(row) * 17.0
-		_draw_palm_tree(canvas, Vector2(c.x - 18.0, py), 0.88)
-		_draw_palm_tree(canvas, Vector2(c.x + 18.0, py), 0.88)
+static func _draw_park_landscaping(canvas: CanvasItem, c: Vector2, show_vegetation: bool) -> void:
+	if show_vegetation:
+		for row in 3:
+			var py := c.y + R_PLAZA + 8.0 + float(row) * 17.0
+			_draw_palm_tree(canvas, Vector2(c.x - 18.0, py), 0.88)
+			_draw_palm_tree(canvas, Vector2(c.x + 18.0, py), 0.88)
 
-	# Các cây cau vua đứng ở các góc ngoài quảng trường
-	for k in [1, 3, 5, 7]:
-		var ang: float = float(k) * PI * 0.25
-		var pp := c + Vector2(cos(ang), sin(ang)) * (R_PLAZA + 12.0)
-		_draw_palm_tree(canvas, pp, 0.92)
+		for k in [1, 3, 5, 7]:
+			var ang: float = float(k) * PI * 0.25
+			var pp := c + Vector2(cos(ang), sin(ang)) * (R_PLAZA + 12.0)
+			_draw_palm_tree(canvas, pp, 0.92)
 
-	# Hàng rào cây xanh cắt tỉa gọn gàng ở 2 bên lối vào Nam
-	_draw_neat_hedge(canvas, c.x - 14.0 - 28.0, c.y + R_PLAZA + 4.0, 28.0)
-	_draw_neat_hedge(canvas, c.x + 14.0,        c.y + R_PLAZA + 4.0, 28.0)
+		_draw_neat_hedge(canvas, c.x - 14.0 - 28.0, c.y + R_PLAZA + 4.0, 28.0)
+		_draw_neat_hedge(canvas, c.x + 14.0,        c.y + R_PLAZA + 4.0, 28.0)
 
-	# Các băng ghế đá công viên trên quảng trường (đặt ở các cung tròn)
-	_draw_park_bench(canvas, Vector2(c.x - 72.0, c.y + 72.0), 0.0)
-	_draw_park_bench(canvas, Vector2(c.x + 72.0, c.y + 72.0), 0.0)
-	_draw_park_bench(canvas, Vector2(c.x - 72.0, c.y - 72.0), 0.0)
-	_draw_park_bench(canvas, Vector2(c.x + 72.0, c.y - 72.0), 0.0)
+	if show_vegetation:
+		_draw_park_bench(canvas, Vector2(c.x - 72.0, c.y + 72.0), 0.0)
+		_draw_park_bench(canvas, Vector2(c.x + 72.0, c.y + 72.0), 0.0)
+		_draw_park_bench(canvas, Vector2(c.x - 72.0, c.y - 72.0), 0.0)
+		_draw_park_bench(canvas, Vector2(c.x + 72.0, c.y - 72.0), 0.0)
 
 # ─── HELPER: VẼ HÌNH TRÒN POLYGON ĐỀU ĐỒNG TÂM ────────────────────────────────
 static func _circle_polygon(c: Vector2, r: float, n: int = 32) -> PackedVector2Array:

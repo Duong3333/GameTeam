@@ -13,7 +13,7 @@ const QUIZ_NPC_POS := Vector2(1180, 580) # Vị trí NPC Cô Toán cạnh Tòa F
 const DIEUHANH := Rect2(860, 680, 260, 170)
 # Tốc độ thời gian: 1 giây thật = TIME_SCALE phút trong game (3.0 -> 1 ngày game dài khoảng 3 phút 20 giây)
 const TIME_SCALE := 3.0
-const LAKE := Rect2(1220, 720, 260, 160)   # Hồ sinh viên (hình elip nội tiếp trong khung này) - nơi câu cá
+const LAKE := Rect2(1220, 720, 260, 160)   # Hồ sinh viên (hình elip nội tiếp trong khung này)
 const LINES := ["Thi chưa?", "Deadline!", "Đi ăn không?", "Đến giờ học rồi!", "Mượn tui cây bút", "Nhà ăn đông quá", "Sáng nay có kiểm tra!", "Ngủ quên mất...", "Lên thư viện không?"]
 
 var WALL := Color("f2d98c")
@@ -36,7 +36,6 @@ var KIOSKS := [
 	["Tự học", 306, 200, Color("3f8fbf"), "Khu vực tự học - ổ điện và wifi."],
 	["Giáo trình", 546, 345, Color("8a5ac0"), "Quầy giáo trình - mua tài liệu học."],
 	["Tự học", 682, 340, Color("3f8fbf"), "Khu vực tự học."],
-	["Hội quán", 1005, 646, Color("3f9c6a"), "Hội quán Khoa học - sinh hoạt câu lạc bộ."],
 	["ATM", 466, 462, Color("8e1f2c"), "Cây ATM."],
 ]
 var ZONES := [
@@ -44,7 +43,7 @@ var ZONES := [
 	["Sân trước Nhà Điều hành (bậc thềm có hoa cảnh)", Rect2(840, 850, 320, 110)],
 	["Bãi giữ xe", Rect2(150, 690, 520, 200)],
 	["Cổng trường - Đường T1", Rect2(640, 900, 200, 100)],
-	["Hồ sinh viên - đứng gần bờ rồi bấm E để câu cá", LAKE.grow(30.0)],
+	["Hồ sinh viên", LAKE.grow(30.0)],
 	["Đường nội bộ", Rect2(0, 585, 1600, 50)],
 ]
 const PALMS := [[850, 332], [900, 332], [956, 332], [1006, 332], [850, 380], [1006, 380], [850, 462], [1006, 462], [850, 508], [900, 508], [956, 508], [1006, 508]]

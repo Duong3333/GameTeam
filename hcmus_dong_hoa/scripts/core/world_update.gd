@@ -3,13 +3,13 @@ extends "res://scripts/core/game_state.gd"
 
 func update_player(delta: float) -> void:
 	var v := Vector2.ZERO
-	if Input.is_physical_key_pressed(KEY_W):
+	if Input.is_physical_key_pressed(KEY_W) or Input.is_physical_key_pressed(KEY_UP):
 		v.y -= 1.0
-	if Input.is_physical_key_pressed(KEY_S):
+	if Input.is_physical_key_pressed(KEY_S) or Input.is_physical_key_pressed(KEY_DOWN):
 		v.y += 1.0
-	if Input.is_physical_key_pressed(KEY_A):
+	if Input.is_physical_key_pressed(KEY_A) or Input.is_physical_key_pressed(KEY_LEFT):
 		v.x -= 1.0
-	if Input.is_physical_key_pressed(KEY_D):
+	if Input.is_physical_key_pressed(KEY_D) or Input.is_physical_key_pressed(KEY_RIGHT):
 		v.x += 1.0
 	if v != Vector2.ZERO:
 		v = v.normalized() * SPEED
@@ -80,7 +80,7 @@ func update_ambient(delta: float) -> void:
 		c.x += c.sp * delta
 		if c.x > WORLD.x + 150.0:
 			c.x = -150.0
-	if petals.size() < 40 and randf() < 0.5:
+	if SHOW_VEGETATION and petals.size() < 40 and randf() < 0.5:
 		var t: Array = trees[randi() % trees.size()]
 		if t[2] == 1 and absf(t[0] - player.x) < 300.0 and absf(t[1] - player.y) < 200.0:
 			petals.append({"pos": Vector2(t[0] + randf_range(-9, 9), t[1] - randf_range(10, 24)), "life": 0.0, "ph": randf() * 6.0})
@@ -101,8 +101,6 @@ func update_daylight() -> void:
 	var h := game_min / 60.0
 	if h < 8.5:
 		tint.color = Color(0.7, 0.8, 1.0, (8.5 - h) / 1.5 * 0.18)
-	elif h > 15.0:
-		tint.color = Color(1.0, 0.5, 0.15, clampf((h - 15.0) / 2.0, 0.0, 1.0) * 0.3)
 	else:
 		tint.color = Color(1, 1, 1, 0)
 

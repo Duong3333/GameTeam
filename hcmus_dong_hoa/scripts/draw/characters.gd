@@ -9,6 +9,9 @@ func draw_person(pos: Vector2, shirt: Color, hair: Color, face: int, step: float
 	var odd := int(step * 8.0) % 2 == 1
 	var sw := 1.0 if odd else 0.0
 	var bob := 1.0 if odd else 0.0
+	# Ẩn tay đang buông của nhân vật chính để feature đánh thay tay bằng cú đấm vẽ riêng.
+	var show_l := not (pos == player and (hidden_arms & 1) != 0)
+	var show_r := not (pos == player and (hidden_arms & 2) != 0)
 	shadow(pos + Vector2(0, 1), 8.0)
 	# chân và giày
 	rc(pos.x - 5, pos.y - 7 + sw, 4, 7 - sw, ol)
@@ -31,13 +34,13 @@ func draw_person(pos: Vector2, shirt: Color, hair: Color, face: int, step: float
 		rc(pos.x - 6, by - 12, 2, 6, Color("2f6bd0"))
 	# thân
 	rc(pos.x - 6, by - 14, 12, 10, ol)
-	rc(pos.x - 8, by - 13, 2, 7, ol)
-	rc(pos.x + 6, by - 13, 2, 7, ol)
+	if show_l: rc(pos.x - 8, by - 13, 2, 7, ol)
+	if show_r: rc(pos.x + 6, by - 13, 2, 7, ol)
 	if uni:
 		rc(pos.x - 5, by - 13, 10, 4, Color.WHITE)
 		rc(pos.x - 5, by - 9, 10, 5, navy)
-		rc(pos.x - 7, by - 12, 2, 6, navy)
-		rc(pos.x + 5, by - 12, 2, 6, navy)
+		if show_l: rc(pos.x - 7, by - 12, 2, 6, navy)
+		if show_r: rc(pos.x + 5, by - 12, 2, 6, navy)
 		rc(pos.x - 3, by - 14, 6, 2, navy)
 		rc(pos.x - 3, by - 13, 6, 1, Color("dfe6ff"))
 		rc(pos.x - 5, by - 5, 10, 1, navy.darkened(0.3))
@@ -50,12 +53,12 @@ func draw_person(pos: Vector2, shirt: Color, hair: Color, face: int, step: float
 				rc(pos.x + 2, by - 11, 1, 1, Color.WHITE)
 	else:
 		rc(pos.x - 5, by - 13, 10, 8, shirt)
-		rc(pos.x - 7, by - 12, 2, 6, shirt)
-		rc(pos.x + 5, by - 12, 2, 6, shirt)
+		if show_l: rc(pos.x - 7, by - 12, 2, 6, shirt)
+		if show_r: rc(pos.x + 5, by - 12, 2, 6, shirt)
 		rc(pos.x - 5, by - 13, 10, 2, shirt.lightened(0.2))
 		rc(pos.x - 5, by - 6, 10, 1, shirt.darkened(0.25))
-	rc(pos.x - 7, by - 7, 2, 2, skin)
-	rc(pos.x + 5, by - 7, 2, 2, skin)
+	if show_l: rc(pos.x - 7, by - 7, 2, 2, skin)
+	if show_r: rc(pos.x + 5, by - 7, 2, 2, skin)
 	# đầu
 	rc(pos.x - 5, by - 22, 10, 9, ol)
 	rc(pos.x - 4, by - 21, 8, 8, skin)
@@ -91,18 +94,3 @@ func draw_quiz_marker(n: Dictionary) -> void:
 	ctext("Thầy Toán", n.pos.x - 25, n.pos.y - 27, 50, 8, Color("7fe0a0"))
 	ctext("?", n.pos.x - 6, n.pos.y - 34 + sin(clock * 4.0) * 2.0, 12, 11, Color("ffd23f"))
 
-func draw_bike(b: Dictionary) -> void:
-	var x: float = b.x
-	var y: float = b.y
-	if not view.grow(20.0).has_point(Vector2(x, y)):
-		return
-	shadow(Vector2(x + 8, y + 7), 10.0)
-	rc(x, y, 14, 4, b.col)
-	rc(x + 2, y - 1, 8, 2, b.col.lightened(0.3))
-	rc(x, y + 3, 4, 4, Color.BLACK)
-	rc(x + 10, y + 3, 4, 4, Color.BLACK)
-	rc(x + 1, y + 4, 2, 2, Color("9aa3ad"))
-	rc(x + 11, y + 4, 2, 2, Color("9aa3ad"))
-	rc(x + 5, y - 8, 4, 8, Color("e8e8e8"))
-	rc(x + 5, y - 12, 4, 4, Color("f1c27d"))
-	rc(x + 4, y - 14, 6, 3, Color("cc2b2b"))

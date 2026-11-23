@@ -37,10 +37,7 @@ func draw_lamp(p: Vector2) -> void:
 	shadow(p + Vector2(3, 0), 5.0)
 	rc(p.x - 1, p.y - 24, 2, 24, Color("3a3f4a"))
 	rc(p.x - 3, p.y - 27, 6, 4, Color("3a3f4a"))
-	var night := game_min / 60.0 > 16.0
-	rc(p.x - 2, p.y - 26, 4, 2, Color("fff1a8") if night else Color("c9d3da"))
-	if night:
-		draw_circle(p + Vector2(0, -24), 16.0, Color(1.0, 0.9, 0.5, 0.18))
+	rc(p.x - 2, p.y - 26, 4, 2, Color("c9d3da"))
 
 func draw_bench(p: Vector2) -> void:
 	shadow(p + Vector2(0, 1), 11.0)
@@ -167,7 +164,7 @@ func draw_ground() -> void:
 	for x in range(0, 1600, 40):
 		rc(x, GATE_Y + 26, 22, 2, Color("e8e8e8"))
 
-# ---------- HỒ SINH VIÊN (nơi câu cá, xem scripts/features/fishing.gd) ----------
+# ---------- HỒ SINH VIÊN ----------
 func lake_poly(c: Vector2, rx: float, ry: float, n: int = 40) -> PackedVector2Array:
 	var pts := PackedVector2Array()
 	for i in n:
