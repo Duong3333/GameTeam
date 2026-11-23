@@ -269,13 +269,8 @@ func setup_decor() -> void:
 		if not is_point_on_concrete_or_blocked(fp):
 			flowers.append([fp, flower_colors[rng.randi_range(0, 3)]])
 	# Ghế đá theo cặp; mỗi cặp gồm hai đoạn nhỏ ghép đầu-cuối.
+	# (Đã bỏ bớt các ghế tại y=1118 trên vỉa hè Bãi xe số 1 để tránh trùng với mái vòm dời xuống)
 	var bench_pairs := [
-		{"position": Vector2(331, 1118)},
-		{"position": Vector2(440, 1118)},
-		{"position": Vector2(547, 1118)},
-		{"position": Vector2(670, 1118)},
-		{"position": Vector2(796, 1118)},
-		{"position": Vector2(900, 1118)},
 		{"position": Vector2(1684, 1096)},
 		{"position": Vector2(1790, 1096)},
 		{"position": Vector2(1874, 1096)},

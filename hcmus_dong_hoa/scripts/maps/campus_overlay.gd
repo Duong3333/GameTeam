@@ -73,7 +73,7 @@ func draw_sorted_items() -> void:
 				draw_gate_arch()
 		elif it[1] == 7:
 			var sec: Dictionary = it[2]
-			WW.draw_walkway_roof(self, sec.start_x, sec.end_x, sec.y, view)
+			WW.draw_walkway_roof(self, sec.start_x, sec.end_x, sec.y, view, player)
 		elif it[1] == 1:
 			var n: Dictionary = it[2]
 			if not view.has_point(n.pos):

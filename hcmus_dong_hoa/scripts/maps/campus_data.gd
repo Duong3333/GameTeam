@@ -99,10 +99,12 @@ var ZONES := [
 const PALMS := []
 
 # Danh sách các đoạn mái vòm hành lang (x_start, x_end, y):
-# Dời vào trong vỉa hè gọn gàng, sạch sẽ (y = 844.0, nằm trọn trong vỉa hè y=835..879),
-# chừa lề 17px cách mép đường xe chạy, dừng trước các ngã tư không đè lên mặt đường bê tông.
+# Bố cục mới: chỉ áp dụng đoạn từ dưới hồ nước tới Tòa G,
+# bỏ đoạn từ Tòa A đến E và dời xuống dưới vỉa hè Bãi xe số 1.
 const WALKWAY_SECTIONS := [
-	{"start_x": 220.0,  "end_x": 1240.0, "y": 844.0}, # Dãy A - B - C - D - E
+	# Đoạn vỉa hè trước Bãi xe số 1 (dời từ khu A-E xuống)
+	{"start_x": 180.0,  "end_x": 976.0,  "y": 1118.0},
+	# Các đoạn phía đông: từ dưới hồ nước tới Tòa G
 	{"start_x": 1390.0, "end_x": 1800.0, "y": 844.0}, # Khu công viên hồ nước
 	{"start_x": 1935.0, "end_x": 2145.0, "y": 844.0}, # Phía trước Tòa F
 	{"start_x": 2255.0, "end_x": 2465.0, "y": 844.0}, # Phía trước Tòa G
