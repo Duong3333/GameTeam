@@ -83,6 +83,13 @@ func _find_nearby_door() -> Dictionary:
 	return nearest
 
 func _update_room_player(delta: float) -> void:
+	# Dang go chat hoac dang mo so tay thi nhan vat dung yen.
+	var focus_owner := get_viewport().gui_get_focus_owner()
+	if focus_owner is LineEdit or focus_owner is TextEdit:
+		return
+	for feature in game.features:
+		if feature != self and is_instance_valid(feature) and feature.has_method("show_notice") and feature.get("active") == true:
+			return
 	var direction := Vector2.ZERO
 	if Input.is_physical_key_pressed(KEY_W):
 		direction.y -= 1.0
@@ -100,10 +107,7 @@ func _update_room_player(delta: float) -> void:
 func _on_draw() -> void:
 	if inside:
 		_draw_room()
-	elif not nearby_door.is_empty():
-		canvas.draw_rect(Rect2(67, 226, 346, 28), Color(0.04, 0.08, 0.14, 0.9))
-		canvas.draw_rect(Rect2(67, 226, 346, 28), Color("e0b020"), false, 1.0)
-		_draw_text("E: Vào " + str(nearby_door["title"]), Vector2(72, 245), 10, Color.WHITE, 336)
+	# Da bo khung goi y 'E: Vao toa ...'; phim E da co trong dong huong dan o day man hinh.
 
 func _draw_room() -> void:
 	canvas.draw_rect(Rect2(0, 0, 480, 270), Color("19232d"))

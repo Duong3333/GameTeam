@@ -16,14 +16,25 @@ func draw_grass() -> void:
 				rc(tx * 16, ty * 16, 16, 16, Color(1, 1, 1, 0.03))
 			if hs(tx, ty) < 14:
 				rc(tx * 16 + 3, ty * 16 + 6, 10, 5, Color(0, 0, 0, 0.05))
-	for t in tufts:
-		if view.has_point(t):
-			rc(t.x, t.y, 2, 3, Color("84c764") if int(t.x + t.y) % 2 == 0 else Color("559040"))
-			rc(t.x + 2, t.y + 1, 1, 2, Color("84c764"))
-	for f in flowers:
-		if view.has_point(f[0]):
-			rc(f[0].x, f[0].y, 2, 2, f[1])
-			rc(f[0].x, f[0].y + 2, 1, 2, Color("3f7a35"))
+	draw_ground_details()
+
+func draw_ground_details() -> void:
+	var min_x := floori(view.position.x / GROUND_DETAIL_CELL_SIZE)
+	var max_x := floori(view.end.x / GROUND_DETAIL_CELL_SIZE)
+	var min_y := floori(view.position.y / GROUND_DETAIL_CELL_SIZE)
+	var max_y := floori(view.end.y / GROUND_DETAIL_CELL_SIZE)
+	for x in range(min_x, max_x + 1):
+		for y in range(min_y, max_y + 1):
+			var bucket: Dictionary = ground_detail_buckets.get(Vector2i(x, y), {})
+			for tuft in bucket.get("tufts", []):
+				if view.has_point(tuft):
+					rc(tuft.x, tuft.y, 2, 3, Color("84c764") if int(tuft.x + tuft.y) % 2 == 0 else Color("559040"))
+					rc(tuft.x + 2, tuft.y + 1, 1, 2, Color("84c764"))
+			for flower in bucket.get("flowers", []):
+				var pos: Vector2 = flower[0]
+				if view.has_point(pos):
+					rc(pos.x, pos.y, 2, 2, flower[1])
+					rc(pos.x, pos.y + 2, 1, 2, Color("3f7a35"))
 
 func hedge(x: float, y: float, w: float) -> void:
 	rc(x, y + 1, w, 7, Color("2a6f33"))

@@ -1,13 +1,18 @@
 extends Control
 
+const TestBank := preload("res://scripts/features/programming_test_bank.gd")
+
 signal close_requested
 signal submit_requested
+signal run_requested(source_code: String, input_text: String)
 
 var question: Dictionary = {}
 var source_edit: CodeEdit
 var input_edit: TextEdit
 var output_edit: TextEdit
 var status_label: Label
+var run_button: Button
+var submit_button: Button
 var editor_font_size := 10
 
 const COLOR_TEXT := Color("202a38")
@@ -20,14 +25,41 @@ func _ready() -> void:
 
 func set_question(value: Dictionary) -> void:
 	question = value
+	var answer_type := str(question.get("answer_type", ""))
+	var question_id := str(question.get("id", ""))
+	var can_run := answer_type == "short_code" and TestBank.supports(question_id)
+
 	if is_instance_valid(source_edit):
 		source_edit.text = ""
+		source_edit.editable = true
+		if question_id in ["CSLT_EXAM_002_Q01", "CSLT_EXAM_004_Q01"]:
+			source_edit.placeholder_text = "Viết đoạn lệnh if/else theo đề (không cần main() hay include)."
+		elif answer_type == "short_code":
+			source_edit.placeholder_text = "Viết hàm theo prototype trong đề (không cần main() hay include)."
+		else:
+			source_edit.placeholder_text = "Nhập lời giải hoặc phần giải thích của bạn tại đây."
 	if is_instance_valid(input_edit):
 		input_edit.text = ""
+		# Input luôn cho phép nhập. Run có thể bị khóa ở câu chưa có testcase,
+		# nhưng điều đó không nên khiến ô Input bị khóa theo.
+		input_edit.editable = true
+		input_edit.placeholder_text = "Nhập dữ liệu đầu vào để thử chương trình"
 	if is_instance_valid(output_edit):
 		output_edit.text = ""
+		output_edit.editable = answer_type == "code_output"
+		output_edit.placeholder_text = "Nhập kết quả chương trình / đáp số"
 	if is_instance_valid(status_label):
-		status_label.text = "Test: chưa chạy (chưa có sandbox an toàn hoặc test case nguồn)."
+		if can_run:
+			status_label.text = "Run: tự thử bằng Input. Submit: chấm toàn bộ testcase của đề."
+		elif answer_type == "code_output":
+			status_label.text = "Nhập output / đáp số ở ô bên phải rồi Submit."
+		elif answer_type == "short_code":
+			status_label.text = "Câu này chưa có testcase tự động; viết hàm phía trên rồi Submit để kiểm tra thủ công."
+		else:
+			status_label.text = "Nhập lời giải hoặc giải thích ở vùng soạn thảo phía trên rồi Submit."
+	if is_instance_valid(run_button):
+		run_button.disabled = not can_run
+	set_busy(false)
 
 func get_response() -> String:
 	if str(question.get("answer_type", "")) == "code_output":
@@ -40,7 +72,7 @@ func set_editable(value: bool) -> void:
 	if is_instance_valid(input_edit):
 		input_edit.editable = value
 	if is_instance_valid(output_edit):
-		output_edit.editable = value
+		output_edit.editable = value and str(question.get("answer_type", "")) == "code_output"
 
 func _build_ui() -> void:
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -81,8 +113,10 @@ func _build_ui() -> void:
 	)
 	add_child(close)
 	source_edit = CodeEdit.new()
+	source_edit.focus_mode = Control.FOCUS_ALL
+	source_edit.mouse_filter = Control.MOUSE_FILTER_STOP
 	source_edit.position = Vector2(8, 27)
-	source_edit.size = Vector2(464, 96)
+	source_edit.size = Vector2(268, 193)
 	source_edit.gutters_draw_line_numbers = true
 	source_edit.indent_size = 4
 	source_edit.indent_use_spaces = true
@@ -105,51 +139,56 @@ func _build_ui() -> void:
 	source_edit.syntax_highlighter = highlighter
 	add_child(source_edit)
 	var input_label := Label.new()
-	input_label.position = Vector2(8, 126)
-	input_label.size = Vector2(220, 14)
+	input_label.position = Vector2(284, 27)
+	input_label.size = Vector2(188, 14)
 	input_label.text = "Input (stdin)"
 	input_label.add_theme_color_override("font_color", Color("075985"))
 	input_label.add_theme_font_size_override("font_size", 9)
 	add_child(input_label)
 	var output_label := Label.new()
-	output_label.position = Vector2(244, 126)
-	output_label.size = Vector2(220, 14)
+	output_label.position = Vector2(284, 125)
+	output_label.size = Vector2(188, 14)
 	output_label.text = "Output / đáp số"
 	output_label.add_theme_color_override("font_color", Color("166534"))
 	output_label.add_theme_font_size_override("font_size", 9)
 	add_child(output_label)
 	input_edit = TextEdit.new()
-	input_edit.position = Vector2(8, 141)
-	input_edit.size = Vector2(224, 72)
+	input_edit.focus_mode = Control.FOCUS_ALL
+	input_edit.mouse_filter = Control.MOUSE_FILTER_STOP
+	input_edit.editable = true
+	input_edit.position = Vector2(284, 43)
+	input_edit.size = Vector2(188, 76)
 	input_edit.placeholder_text = "Nhập dữ liệu đầu vào"
 	input_edit.add_theme_font_size_override("font_size", editor_font_size - 1)
 	_style_text_edit(input_edit)
 	add_child(input_edit)
 	output_edit = TextEdit.new()
-	output_edit.position = Vector2(244, 141)
-	output_edit.size = Vector2(228, 72)
+	output_edit.focus_mode = Control.FOCUS_ALL
+	output_edit.mouse_filter = Control.MOUSE_FILTER_STOP
+	output_edit.position = Vector2(284, 141)
+	output_edit.size = Vector2(188, 79)
 	output_edit.placeholder_text = "Nhập output / đáp số"
 	output_edit.add_theme_font_size_override("font_size", editor_font_size - 1)
 	_style_text_edit(output_edit)
 	add_child(output_edit)
 	status_label = Label.new()
-	status_label.position = Vector2(8, 216)
-	status_label.size = Vector2(464, 16)
-	status_label.text = "Test: chưa chạy (chưa có sandbox an toàn hoặc test case nguồn)."
+	status_label.position = Vector2(8, 223)
+	status_label.size = Vector2(464, 17)
+	status_label.text = "Run dùng compiler C++ cài trên máy; chỉ chạy code bạn tin cậy."
 	status_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	status_label.add_theme_font_size_override("font_size", 8)
 	status_label.add_theme_color_override("font_color", Color("805800"))
 	add_child(status_label)
-	var run_button := Button.new()
-	run_button.position = Vector2(298, 237)
-	run_button.size = Vector2(78, 25)
+	run_button = Button.new()
+	run_button.position = Vector2(298, 244)
+	run_button.size = Vector2(78, 22)
 	run_button.text = "Run"
 	_style_button(run_button, Color("24567c"))
 	run_button.pressed.connect(_run_code)
 	add_child(run_button)
-	var submit_button := Button.new()
-	submit_button.position = Vector2(384, 237)
-	submit_button.size = Vector2(88, 25)
+	submit_button = Button.new()
+	submit_button.position = Vector2(384, 244)
+	submit_button.size = Vector2(88, 22)
 	submit_button.text = "Submit"
 	_style_button(submit_button, Color("286144"))
 	submit_button.pressed.connect(func() -> void:
@@ -158,6 +197,8 @@ func _build_ui() -> void:
 	add_child(submit_button)
 
 func _style_text_edit(edit: TextEdit) -> void:
+	edit.focus_mode = Control.FOCUS_ALL
+	edit.mouse_filter = Control.MOUSE_FILTER_STOP
 	edit.add_theme_color_override("font_color", COLOR_TEXT)
 	edit.add_theme_color_override("font_readonly_color", COLOR_TEXT)
 	edit.add_theme_color_override("font_placeholder_color", COLOR_MUTED)
@@ -210,6 +251,28 @@ func _set_editor_font_size(value: int) -> void:
 			edit.add_theme_font_size_override("font_size", editor_font_size if edit == source_edit else editor_font_size - 1)
 
 func _run_code() -> void:
+	if not is_instance_valid(source_edit) or not is_instance_valid(input_edit):
+		return
+	if str(question.get("answer_type", "")) != "short_code" or not TestBank.supports(str(question.get("id", ""))):
+		set_status("Câu này không có bộ khung chạy tự động; hãy nhập đáp án rồi Submit.")
+		return
+	set_busy(true)
+	set_status("Đang gửi code đi biên dịch...")
+	run_requested.emit(source_edit.text, input_edit.text)
+
+func set_status(message: String, is_error: bool = false) -> void:
 	if not is_instance_valid(status_label):
 		return
-	status_label.text = "Không chạy code trong game. Input và output/đáp số được nhập riêng để nộp bài."
+	status_label.text = message
+	status_label.add_theme_color_override("font_color", Color("a83232") if is_error else Color("805800"))
+
+func set_output(value: String) -> void:
+	if is_instance_valid(output_edit):
+		output_edit.text = value
+
+func set_busy(value: bool) -> void:
+	if is_instance_valid(run_button):
+		var can_run := str(question.get("answer_type", "")) == "short_code" and TestBank.supports(str(question.get("id", "")))
+		run_button.disabled = value or not can_run
+	if is_instance_valid(submit_button):
+		submit_button.disabled = value

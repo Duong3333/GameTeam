@@ -332,14 +332,13 @@ func _get_wallet_money() -> int:
 		return int(c.money)
 	return 0
 
-func _set_wallet_money(val: int) -> void:
+func _set_wallet_money(val: int, reason: String = "") -> void:
 	var c := _find_canteen()
 	if c != null and ("money" in c):
-		c.money = val
-		if c.has_method("_eco_save"):
-			c._eco_save()
-		if "_wallet" in c and c._wallet != null and c.has_method("_fmt"):
-			c._wallet.text = "Tiền: " + c._fmt(val)
+		if not c.has_method("set_wallet_balance"):
+			push_error("ATM cannot update the wallet: canteen.set_wallet_balance is unavailable.")
+			return
+		c.call("set_wallet_balance", val, reason)
 
 func _find_canteen() -> Node:
 	if game == null:
@@ -374,7 +373,7 @@ func _withdraw(amount: int) -> void:
 		return
 	bank_balance -= amount
 	var cur_wallet := _get_wallet_money()
-	_set_wallet_money(cur_wallet + amount)
+	_set_wallet_money(cur_wallet + amount, "Rút ATM")
 	_update_ui_balance()
 	_say("Đã rút thành công %s từ ATM!" % _fmt(amount), Color("55e670"))
 	_play_sound("buy")
@@ -385,7 +384,7 @@ func _deposit(amount: int) -> void:
 		_say("Tiền mặt trong ví không đủ %s để nạp!" % _fmt(amount), Color("ff6b6b"))
 		_play_sound("cancel")
 		return
-	_set_wallet_money(cur_wallet - amount)
+	_set_wallet_money(cur_wallet - amount, "Nạp ATM")
 	bank_balance += amount
 	_update_ui_balance()
 	_say("Đã nạp thành công %s vào thẻ ATM!" % _fmt(amount), Color("55e670"))

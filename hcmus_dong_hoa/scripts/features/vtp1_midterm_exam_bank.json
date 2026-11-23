@@ -1,0 +1,1237 @@
+{
+ "schema_version": 1,
+ "subject_code": "VTP1",
+ "subject": "Vi tích phân 1",
+ "exam_type": "midterm",
+ "answer_mode": "short_answer",
+ "question_count_per_exam": 5,
+ "source_note": "Đề luyện tập mô phỏng do GameTeam biên soạn, không phải đề chính thức hoặc đề được giảng viên phê duyệt.",
+ "metadata_note": "Mỗi câu chỉ có một đáp số ngắn (số nguyên hoặc số thập phân làm tròn 3 chữ số). Đáp án tính bằng sympy; phạm vi: giới hạn, đạo hàm, tiếp tuyến, liên tục và cực trị, tích phân xác định.",
+ "duration_seconds": 3600,
+ "exams": [
+  {
+   "exam_id": "VTP1_MIDTERM_PRACTICE_01",
+   "subject_code": "VTP1",
+   "subject": "Vi tích phân 1",
+   "title": "ĐỀ LUYỆN TẬP GIỮA KỲ VI TÍCH PHÂN 1 - 01",
+   "exam_type": "midterm",
+   "question_count": 5,
+   "source_kind": "ai_authored_practice_not_official_exam",
+   "source_note": "Đề luyện tập mô phỏng do GameTeam biên soạn theo dạng Quiz Vi tích phân 1 lý thuyết; không phải đề thi chính thức.",
+   "duration_seconds": 3600,
+   "questions": [
+    {
+     "id": "VTPM_01_01",
+     "question_number": 1,
+     "type": "short_answer",
+     "question_text": "Tính lim(x→4) (x²−16)/(x−4).",
+     "question_latex": "Tính lim(x→4) (x²−16)/(x−4).",
+     "answer_type": "integer",
+     "official_answer": "8",
+     "accepted_answers": [
+      "8"
+     ],
+     "grading_method": "exact",
+     "tolerance": 0.0,
+     "points": 2.0,
+     "solution_latex": "Phân tích x²−16=(x−4)(x+4) nên giới hạn bằng 4+4=8.",
+     "verified": true,
+     "answer_status": "verified_ai",
+     "verification_note": "Đáp án được tính bằng phần mềm đại số (sympy 1.14) từ chính đề bài; câu hỏi mô phỏng do dự án biên soạn, chưa được giảng viên duyệt.",
+     "subject_code": "VTP1",
+     "subject": "Vi tích phân 1",
+     "exam_type": "midterm",
+     "topic": "Giới hạn",
+     "source_reference": "Dạng bài và phong cách lấy theo Quiz Vi tích phân 1 lý thuyết của dự án (VTP_CLASS_001–020); câu hỏi biên soạn mới, không phải câu trích nguyên văn hay đề chính thức.",
+     "source_kind": "ai_authored_practice_based_on_project_theory_quiz",
+     "source_metadata": {
+      "authorship": "AI-authored practice mock. Not a genuine HCMUS examination paper."
+     }
+    },
+    {
+     "id": "VTPM_01_02",
+     "question_number": 2,
+     "type": "short_answer",
+     "question_text": "Cho f(x)=x⁴−3x²+2x. Tính f′(1).",
+     "question_latex": "Cho f(x)=x⁴−3x²+2x. Tính f′(1).",
+     "answer_type": "integer",
+     "official_answer": "0",
+     "accepted_answers": [
+      "0"
+     ],
+     "grading_method": "exact",
+     "tolerance": 0.0,
+     "points": 2.0,
+     "solution_latex": "f′(x)=4x³−6x+2 nên f′(1)=0.",
+     "verified": true,
+     "answer_status": "verified_ai",
+     "verification_note": "Đáp án được tính bằng phần mềm đại số (sympy 1.14) từ chính đề bài; câu hỏi mô phỏng do dự án biên soạn, chưa được giảng viên duyệt.",
+     "subject_code": "VTP1",
+     "subject": "Vi tích phân 1",
+     "exam_type": "midterm",
+     "topic": "Đạo hàm",
+     "source_reference": "Dạng bài và phong cách lấy theo Quiz Vi tích phân 1 lý thuyết của dự án (VTP_CLASS_001–020); câu hỏi biên soạn mới, không phải câu trích nguyên văn hay đề chính thức.",
+     "source_kind": "ai_authored_practice_based_on_project_theory_quiz",
+     "source_metadata": {
+      "authorship": "AI-authored practice mock. Not a genuine HCMUS examination paper."
+     }
+    },
+    {
+     "id": "VTPM_01_03",
+     "question_number": 3,
+     "type": "short_answer",
+     "question_text": "Tìm hệ số góc tiếp tuyến của y=x³−2x tại x=−1.",
+     "question_latex": "Tìm hệ số góc tiếp tuyến của y=x³−2x tại x=−1.",
+     "answer_type": "integer",
+     "official_answer": "1",
+     "accepted_answers": [
+      "1"
+     ],
+     "grading_method": "exact",
+     "tolerance": 0.0,
+     "points": 2.0,
+     "solution_latex": "y′=3x²−2 nên hệ số góc tại x=−1 là 1.",
+     "verified": true,
+     "answer_status": "verified_ai",
+     "verification_note": "Đáp án được tính bằng phần mềm đại số (sympy 1.14) từ chính đề bài; câu hỏi mô phỏng do dự án biên soạn, chưa được giảng viên duyệt.",
+     "subject_code": "VTP1",
+     "subject": "Vi tích phân 1",
+     "exam_type": "midterm",
+     "topic": "Tiếp tuyến",
+     "source_reference": "Dạng bài và phong cách lấy theo Quiz Vi tích phân 1 lý thuyết của dự án (VTP_CLASS_001–020); câu hỏi biên soạn mới, không phải câu trích nguyên văn hay đề chính thức.",
+     "source_kind": "ai_authored_practice_based_on_project_theory_quiz",
+     "source_metadata": {
+      "authorship": "AI-authored practice mock. Not a genuine HCMUS examination paper."
+     }
+    },
+    {
+     "id": "VTPM_01_04",
+     "question_number": 4,
+     "type": "short_answer",
+     "question_text": "Cho f(x)=3x+a khi x<2 và f(x)=x²+1 khi x≥2. Tìm a để f liên tục tại x=2.",
+     "question_latex": "Cho f(x)=3x+a khi x<2 và f(x)=x²+1 khi x≥2. Tìm a để f liên tục tại x=2.",
+     "answer_type": "integer",
+     "official_answer": "-1",
+     "accepted_answers": [
+      "-1"
+     ],
+     "grading_method": "exact",
+     "tolerance": 0.0,
+     "points": 2.0,
+     "solution_latex": "Giới hạn trái là 6+a, giá trị tại 2 là 5; liên tục khi 6+a=5 nên a=−1.",
+     "verified": true,
+     "answer_status": "verified_ai",
+     "verification_note": "Đáp án được tính bằng phần mềm đại số (sympy 1.14) từ chính đề bài; câu hỏi mô phỏng do dự án biên soạn, chưa được giảng viên duyệt.",
+     "subject_code": "VTP1",
+     "subject": "Vi tích phân 1",
+     "exam_type": "midterm",
+     "topic": "Liên tục",
+     "source_reference": "Dạng bài và phong cách lấy theo Quiz Vi tích phân 1 lý thuyết của dự án (VTP_CLASS_001–020); câu hỏi biên soạn mới, không phải câu trích nguyên văn hay đề chính thức.",
+     "source_kind": "ai_authored_practice_based_on_project_theory_quiz",
+     "source_metadata": {
+      "authorship": "AI-authored practice mock. Not a genuine HCMUS examination paper."
+     }
+    },
+    {
+     "id": "VTPM_01_05",
+     "question_number": 5,
+     "type": "short_answer",
+     "question_text": "Tính tích phân xác định ∫ từ 0 đến 2 của (3x²+1) dx.",
+     "question_latex": "Tính tích phân xác định ∫ từ 0 đến 2 của (3x²+1) dx.",
+     "answer_type": "integer",
+     "official_answer": "10",
+     "accepted_answers": [
+      "10"
+     ],
+     "grading_method": "exact",
+     "tolerance": 0.0,
+     "points": 2.0,
+     "solution_latex": "Nguyên hàm x³+x; giá trị là (8+2)−0=10.",
+     "verified": true,
+     "answer_status": "verified_ai",
+     "verification_note": "Đáp án được tính bằng phần mềm đại số (sympy 1.14) từ chính đề bài; câu hỏi mô phỏng do dự án biên soạn, chưa được giảng viên duyệt.",
+     "subject_code": "VTP1",
+     "subject": "Vi tích phân 1",
+     "exam_type": "midterm",
+     "topic": "Tích phân",
+     "source_reference": "Dạng bài và phong cách lấy theo Quiz Vi tích phân 1 lý thuyết của dự án (VTP_CLASS_001–020); câu hỏi biên soạn mới, không phải câu trích nguyên văn hay đề chính thức.",
+     "source_kind": "ai_authored_practice_based_on_project_theory_quiz",
+     "source_metadata": {
+      "authorship": "AI-authored practice mock. Not a genuine HCMUS examination paper."
+     }
+    }
+   ]
+  },
+  {
+   "exam_id": "VTP1_MIDTERM_PRACTICE_02",
+   "subject_code": "VTP1",
+   "subject": "Vi tích phân 1",
+   "title": "ĐỀ LUYỆN TẬP GIỮA KỲ VI TÍCH PHÂN 1 - 02",
+   "exam_type": "midterm",
+   "question_count": 5,
+   "source_kind": "ai_authored_practice_not_official_exam",
+   "source_note": "Đề luyện tập mô phỏng do GameTeam biên soạn theo dạng Quiz Vi tích phân 1 lý thuyết; không phải đề thi chính thức.",
+   "duration_seconds": 3600,
+   "questions": [
+    {
+     "id": "VTPM_02_01",
+     "question_number": 1,
+     "type": "short_answer",
+     "question_text": "Tính lim(x→0) sin(7x)/(2x).",
+     "question_latex": "Tính lim(x→0) sin(7x)/(2x).",
+     "answer_type": "decimal",
+     "official_answer": "3.5",
+     "accepted_answers": [
+      "3.5"
+     ],
+     "grading_method": "exact",
+     "tolerance": 0.001,
+     "points": 2.0,
+     "solution_latex": "sin(7x)/(2x)=(7/2)·sin(7x)/(7x) → 7/2=3.5.",
+     "verified": true,
+     "answer_status": "verified_ai",
+     "verification_note": "Đáp án được tính bằng phần mềm đại số (sympy 1.14) từ chính đề bài; câu hỏi mô phỏng do dự án biên soạn, chưa được giảng viên duyệt.",
+     "subject_code": "VTP1",
+     "subject": "Vi tích phân 1",
+     "exam_type": "midterm",
+     "topic": "Giới hạn",
+     "source_reference": "Dạng bài và phong cách lấy theo Quiz Vi tích phân 1 lý thuyết của dự án (VTP_CLASS_001–020); câu hỏi biên soạn mới, không phải câu trích nguyên văn hay đề chính thức.",
+     "source_kind": "ai_authored_practice_based_on_project_theory_quiz",
+     "source_metadata": {
+      "authorship": "AI-authored practice mock. Not a genuine HCMUS examination paper."
+     }
+    },
+    {
+     "id": "VTPM_02_02",
+     "question_number": 2,
+     "type": "short_answer",
+     "question_text": "Cho f(x)=x·e^(2x). Tính f′(0).",
+     "question_latex": "Cho f(x)=x·e^(2x). Tính f′(0).",
+     "answer_type": "integer",
+     "official_answer": "1",
+     "accepted_answers": [
+      "1"
+     ],
+     "grading_method": "exact",
+     "tolerance": 0.0,
+     "points": 2.0,
+     "solution_latex": "f′(x)=e^(2x)(1+2x) nên f′(0)=1.",
+     "verified": true,
+     "answer_status": "verified_ai",
+     "verification_note": "Đáp án được tính bằng phần mềm đại số (sympy 1.14) từ chính đề bài; câu hỏi mô phỏng do dự án biên soạn, chưa được giảng viên duyệt.",
+     "subject_code": "VTP1",
+     "subject": "Vi tích phân 1",
+     "exam_type": "midterm",
+     "topic": "Đạo hàm",
+     "source_reference": "Dạng bài và phong cách lấy theo Quiz Vi tích phân 1 lý thuyết của dự án (VTP_CLASS_001–020); câu hỏi biên soạn mới, không phải câu trích nguyên văn hay đề chính thức.",
+     "source_kind": "ai_authored_practice_based_on_project_theory_quiz",
+     "source_metadata": {
+      "authorship": "AI-authored practice mock. Not a genuine HCMUS examination paper."
+     }
+    },
+    {
+     "id": "VTPM_02_03",
+     "question_number": 3,
+     "type": "short_answer",
+     "question_text": "Cho f(x)=x⁵. Tính f″(1).",
+     "question_latex": "Cho f(x)=x⁵. Tính f″(1).",
+     "answer_type": "integer",
+     "official_answer": "20",
+     "accepted_answers": [
+      "20"
+     ],
+     "grading_method": "exact",
+     "tolerance": 0.0,
+     "points": 2.0,
+     "solution_latex": "f″(x)=20x³ nên f″(1)=20.",
+     "verified": true,
+     "answer_status": "verified_ai",
+     "verification_note": "Đáp án được tính bằng phần mềm đại số (sympy 1.14) từ chính đề bài; câu hỏi mô phỏng do dự án biên soạn, chưa được giảng viên duyệt.",
+     "subject_code": "VTP1",
+     "subject": "Vi tích phân 1",
+     "exam_type": "midterm",
+     "topic": "Đạo hàm cấp hai",
+     "source_reference": "Dạng bài và phong cách lấy theo Quiz Vi tích phân 1 lý thuyết của dự án (VTP_CLASS_001–020); câu hỏi biên soạn mới, không phải câu trích nguyên văn hay đề chính thức.",
+     "source_kind": "ai_authored_practice_based_on_project_theory_quiz",
+     "source_metadata": {
+      "authorship": "AI-authored practice mock. Not a genuine HCMUS examination paper."
+     }
+    },
+    {
+     "id": "VTPM_02_04",
+     "question_number": 4,
+     "type": "short_answer",
+     "question_text": "Hàm f(x)=x²−6x+11 đạt giá trị nhỏ nhất tại x bằng bao nhiêu?",
+     "question_latex": "Hàm f(x)=x²−6x+11 đạt giá trị nhỏ nhất tại x bằng bao nhiêu?",
+     "answer_type": "integer",
+     "official_answer": "3",
+     "accepted_answers": [
+      "3"
+     ],
+     "grading_method": "exact",
+     "tolerance": 0.0,
+     "points": 2.0,
+     "solution_latex": "f′(x)=2x−6=0 nên x=3.",
+     "verified": true,
+     "answer_status": "verified_ai",
+     "verification_note": "Đáp án được tính bằng phần mềm đại số (sympy 1.14) từ chính đề bài; câu hỏi mô phỏng do dự án biên soạn, chưa được giảng viên duyệt.",
+     "subject_code": "VTP1",
+     "subject": "Vi tích phân 1",
+     "exam_type": "midterm",
+     "topic": "Cực trị",
+     "source_reference": "Dạng bài và phong cách lấy theo Quiz Vi tích phân 1 lý thuyết của dự án (VTP_CLASS_001–020); câu hỏi biên soạn mới, không phải câu trích nguyên văn hay đề chính thức.",
+     "source_kind": "ai_authored_practice_based_on_project_theory_quiz",
+     "source_metadata": {
+      "authorship": "AI-authored practice mock. Not a genuine HCMUS examination paper."
+     }
+    },
+    {
+     "id": "VTPM_02_05",
+     "question_number": 5,
+     "type": "short_answer",
+     "question_text": "Tính ∫ từ 0 đến π/2 của cos(x) dx.",
+     "question_latex": "Tính ∫ từ 0 đến π/2 của cos(x) dx.",
+     "answer_type": "integer",
+     "official_answer": "1",
+     "accepted_answers": [
+      "1"
+     ],
+     "grading_method": "exact",
+     "tolerance": 0.0,
+     "points": 2.0,
+     "solution_latex": "Nguyên hàm sin(x); giá trị là 1−0=1.",
+     "verified": true,
+     "answer_status": "verified_ai",
+     "verification_note": "Đáp án được tính bằng phần mềm đại số (sympy 1.14) từ chính đề bài; câu hỏi mô phỏng do dự án biên soạn, chưa được giảng viên duyệt.",
+     "subject_code": "VTP1",
+     "subject": "Vi tích phân 1",
+     "exam_type": "midterm",
+     "topic": "Tích phân",
+     "source_reference": "Dạng bài và phong cách lấy theo Quiz Vi tích phân 1 lý thuyết của dự án (VTP_CLASS_001–020); câu hỏi biên soạn mới, không phải câu trích nguyên văn hay đề chính thức.",
+     "source_kind": "ai_authored_practice_based_on_project_theory_quiz",
+     "source_metadata": {
+      "authorship": "AI-authored practice mock. Not a genuine HCMUS examination paper."
+     }
+    }
+   ]
+  },
+  {
+   "exam_id": "VTP1_MIDTERM_PRACTICE_03",
+   "subject_code": "VTP1",
+   "subject": "Vi tích phân 1",
+   "title": "ĐỀ LUYỆN TẬP GIỮA KỲ VI TÍCH PHÂN 1 - 03",
+   "exam_type": "midterm",
+   "question_count": 5,
+   "source_kind": "ai_authored_practice_not_official_exam",
+   "source_note": "Đề luyện tập mô phỏng do GameTeam biên soạn theo dạng Quiz Vi tích phân 1 lý thuyết; không phải đề thi chính thức.",
+   "duration_seconds": 3600,
+   "questions": [
+    {
+     "id": "VTPM_03_01",
+     "question_number": 1,
+     "type": "short_answer",
+     "question_text": "Tính lim(x→0) (e^(3x)−1)/x.",
+     "question_latex": "Tính lim(x→0) (e^(3x)−1)/x.",
+     "answer_type": "integer",
+     "official_answer": "3",
+     "accepted_answers": [
+      "3"
+     ],
+     "grading_method": "exact",
+     "tolerance": 0.0,
+     "points": 2.0,
+     "solution_latex": "Dùng (e^(kx)−1)/x → k với k=3.",
+     "verified": true,
+     "answer_status": "verified_ai",
+     "verification_note": "Đáp án được tính bằng phần mềm đại số (sympy 1.14) từ chính đề bài; câu hỏi mô phỏng do dự án biên soạn, chưa được giảng viên duyệt.",
+     "subject_code": "VTP1",
+     "subject": "Vi tích phân 1",
+     "exam_type": "midterm",
+     "topic": "Giới hạn",
+     "source_reference": "Dạng bài và phong cách lấy theo Quiz Vi tích phân 1 lý thuyết của dự án (VTP_CLASS_001–020); câu hỏi biên soạn mới, không phải câu trích nguyên văn hay đề chính thức.",
+     "source_kind": "ai_authored_practice_based_on_project_theory_quiz",
+     "source_metadata": {
+      "authorship": "AI-authored practice mock. Not a genuine HCMUS examination paper."
+     }
+    },
+    {
+     "id": "VTPM_03_02",
+     "question_number": 2,
+     "type": "short_answer",
+     "question_text": "Cho f(x)=ln(x²+1). Tính f′(1).",
+     "question_latex": "Cho f(x)=ln(x²+1). Tính f′(1).",
+     "answer_type": "integer",
+     "official_answer": "1",
+     "accepted_answers": [
+      "1"
+     ],
+     "grading_method": "exact",
+     "tolerance": 0.0,
+     "points": 2.0,
+     "solution_latex": "f′(x)=2x/(x²+1) nên f′(1)=1.",
+     "verified": true,
+     "answer_status": "verified_ai",
+     "verification_note": "Đáp án được tính bằng phần mềm đại số (sympy 1.14) từ chính đề bài; câu hỏi mô phỏng do dự án biên soạn, chưa được giảng viên duyệt.",
+     "subject_code": "VTP1",
+     "subject": "Vi tích phân 1",
+     "exam_type": "midterm",
+     "topic": "Đạo hàm",
+     "source_reference": "Dạng bài và phong cách lấy theo Quiz Vi tích phân 1 lý thuyết của dự án (VTP_CLASS_001–020); câu hỏi biên soạn mới, không phải câu trích nguyên văn hay đề chính thức.",
+     "source_kind": "ai_authored_practice_based_on_project_theory_quiz",
+     "source_metadata": {
+      "authorship": "AI-authored practice mock. Not a genuine HCMUS examination paper."
+     }
+    },
+    {
+     "id": "VTPM_03_03",
+     "question_number": 3,
+     "type": "short_answer",
+     "question_text": "Cho đường cong x²+y²=25. Tính dy/dx tại điểm (4,3). Làm tròn đến 3 chữ số sau dấu phẩy.",
+     "question_latex": "Cho đường cong x²+y²=25. Tính dy/dx tại điểm (4,3). Làm tròn đến 3 chữ số sau dấu phẩy.",
+     "answer_type": "decimal",
+     "official_answer": "-1.333",
+     "accepted_answers": [
+      "-1.333"
+     ],
+     "grading_method": "exact",
+     "tolerance": 0.001,
+     "points": 2.0,
+     "solution_latex": "Đạo hàm ẩn: dy/dx=−x/y=−4/3≈−1.333.",
+     "verified": true,
+     "answer_status": "verified_ai",
+     "verification_note": "Đáp án được tính bằng phần mềm đại số (sympy 1.14) từ chính đề bài; câu hỏi mô phỏng do dự án biên soạn, chưa được giảng viên duyệt.",
+     "subject_code": "VTP1",
+     "subject": "Vi tích phân 1",
+     "exam_type": "midterm",
+     "topic": "Đạo hàm ẩn",
+     "source_reference": "Dạng bài và phong cách lấy theo Quiz Vi tích phân 1 lý thuyết của dự án (VTP_CLASS_001–020); câu hỏi biên soạn mới, không phải câu trích nguyên văn hay đề chính thức.",
+     "source_kind": "ai_authored_practice_based_on_project_theory_quiz",
+     "source_metadata": {
+      "authorship": "AI-authored practice mock. Not a genuine HCMUS examination paper."
+     }
+    },
+    {
+     "id": "VTPM_03_04",
+     "question_number": 4,
+     "type": "short_answer",
+     "question_text": "Tìm giá trị lớn nhất của f(x)=−x²+4x+1.",
+     "question_latex": "Tìm giá trị lớn nhất của f(x)=−x²+4x+1.",
+     "answer_type": "integer",
+     "official_answer": "5",
+     "accepted_answers": [
+      "5"
+     ],
+     "grading_method": "exact",
+     "tolerance": 0.0,
+     "points": 2.0,
+     "solution_latex": "Đỉnh parabol ở x=2 nên giá trị lớn nhất là f(2)=−4+8+1=5.",
+     "verified": true,
+     "answer_status": "verified_ai",
+     "verification_note": "Đáp án được tính bằng phần mềm đại số (sympy 1.14) từ chính đề bài; câu hỏi mô phỏng do dự án biên soạn, chưa được giảng viên duyệt.",
+     "subject_code": "VTP1",
+     "subject": "Vi tích phân 1",
+     "exam_type": "midterm",
+     "topic": "Cực trị",
+     "source_reference": "Dạng bài và phong cách lấy theo Quiz Vi tích phân 1 lý thuyết của dự án (VTP_CLASS_001–020); câu hỏi biên soạn mới, không phải câu trích nguyên văn hay đề chính thức.",
+     "source_kind": "ai_authored_practice_based_on_project_theory_quiz",
+     "source_metadata": {
+      "authorship": "AI-authored practice mock. Not a genuine HCMUS examination paper."
+     }
+    },
+    {
+     "id": "VTPM_03_05",
+     "question_number": 5,
+     "type": "short_answer",
+     "question_text": "Tính ∫ từ 1 đến e của 2/x dx.",
+     "question_latex": "Tính ∫ từ 1 đến e của 2/x dx.",
+     "answer_type": "integer",
+     "official_answer": "2",
+     "accepted_answers": [
+      "2"
+     ],
+     "grading_method": "exact",
+     "tolerance": 0.0,
+     "points": 2.0,
+     "solution_latex": "Nguyên hàm 2ln(x); giá trị là 2(1−0)=2.",
+     "verified": true,
+     "answer_status": "verified_ai",
+     "verification_note": "Đáp án được tính bằng phần mềm đại số (sympy 1.14) từ chính đề bài; câu hỏi mô phỏng do dự án biên soạn, chưa được giảng viên duyệt.",
+     "subject_code": "VTP1",
+     "subject": "Vi tích phân 1",
+     "exam_type": "midterm",
+     "topic": "Tích phân",
+     "source_reference": "Dạng bài và phong cách lấy theo Quiz Vi tích phân 1 lý thuyết của dự án (VTP_CLASS_001–020); câu hỏi biên soạn mới, không phải câu trích nguyên văn hay đề chính thức.",
+     "source_kind": "ai_authored_practice_based_on_project_theory_quiz",
+     "source_metadata": {
+      "authorship": "AI-authored practice mock. Not a genuine HCMUS examination paper."
+     }
+    }
+   ]
+  },
+  {
+   "exam_id": "VTP1_MIDTERM_PRACTICE_04",
+   "subject_code": "VTP1",
+   "subject": "Vi tích phân 1",
+   "title": "ĐỀ LUYỆN TẬP GIỮA KỲ VI TÍCH PHÂN 1 - 04",
+   "exam_type": "midterm",
+   "question_count": 5,
+   "source_kind": "ai_authored_practice_not_official_exam",
+   "source_note": "Đề luyện tập mô phỏng do GameTeam biên soạn theo dạng Quiz Vi tích phân 1 lý thuyết; không phải đề thi chính thức.",
+   "duration_seconds": 3600,
+   "questions": [
+    {
+     "id": "VTPM_04_01",
+     "question_number": 1,
+     "type": "short_answer",
+     "question_text": "Tính lim(x→∞) (5x²+3x)/(2x²−7).",
+     "question_latex": "Tính lim(x→∞) (5x²+3x)/(2x²−7).",
+     "answer_type": "decimal",
+     "official_answer": "2.5",
+     "accepted_answers": [
+      "2.5"
+     ],
+     "grading_method": "exact",
+     "tolerance": 0.001,
+     "points": 2.0,
+     "solution_latex": "Chia tử và mẫu cho x²: giới hạn bằng 5/2=2.5.",
+     "verified": true,
+     "answer_status": "verified_ai",
+     "verification_note": "Đáp án được tính bằng phần mềm đại số (sympy 1.14) từ chính đề bài; câu hỏi mô phỏng do dự án biên soạn, chưa được giảng viên duyệt.",
+     "subject_code": "VTP1",
+     "subject": "Vi tích phân 1",
+     "exam_type": "midterm",
+     "topic": "Giới hạn",
+     "source_reference": "Dạng bài và phong cách lấy theo Quiz Vi tích phân 1 lý thuyết của dự án (VTP_CLASS_001–020); câu hỏi biên soạn mới, không phải câu trích nguyên văn hay đề chính thức.",
+     "source_kind": "ai_authored_practice_based_on_project_theory_quiz",
+     "source_metadata": {
+      "authorship": "AI-authored practice mock. Not a genuine HCMUS examination paper."
+     }
+    },
+    {
+     "id": "VTPM_04_02",
+     "question_number": 2,
+     "type": "short_answer",
+     "question_text": "Cho f(x)=(x²+1)³. Tính f′(1).",
+     "question_latex": "Cho f(x)=(x²+1)³. Tính f′(1).",
+     "answer_type": "integer",
+     "official_answer": "24",
+     "accepted_answers": [
+      "24"
+     ],
+     "grading_method": "exact",
+     "tolerance": 0.0,
+     "points": 2.0,
+     "solution_latex": "f′(x)=3(x²+1)²·2x nên f′(1)=3·4·2=24.",
+     "verified": true,
+     "answer_status": "verified_ai",
+     "verification_note": "Đáp án được tính bằng phần mềm đại số (sympy 1.14) từ chính đề bài; câu hỏi mô phỏng do dự án biên soạn, chưa được giảng viên duyệt.",
+     "subject_code": "VTP1",
+     "subject": "Vi tích phân 1",
+     "exam_type": "midterm",
+     "topic": "Đạo hàm",
+     "source_reference": "Dạng bài và phong cách lấy theo Quiz Vi tích phân 1 lý thuyết của dự án (VTP_CLASS_001–020); câu hỏi biên soạn mới, không phải câu trích nguyên văn hay đề chính thức.",
+     "source_kind": "ai_authored_practice_based_on_project_theory_quiz",
+     "source_metadata": {
+      "authorship": "AI-authored practice mock. Not a genuine HCMUS examination paper."
+     }
+    },
+    {
+     "id": "VTPM_04_03",
+     "question_number": 3,
+     "type": "short_answer",
+     "question_text": "Cho f(x)=ln(x). Tính f″(2).",
+     "question_latex": "Cho f(x)=ln(x). Tính f″(2).",
+     "answer_type": "decimal",
+     "official_answer": "-0.25",
+     "accepted_answers": [
+      "-0.25"
+     ],
+     "grading_method": "exact",
+     "tolerance": 0.001,
+     "points": 2.0,
+     "solution_latex": "f′(x)=1/x, f″(x)=−1/x² nên f″(2)=−0.25.",
+     "verified": true,
+     "answer_status": "verified_ai",
+     "verification_note": "Đáp án được tính bằng phần mềm đại số (sympy 1.14) từ chính đề bài; câu hỏi mô phỏng do dự án biên soạn, chưa được giảng viên duyệt.",
+     "subject_code": "VTP1",
+     "subject": "Vi tích phân 1",
+     "exam_type": "midterm",
+     "topic": "Đạo hàm cấp hai",
+     "source_reference": "Dạng bài và phong cách lấy theo Quiz Vi tích phân 1 lý thuyết của dự án (VTP_CLASS_001–020); câu hỏi biên soạn mới, không phải câu trích nguyên văn hay đề chính thức.",
+     "source_kind": "ai_authored_practice_based_on_project_theory_quiz",
+     "source_metadata": {
+      "authorship": "AI-authored practice mock. Not a genuine HCMUS examination paper."
+     }
+    },
+    {
+     "id": "VTPM_04_04",
+     "question_number": 4,
+     "type": "short_answer",
+     "question_text": "Tìm giá trị nhỏ nhất của f(x)=x³−3x trên đoạn [0,2].",
+     "question_latex": "Tìm giá trị nhỏ nhất của f(x)=x³−3x trên đoạn [0,2].",
+     "answer_type": "integer",
+     "official_answer": "-2",
+     "accepted_answers": [
+      "-2"
+     ],
+     "grading_method": "exact",
+     "tolerance": 0.0,
+     "points": 2.0,
+     "solution_latex": "f′(x)=3x²−3=0 tại x=1; so sánh f(0)=0, f(1)=−2, f(2)=2 nên giá trị nhỏ nhất là −2.",
+     "verified": true,
+     "answer_status": "verified_ai",
+     "verification_note": "Đáp án được tính bằng phần mềm đại số (sympy 1.14) từ chính đề bài; câu hỏi mô phỏng do dự án biên soạn, chưa được giảng viên duyệt.",
+     "subject_code": "VTP1",
+     "subject": "Vi tích phân 1",
+     "exam_type": "midterm",
+     "topic": "Cực trị",
+     "source_reference": "Dạng bài và phong cách lấy theo Quiz Vi tích phân 1 lý thuyết của dự án (VTP_CLASS_001–020); câu hỏi biên soạn mới, không phải câu trích nguyên văn hay đề chính thức.",
+     "source_kind": "ai_authored_practice_based_on_project_theory_quiz",
+     "source_metadata": {
+      "authorship": "AI-authored practice mock. Not a genuine HCMUS examination paper."
+     }
+    },
+    {
+     "id": "VTPM_04_05",
+     "question_number": 5,
+     "type": "short_answer",
+     "question_text": "Tính ∫ từ 0 đến 1 của e^(3x) dx. Làm tròn đến 3 chữ số sau dấu phẩy.",
+     "question_latex": "Tính ∫ từ 0 đến 1 của e^(3x) dx. Làm tròn đến 3 chữ số sau dấu phẩy.",
+     "answer_type": "decimal",
+     "official_answer": "6.362",
+     "accepted_answers": [
+      "6.362"
+     ],
+     "grading_method": "exact",
+     "tolerance": 0.001,
+     "points": 2.0,
+     "solution_latex": "Nguyên hàm e^(3x)/3; giá trị là (e³−1)/3≈6.362.",
+     "verified": true,
+     "answer_status": "verified_ai",
+     "verification_note": "Đáp án được tính bằng phần mềm đại số (sympy 1.14) từ chính đề bài; câu hỏi mô phỏng do dự án biên soạn, chưa được giảng viên duyệt.",
+     "subject_code": "VTP1",
+     "subject": "Vi tích phân 1",
+     "exam_type": "midterm",
+     "topic": "Tích phân",
+     "source_reference": "Dạng bài và phong cách lấy theo Quiz Vi tích phân 1 lý thuyết của dự án (VTP_CLASS_001–020); câu hỏi biên soạn mới, không phải câu trích nguyên văn hay đề chính thức.",
+     "source_kind": "ai_authored_practice_based_on_project_theory_quiz",
+     "source_metadata": {
+      "authorship": "AI-authored practice mock. Not a genuine HCMUS examination paper."
+     }
+    }
+   ]
+  },
+  {
+   "exam_id": "VTP1_MIDTERM_PRACTICE_05",
+   "subject_code": "VTP1",
+   "subject": "Vi tích phân 1",
+   "title": "ĐỀ LUYỆN TẬP GIỮA KỲ VI TÍCH PHÂN 1 - 05",
+   "exam_type": "midterm",
+   "question_count": 5,
+   "source_kind": "ai_authored_practice_not_official_exam",
+   "source_note": "Đề luyện tập mô phỏng do GameTeam biên soạn theo dạng Quiz Vi tích phân 1 lý thuyết; không phải đề thi chính thức.",
+   "duration_seconds": 3600,
+   "questions": [
+    {
+     "id": "VTPM_05_01",
+     "question_number": 1,
+     "type": "short_answer",
+     "question_text": "Tính lim(x→1) (x³−1)/(x−1).",
+     "question_latex": "Tính lim(x→1) (x³−1)/(x−1).",
+     "answer_type": "integer",
+     "official_answer": "3",
+     "accepted_answers": [
+      "3"
+     ],
+     "grading_method": "exact",
+     "tolerance": 0.0,
+     "points": 2.0,
+     "solution_latex": "x³−1=(x−1)(x²+x+1) nên giới hạn bằng 1+1+1=3.",
+     "verified": true,
+     "answer_status": "verified_ai",
+     "verification_note": "Đáp án được tính bằng phần mềm đại số (sympy 1.14) từ chính đề bài; câu hỏi mô phỏng do dự án biên soạn, chưa được giảng viên duyệt.",
+     "subject_code": "VTP1",
+     "subject": "Vi tích phân 1",
+     "exam_type": "midterm",
+     "topic": "Giới hạn",
+     "source_reference": "Dạng bài và phong cách lấy theo Quiz Vi tích phân 1 lý thuyết của dự án (VTP_CLASS_001–020); câu hỏi biên soạn mới, không phải câu trích nguyên văn hay đề chính thức.",
+     "source_kind": "ai_authored_practice_based_on_project_theory_quiz",
+     "source_metadata": {
+      "authorship": "AI-authored practice mock. Not a genuine HCMUS examination paper."
+     }
+    },
+    {
+     "id": "VTPM_05_02",
+     "question_number": 2,
+     "type": "short_answer",
+     "question_text": "Cho f(x)=√(4x+1). Tính f′(2). Làm tròn đến 3 chữ số sau dấu phẩy.",
+     "question_latex": "Cho f(x)=√(4x+1). Tính f′(2). Làm tròn đến 3 chữ số sau dấu phẩy.",
+     "answer_type": "decimal",
+     "official_answer": "0.667",
+     "accepted_answers": [
+      "0.667"
+     ],
+     "grading_method": "exact",
+     "tolerance": 0.001,
+     "points": 2.0,
+     "solution_latex": "f′(x)=2/√(4x+1) nên f′(2)=2/3≈0.667.",
+     "verified": true,
+     "answer_status": "verified_ai",
+     "verification_note": "Đáp án được tính bằng phần mềm đại số (sympy 1.14) từ chính đề bài; câu hỏi mô phỏng do dự án biên soạn, chưa được giảng viên duyệt.",
+     "subject_code": "VTP1",
+     "subject": "Vi tích phân 1",
+     "exam_type": "midterm",
+     "topic": "Đạo hàm",
+     "source_reference": "Dạng bài và phong cách lấy theo Quiz Vi tích phân 1 lý thuyết của dự án (VTP_CLASS_001–020); câu hỏi biên soạn mới, không phải câu trích nguyên văn hay đề chính thức.",
+     "source_kind": "ai_authored_practice_based_on_project_theory_quiz",
+     "source_metadata": {
+      "authorship": "AI-authored practice mock. Not a genuine HCMUS examination paper."
+     }
+    },
+    {
+     "id": "VTPM_05_03",
+     "question_number": 3,
+     "type": "short_answer",
+     "question_text": "Tìm hệ số góc tiếp tuyến của y=√x tại x=4.",
+     "question_latex": "Tìm hệ số góc tiếp tuyến của y=√x tại x=4.",
+     "answer_type": "decimal",
+     "official_answer": "0.25",
+     "accepted_answers": [
+      "0.25"
+     ],
+     "grading_method": "exact",
+     "tolerance": 0.001,
+     "points": 2.0,
+     "solution_latex": "y′=1/(2√x) nên hệ số góc tại x=4 là 1/4=0.25.",
+     "verified": true,
+     "answer_status": "verified_ai",
+     "verification_note": "Đáp án được tính bằng phần mềm đại số (sympy 1.14) từ chính đề bài; câu hỏi mô phỏng do dự án biên soạn, chưa được giảng viên duyệt.",
+     "subject_code": "VTP1",
+     "subject": "Vi tích phân 1",
+     "exam_type": "midterm",
+     "topic": "Tiếp tuyến",
+     "source_reference": "Dạng bài và phong cách lấy theo Quiz Vi tích phân 1 lý thuyết của dự án (VTP_CLASS_001–020); câu hỏi biên soạn mới, không phải câu trích nguyên văn hay đề chính thức.",
+     "source_kind": "ai_authored_practice_based_on_project_theory_quiz",
+     "source_metadata": {
+      "authorship": "AI-authored practice mock. Not a genuine HCMUS examination paper."
+     }
+    },
+    {
+     "id": "VTPM_05_04",
+     "question_number": 4,
+     "type": "short_answer",
+     "question_text": "Cho f(x)=(x²−25)/(x−5) khi x≠5 và f(5)=a. Tìm a để f liên tục tại x=5.",
+     "question_latex": "Cho f(x)=(x²−25)/(x−5) khi x≠5 và f(5)=a. Tìm a để f liên tục tại x=5.",
+     "answer_type": "integer",
+     "official_answer": "10",
+     "accepted_answers": [
+      "10"
+     ],
+     "grading_method": "exact",
+     "tolerance": 0.0,
+     "points": 2.0,
+     "solution_latex": "Giới hạn khi x→5 là x+5=10 nên a=10.",
+     "verified": true,
+     "answer_status": "verified_ai",
+     "verification_note": "Đáp án được tính bằng phần mềm đại số (sympy 1.14) từ chính đề bài; câu hỏi mô phỏng do dự án biên soạn, chưa được giảng viên duyệt.",
+     "subject_code": "VTP1",
+     "subject": "Vi tích phân 1",
+     "exam_type": "midterm",
+     "topic": "Liên tục",
+     "source_reference": "Dạng bài và phong cách lấy theo Quiz Vi tích phân 1 lý thuyết của dự án (VTP_CLASS_001–020); câu hỏi biên soạn mới, không phải câu trích nguyên văn hay đề chính thức.",
+     "source_kind": "ai_authored_practice_based_on_project_theory_quiz",
+     "source_metadata": {
+      "authorship": "AI-authored practice mock. Not a genuine HCMUS examination paper."
+     }
+    },
+    {
+     "id": "VTPM_05_05",
+     "question_number": 5,
+     "type": "short_answer",
+     "question_text": "Tính ∫ từ 0 đến 1 của 2x(x²+1)³ dx.",
+     "question_latex": "Tính ∫ từ 0 đến 1 của 2x(x²+1)³ dx.",
+     "answer_type": "decimal",
+     "official_answer": "3.75",
+     "accepted_answers": [
+      "3.75"
+     ],
+     "grading_method": "exact",
+     "tolerance": 0.001,
+     "points": 2.0,
+     "solution_latex": "Đặt u=x²+1: ∫ từ 1 đến 2 của u³ du=(16−1)/4=3.75.",
+     "verified": true,
+     "answer_status": "verified_ai",
+     "verification_note": "Đáp án được tính bằng phần mềm đại số (sympy 1.14) từ chính đề bài; câu hỏi mô phỏng do dự án biên soạn, chưa được giảng viên duyệt.",
+     "subject_code": "VTP1",
+     "subject": "Vi tích phân 1",
+     "exam_type": "midterm",
+     "topic": "Đổi biến",
+     "source_reference": "Dạng bài và phong cách lấy theo Quiz Vi tích phân 1 lý thuyết của dự án (VTP_CLASS_001–020); câu hỏi biên soạn mới, không phải câu trích nguyên văn hay đề chính thức.",
+     "source_kind": "ai_authored_practice_based_on_project_theory_quiz",
+     "source_metadata": {
+      "authorship": "AI-authored practice mock. Not a genuine HCMUS examination paper."
+     }
+    }
+   ]
+  },
+  {
+   "exam_id": "VTP1_MIDTERM_PRACTICE_06",
+   "subject_code": "VTP1",
+   "subject": "Vi tích phân 1",
+   "title": "ĐỀ LUYỆN TẬP GIỮA KỲ VI TÍCH PHÂN 1 - 06",
+   "exam_type": "midterm",
+   "question_count": 5,
+   "source_kind": "ai_authored_practice_not_official_exam",
+   "source_note": "Đề luyện tập mô phỏng do GameTeam biên soạn theo dạng Quiz Vi tích phân 1 lý thuyết; không phải đề thi chính thức.",
+   "duration_seconds": 3600,
+   "questions": [
+    {
+     "id": "VTPM_06_01",
+     "question_number": 1,
+     "type": "short_answer",
+     "question_text": "Tính lim(x→0) (1−cos(2x))/x².",
+     "question_latex": "Tính lim(x→0) (1−cos(2x))/x².",
+     "answer_type": "integer",
+     "official_answer": "2",
+     "accepted_answers": [
+      "2"
+     ],
+     "grading_method": "exact",
+     "tolerance": 0.0,
+     "points": 2.0,
+     "solution_latex": "1−cos(2x)=2sin²x nên giới hạn bằng 2·1=2.",
+     "verified": true,
+     "answer_status": "verified_ai",
+     "verification_note": "Đáp án được tính bằng phần mềm đại số (sympy 1.14) từ chính đề bài; câu hỏi mô phỏng do dự án biên soạn, chưa được giảng viên duyệt.",
+     "subject_code": "VTP1",
+     "subject": "Vi tích phân 1",
+     "exam_type": "midterm",
+     "topic": "Giới hạn",
+     "source_reference": "Dạng bài và phong cách lấy theo Quiz Vi tích phân 1 lý thuyết của dự án (VTP_CLASS_001–020); câu hỏi biên soạn mới, không phải câu trích nguyên văn hay đề chính thức.",
+     "source_kind": "ai_authored_practice_based_on_project_theory_quiz",
+     "source_metadata": {
+      "authorship": "AI-authored practice mock. Not a genuine HCMUS examination paper."
+     }
+    },
+    {
+     "id": "VTPM_06_02",
+     "question_number": 2,
+     "type": "short_answer",
+     "question_text": "Cho f(x)=x/(x+1). Tính f′(1).",
+     "question_latex": "Cho f(x)=x/(x+1). Tính f′(1).",
+     "answer_type": "decimal",
+     "official_answer": "0.25",
+     "accepted_answers": [
+      "0.25"
+     ],
+     "grading_method": "exact",
+     "tolerance": 0.001,
+     "points": 2.0,
+     "solution_latex": "f′(x)=1/(x+1)² nên f′(1)=1/4=0.25.",
+     "verified": true,
+     "answer_status": "verified_ai",
+     "verification_note": "Đáp án được tính bằng phần mềm đại số (sympy 1.14) từ chính đề bài; câu hỏi mô phỏng do dự án biên soạn, chưa được giảng viên duyệt.",
+     "subject_code": "VTP1",
+     "subject": "Vi tích phân 1",
+     "exam_type": "midterm",
+     "topic": "Đạo hàm",
+     "source_reference": "Dạng bài và phong cách lấy theo Quiz Vi tích phân 1 lý thuyết của dự án (VTP_CLASS_001–020); câu hỏi biên soạn mới, không phải câu trích nguyên văn hay đề chính thức.",
+     "source_kind": "ai_authored_practice_based_on_project_theory_quiz",
+     "source_metadata": {
+      "authorship": "AI-authored practice mock. Not a genuine HCMUS examination paper."
+     }
+    },
+    {
+     "id": "VTPM_06_03",
+     "question_number": 3,
+     "type": "short_answer",
+     "question_text": "Cho f(x)=sin(x)+x². Tính f″(0).",
+     "question_latex": "Cho f(x)=sin(x)+x². Tính f″(0).",
+     "answer_type": "integer",
+     "official_answer": "2",
+     "accepted_answers": [
+      "2"
+     ],
+     "grading_method": "exact",
+     "tolerance": 0.0,
+     "points": 2.0,
+     "solution_latex": "f″(x)=−sin(x)+2 nên f″(0)=2.",
+     "verified": true,
+     "answer_status": "verified_ai",
+     "verification_note": "Đáp án được tính bằng phần mềm đại số (sympy 1.14) từ chính đề bài; câu hỏi mô phỏng do dự án biên soạn, chưa được giảng viên duyệt.",
+     "subject_code": "VTP1",
+     "subject": "Vi tích phân 1",
+     "exam_type": "midterm",
+     "topic": "Đạo hàm cấp hai",
+     "source_reference": "Dạng bài và phong cách lấy theo Quiz Vi tích phân 1 lý thuyết của dự án (VTP_CLASS_001–020); câu hỏi biên soạn mới, không phải câu trích nguyên văn hay đề chính thức.",
+     "source_kind": "ai_authored_practice_based_on_project_theory_quiz",
+     "source_metadata": {
+      "authorship": "AI-authored practice mock. Not a genuine HCMUS examination paper."
+     }
+    },
+    {
+     "id": "VTPM_06_04",
+     "question_number": 4,
+     "type": "short_answer",
+     "question_text": "Tìm giá trị lớn nhất của f(x)=x²−2x trên đoạn [−1,3].",
+     "question_latex": "Tìm giá trị lớn nhất của f(x)=x²−2x trên đoạn [−1,3].",
+     "answer_type": "integer",
+     "official_answer": "3",
+     "accepted_answers": [
+      "3"
+     ],
+     "grading_method": "exact",
+     "tolerance": 0.0,
+     "points": 2.0,
+     "solution_latex": "f′(x)=2x−2=0 tại x=1; so sánh f(−1)=3, f(1)=−1, f(3)=3 nên giá trị lớn nhất là 3.",
+     "verified": true,
+     "answer_status": "verified_ai",
+     "verification_note": "Đáp án được tính bằng phần mềm đại số (sympy 1.14) từ chính đề bài; câu hỏi mô phỏng do dự án biên soạn, chưa được giảng viên duyệt.",
+     "subject_code": "VTP1",
+     "subject": "Vi tích phân 1",
+     "exam_type": "midterm",
+     "topic": "Cực trị",
+     "source_reference": "Dạng bài và phong cách lấy theo Quiz Vi tích phân 1 lý thuyết của dự án (VTP_CLASS_001–020); câu hỏi biên soạn mới, không phải câu trích nguyên văn hay đề chính thức.",
+     "source_kind": "ai_authored_practice_based_on_project_theory_quiz",
+     "source_metadata": {
+      "authorship": "AI-authored practice mock. Not a genuine HCMUS examination paper."
+     }
+    },
+    {
+     "id": "VTPM_06_05",
+     "question_number": 5,
+     "type": "short_answer",
+     "question_text": "Tính ∫ từ 1 đến 4 của √x dx. Làm tròn đến 3 chữ số sau dấu phẩy.",
+     "question_latex": "Tính ∫ từ 1 đến 4 của √x dx. Làm tròn đến 3 chữ số sau dấu phẩy.",
+     "answer_type": "decimal",
+     "official_answer": "4.667",
+     "accepted_answers": [
+      "4.667"
+     ],
+     "grading_method": "exact",
+     "tolerance": 0.001,
+     "points": 2.0,
+     "solution_latex": "Nguyên hàm (2/3)x^(3/2); giá trị là (2/3)(8−1)=14/3≈4.667.",
+     "verified": true,
+     "answer_status": "verified_ai",
+     "verification_note": "Đáp án được tính bằng phần mềm đại số (sympy 1.14) từ chính đề bài; câu hỏi mô phỏng do dự án biên soạn, chưa được giảng viên duyệt.",
+     "subject_code": "VTP1",
+     "subject": "Vi tích phân 1",
+     "exam_type": "midterm",
+     "topic": "Tích phân",
+     "source_reference": "Dạng bài và phong cách lấy theo Quiz Vi tích phân 1 lý thuyết của dự án (VTP_CLASS_001–020); câu hỏi biên soạn mới, không phải câu trích nguyên văn hay đề chính thức.",
+     "source_kind": "ai_authored_practice_based_on_project_theory_quiz",
+     "source_metadata": {
+      "authorship": "AI-authored practice mock. Not a genuine HCMUS examination paper."
+     }
+    }
+   ]
+  },
+  {
+   "exam_id": "VTP1_MIDTERM_PRACTICE_07",
+   "subject_code": "VTP1",
+   "subject": "Vi tích phân 1",
+   "title": "ĐỀ LUYỆN TẬP GIỮA KỲ VI TÍCH PHÂN 1 - 07",
+   "exam_type": "midterm",
+   "question_count": 5,
+   "source_kind": "ai_authored_practice_not_official_exam",
+   "source_note": "Đề luyện tập mô phỏng do GameTeam biên soạn theo dạng Quiz Vi tích phân 1 lý thuyết; không phải đề thi chính thức.",
+   "duration_seconds": 3600,
+   "questions": [
+    {
+     "id": "VTPM_07_01",
+     "question_number": 1,
+     "type": "short_answer",
+     "question_text": "Tính lim(x→0) ln(1+6x)/(3x).",
+     "question_latex": "Tính lim(x→0) ln(1+6x)/(3x).",
+     "answer_type": "integer",
+     "official_answer": "2",
+     "accepted_answers": [
+      "2"
+     ],
+     "grading_method": "exact",
+     "tolerance": 0.0,
+     "points": 2.0,
+     "solution_latex": "ln(1+6x)/(3x)=2·ln(1+6x)/(6x) → 2.",
+     "verified": true,
+     "answer_status": "verified_ai",
+     "verification_note": "Đáp án được tính bằng phần mềm đại số (sympy 1.14) từ chính đề bài; câu hỏi mô phỏng do dự án biên soạn, chưa được giảng viên duyệt.",
+     "subject_code": "VTP1",
+     "subject": "Vi tích phân 1",
+     "exam_type": "midterm",
+     "topic": "Giới hạn",
+     "source_reference": "Dạng bài và phong cách lấy theo Quiz Vi tích phân 1 lý thuyết của dự án (VTP_CLASS_001–020); câu hỏi biên soạn mới, không phải câu trích nguyên văn hay đề chính thức.",
+     "source_kind": "ai_authored_practice_based_on_project_theory_quiz",
+     "source_metadata": {
+      "authorship": "AI-authored practice mock. Not a genuine HCMUS examination paper."
+     }
+    },
+    {
+     "id": "VTPM_07_02",
+     "question_number": 2,
+     "type": "short_answer",
+     "question_text": "Cho f(x)=e^(x²). Tính f′(1). Làm tròn đến 3 chữ số sau dấu phẩy.",
+     "question_latex": "Cho f(x)=e^(x²). Tính f′(1). Làm tròn đến 3 chữ số sau dấu phẩy.",
+     "answer_type": "decimal",
+     "official_answer": "5.437",
+     "accepted_answers": [
+      "5.437"
+     ],
+     "grading_method": "exact",
+     "tolerance": 0.001,
+     "points": 2.0,
+     "solution_latex": "f′(x)=2x·e^(x²) nên f′(1)=2e≈5.437.",
+     "verified": true,
+     "answer_status": "verified_ai",
+     "verification_note": "Đáp án được tính bằng phần mềm đại số (sympy 1.14) từ chính đề bài; câu hỏi mô phỏng do dự án biên soạn, chưa được giảng viên duyệt.",
+     "subject_code": "VTP1",
+     "subject": "Vi tích phân 1",
+     "exam_type": "midterm",
+     "topic": "Đạo hàm",
+     "source_reference": "Dạng bài và phong cách lấy theo Quiz Vi tích phân 1 lý thuyết của dự án (VTP_CLASS_001–020); câu hỏi biên soạn mới, không phải câu trích nguyên văn hay đề chính thức.",
+     "source_kind": "ai_authored_practice_based_on_project_theory_quiz",
+     "source_metadata": {
+      "authorship": "AI-authored practice mock. Not a genuine HCMUS examination paper."
+     }
+    },
+    {
+     "id": "VTPM_07_03",
+     "question_number": 3,
+     "type": "short_answer",
+     "question_text": "Cho đường cong x²+xy+y²=7. Tính dy/dx tại điểm (1,2).",
+     "question_latex": "Cho đường cong x²+xy+y²=7. Tính dy/dx tại điểm (1,2).",
+     "answer_type": "decimal",
+     "official_answer": "-0.8",
+     "accepted_answers": [
+      "-0.8"
+     ],
+     "grading_method": "exact",
+     "tolerance": 0.001,
+     "points": 2.0,
+     "solution_latex": "Đạo hàm ẩn: dy/dx=−(2x+y)/(x+2y)=−4/5=−0.8.",
+     "verified": true,
+     "answer_status": "verified_ai",
+     "verification_note": "Đáp án được tính bằng phần mềm đại số (sympy 1.14) từ chính đề bài; câu hỏi mô phỏng do dự án biên soạn, chưa được giảng viên duyệt.",
+     "subject_code": "VTP1",
+     "subject": "Vi tích phân 1",
+     "exam_type": "midterm",
+     "topic": "Đạo hàm ẩn",
+     "source_reference": "Dạng bài và phong cách lấy theo Quiz Vi tích phân 1 lý thuyết của dự án (VTP_CLASS_001–020); câu hỏi biên soạn mới, không phải câu trích nguyên văn hay đề chính thức.",
+     "source_kind": "ai_authored_practice_based_on_project_theory_quiz",
+     "source_metadata": {
+      "authorship": "AI-authored practice mock. Not a genuine HCMUS examination paper."
+     }
+    },
+    {
+     "id": "VTPM_07_04",
+     "question_number": 4,
+     "type": "short_answer",
+     "question_text": "Tìm hoành độ điểm cực tiểu của f(x)=x³−12x với x>0.",
+     "question_latex": "Tìm hoành độ điểm cực tiểu của f(x)=x³−12x với x>0.",
+     "answer_type": "integer",
+     "official_answer": "2",
+     "accepted_answers": [
+      "2"
+     ],
+     "grading_method": "exact",
+     "tolerance": 0.0,
+     "points": 2.0,
+     "solution_latex": "f′(x)=3x²−12=0 nên x=2 (x>0); f″(2)=12>0 nên đây là cực tiểu.",
+     "verified": true,
+     "answer_status": "verified_ai",
+     "verification_note": "Đáp án được tính bằng phần mềm đại số (sympy 1.14) từ chính đề bài; câu hỏi mô phỏng do dự án biên soạn, chưa được giảng viên duyệt.",
+     "subject_code": "VTP1",
+     "subject": "Vi tích phân 1",
+     "exam_type": "midterm",
+     "topic": "Cực trị",
+     "source_reference": "Dạng bài và phong cách lấy theo Quiz Vi tích phân 1 lý thuyết của dự án (VTP_CLASS_001–020); câu hỏi biên soạn mới, không phải câu trích nguyên văn hay đề chính thức.",
+     "source_kind": "ai_authored_practice_based_on_project_theory_quiz",
+     "source_metadata": {
+      "authorship": "AI-authored practice mock. Not a genuine HCMUS examination paper."
+     }
+    },
+    {
+     "id": "VTPM_07_05",
+     "question_number": 5,
+     "type": "short_answer",
+     "question_text": "Tính ∫ từ 0 đến π/2 của sin(2x) dx.",
+     "question_latex": "Tính ∫ từ 0 đến π/2 của sin(2x) dx.",
+     "answer_type": "integer",
+     "official_answer": "1",
+     "accepted_answers": [
+      "1"
+     ],
+     "grading_method": "exact",
+     "tolerance": 0.0,
+     "points": 2.0,
+     "solution_latex": "Nguyên hàm −cos(2x)/2; giá trị là (1+1)/2=1.",
+     "verified": true,
+     "answer_status": "verified_ai",
+     "verification_note": "Đáp án được tính bằng phần mềm đại số (sympy 1.14) từ chính đề bài; câu hỏi mô phỏng do dự án biên soạn, chưa được giảng viên duyệt.",
+     "subject_code": "VTP1",
+     "subject": "Vi tích phân 1",
+     "exam_type": "midterm",
+     "topic": "Đổi biến",
+     "source_reference": "Dạng bài và phong cách lấy theo Quiz Vi tích phân 1 lý thuyết của dự án (VTP_CLASS_001–020); câu hỏi biên soạn mới, không phải câu trích nguyên văn hay đề chính thức.",
+     "source_kind": "ai_authored_practice_based_on_project_theory_quiz",
+     "source_metadata": {
+      "authorship": "AI-authored practice mock. Not a genuine HCMUS examination paper."
+     }
+    }
+   ]
+  },
+  {
+   "exam_id": "VTP1_MIDTERM_PRACTICE_08",
+   "subject_code": "VTP1",
+   "subject": "Vi tích phân 1",
+   "title": "ĐỀ LUYỆN TẬP GIỮA KỲ VI TÍCH PHÂN 1 - 08",
+   "exam_type": "midterm",
+   "question_count": 5,
+   "source_kind": "ai_authored_practice_not_official_exam",
+   "source_note": "Đề luyện tập mô phỏng do GameTeam biên soạn theo dạng Quiz Vi tích phân 1 lý thuyết; không phải đề thi chính thức.",
+   "duration_seconds": 3600,
+   "questions": [
+    {
+     "id": "VTPM_08_01",
+     "question_number": 1,
+     "type": "short_answer",
+     "question_text": "Tính lim(x→9) (√x−3)/(x−9). Làm tròn đến 3 chữ số sau dấu phẩy.",
+     "question_latex": "Tính lim(x→9) (√x−3)/(x−9). Làm tròn đến 3 chữ số sau dấu phẩy.",
+     "answer_type": "decimal",
+     "official_answer": "0.167",
+     "accepted_answers": [
+      "0.167"
+     ],
+     "grading_method": "exact",
+     "tolerance": 0.001,
+     "points": 2.0,
+     "solution_latex": "Nhân liên hợp: (√x−3)/(x−9)=1/(√x+3) → 1/6≈0.167.",
+     "verified": true,
+     "answer_status": "verified_ai",
+     "verification_note": "Đáp án được tính bằng phần mềm đại số (sympy 1.14) từ chính đề bài; câu hỏi mô phỏng do dự án biên soạn, chưa được giảng viên duyệt.",
+     "subject_code": "VTP1",
+     "subject": "Vi tích phân 1",
+     "exam_type": "midterm",
+     "topic": "Giới hạn",
+     "source_reference": "Dạng bài và phong cách lấy theo Quiz Vi tích phân 1 lý thuyết của dự án (VTP_CLASS_001–020); câu hỏi biên soạn mới, không phải câu trích nguyên văn hay đề chính thức.",
+     "source_kind": "ai_authored_practice_based_on_project_theory_quiz",
+     "source_metadata": {
+      "authorship": "AI-authored practice mock. Not a genuine HCMUS examination paper."
+     }
+    },
+    {
+     "id": "VTPM_08_02",
+     "question_number": 2,
+     "type": "short_answer",
+     "question_text": "Cho f(x)=arctan(2x). Tính f′(0).",
+     "question_latex": "Cho f(x)=arctan(2x). Tính f′(0).",
+     "answer_type": "integer",
+     "official_answer": "2",
+     "accepted_answers": [
+      "2"
+     ],
+     "grading_method": "exact",
+     "tolerance": 0.0,
+     "points": 2.0,
+     "solution_latex": "f′(x)=2/(1+4x²) nên f′(0)=2.",
+     "verified": true,
+     "answer_status": "verified_ai",
+     "verification_note": "Đáp án được tính bằng phần mềm đại số (sympy 1.14) từ chính đề bài; câu hỏi mô phỏng do dự án biên soạn, chưa được giảng viên duyệt.",
+     "subject_code": "VTP1",
+     "subject": "Vi tích phân 1",
+     "exam_type": "midterm",
+     "topic": "Đạo hàm",
+     "source_reference": "Dạng bài và phong cách lấy theo Quiz Vi tích phân 1 lý thuyết của dự án (VTP_CLASS_001–020); câu hỏi biên soạn mới, không phải câu trích nguyên văn hay đề chính thức.",
+     "source_kind": "ai_authored_practice_based_on_project_theory_quiz",
+     "source_metadata": {
+      "authorship": "AI-authored practice mock. Not a genuine HCMUS examination paper."
+     }
+    },
+    {
+     "id": "VTPM_08_03",
+     "question_number": 3,
+     "type": "short_answer",
+     "question_text": "Tìm hệ số góc tiếp tuyến của y=x²·e^x tại x=1. Làm tròn đến 3 chữ số sau dấu phẩy.",
+     "question_latex": "Tìm hệ số góc tiếp tuyến của y=x²·e^x tại x=1. Làm tròn đến 3 chữ số sau dấu phẩy.",
+     "answer_type": "decimal",
+     "official_answer": "8.155",
+     "accepted_answers": [
+      "8.155"
+     ],
+     "grading_method": "exact",
+     "tolerance": 0.001,
+     "points": 2.0,
+     "solution_latex": "y′=(2x+x²)e^x nên hệ số góc tại x=1 là 3e≈8.155.",
+     "verified": true,
+     "answer_status": "verified_ai",
+     "verification_note": "Đáp án được tính bằng phần mềm đại số (sympy 1.14) từ chính đề bài; câu hỏi mô phỏng do dự án biên soạn, chưa được giảng viên duyệt.",
+     "subject_code": "VTP1",
+     "subject": "Vi tích phân 1",
+     "exam_type": "midterm",
+     "topic": "Tiếp tuyến",
+     "source_reference": "Dạng bài và phong cách lấy theo Quiz Vi tích phân 1 lý thuyết của dự án (VTP_CLASS_001–020); câu hỏi biên soạn mới, không phải câu trích nguyên văn hay đề chính thức.",
+     "source_kind": "ai_authored_practice_based_on_project_theory_quiz",
+     "source_metadata": {
+      "authorship": "AI-authored practice mock. Not a genuine HCMUS examination paper."
+     }
+    },
+    {
+     "id": "VTPM_08_04",
+     "question_number": 4,
+     "type": "short_answer",
+     "question_text": "Cho f(x)=a·x+1 khi x<1 và f(x)=4 khi x≥1. Tìm a để f liên tục tại x=1.",
+     "question_latex": "Cho f(x)=a·x+1 khi x<1 và f(x)=4 khi x≥1. Tìm a để f liên tục tại x=1.",
+     "answer_type": "integer",
+     "official_answer": "3",
+     "accepted_answers": [
+      "3"
+     ],
+     "grading_method": "exact",
+     "tolerance": 0.0,
+     "points": 2.0,
+     "solution_latex": "Giới hạn trái là a+1, giá trị tại 1 là 4; liên tục khi a+1=4 nên a=3.",
+     "verified": true,
+     "answer_status": "verified_ai",
+     "verification_note": "Đáp án được tính bằng phần mềm đại số (sympy 1.14) từ chính đề bài; câu hỏi mô phỏng do dự án biên soạn, chưa được giảng viên duyệt.",
+     "subject_code": "VTP1",
+     "subject": "Vi tích phân 1",
+     "exam_type": "midterm",
+     "topic": "Liên tục",
+     "source_reference": "Dạng bài và phong cách lấy theo Quiz Vi tích phân 1 lý thuyết của dự án (VTP_CLASS_001–020); câu hỏi biên soạn mới, không phải câu trích nguyên văn hay đề chính thức.",
+     "source_kind": "ai_authored_practice_based_on_project_theory_quiz",
+     "source_metadata": {
+      "authorship": "AI-authored practice mock. Not a genuine HCMUS examination paper."
+     }
+    },
+    {
+     "id": "VTPM_08_05",
+     "question_number": 5,
+     "type": "short_answer",
+     "question_text": "Tính ∫ từ 0 đến 1 của 1/(1+x²) dx. Làm tròn đến 3 chữ số sau dấu phẩy.",
+     "question_latex": "Tính ∫ từ 0 đến 1 của 1/(1+x²) dx. Làm tròn đến 3 chữ số sau dấu phẩy.",
+     "answer_type": "decimal",
+     "official_answer": "0.785",
+     "accepted_answers": [
+      "0.785"
+     ],
+     "grading_method": "exact",
+     "tolerance": 0.001,
+     "points": 2.0,
+     "solution_latex": "Nguyên hàm arctan(x); giá trị là π/4≈0.785.",
+     "verified": true,
+     "answer_status": "verified_ai",
+     "verification_note": "Đáp án được tính bằng phần mềm đại số (sympy 1.14) từ chính đề bài; câu hỏi mô phỏng do dự án biên soạn, chưa được giảng viên duyệt.",
+     "subject_code": "VTP1",
+     "subject": "Vi tích phân 1",
+     "exam_type": "midterm",
+     "topic": "Tích phân",
+     "source_reference": "Dạng bài và phong cách lấy theo Quiz Vi tích phân 1 lý thuyết của dự án (VTP_CLASS_001–020); câu hỏi biên soạn mới, không phải câu trích nguyên văn hay đề chính thức.",
+     "source_kind": "ai_authored_practice_based_on_project_theory_quiz",
+     "source_metadata": {
+      "authorship": "AI-authored practice mock. Not a genuine HCMUS examination paper."
+     }
+    }
+   ]
+  }
+ ]
+}

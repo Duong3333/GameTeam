@@ -130,13 +130,43 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 	var exam := Schedule.exam_for_teacher(str(n.role))
 	if not exam.is_empty():
-		if Schedule.week_no(game.day) == int(exam["week"]):
+		var subject_code := str(exam.get("subject_code", ""))
+		var current_week := Schedule.week_no(game.day)
+		var exam_type := "final" if subject_code == "VTP1" and current_week in Schedule.FINAL_WEEKS else "midterm"
+		var is_exam_week := current_week in Schedule.FINAL_WEEKS if exam_type == "final" else current_week == int(exam["week"])
+		if is_exam_week:
 			for feature in game.features:
-				if feature.has_method("start_teacher_exam") and feature.start_teacher_exam(str(n.role)):
+				if feature.has_method("is_official_exam_attempt_storage_ready") and not feature.is_official_exam_attempt_storage_ready():
+					n.say = "Không thể đọc lịch sử lượt thi. Kỳ thi tạm thời chưa thể bắt đầu."
+					n.say_t = ROLE_SAY_TIME
+					n.talk = ROLE_SAY_TIME
 					n.dir = Vector2.ZERO
 					n.face = role_face(game.player - n.pos)
 					get_viewport().set_input_as_handled()
 					return
+				if feature.has_method("is_official_exam_used") and feature.is_official_exam_used(subject_code, exam_type):
+					var period_text := "cuối kỳ" if exam_type == "final" else "giữa kỳ"
+					n.say = "Em đã sử dụng lượt thi %s môn %s. Không thể thi lại." % [period_text, str(exam.get("subject_name", subject_code))]
+					n.say_t = ROLE_SAY_TIME
+					n.talk = ROLE_SAY_TIME
+					n.dir = Vector2.ZERO
+					n.face = role_face(game.player - n.pos)
+					get_viewport().set_input_as_handled()
+					return
+			if exam_type == "final":
+				for feature in game.features:
+					if feature.has_method("start_teacher_final_exam") and feature.start_teacher_final_exam(str(n.role)):
+						n.dir = Vector2.ZERO
+						n.face = role_face(game.player - n.pos)
+						get_viewport().set_input_as_handled()
+						return
+			else:
+				for feature in game.features:
+					if feature.has_method("start_teacher_exam") and feature.start_teacher_exam(str(n.role)):
+						n.dir = Vector2.ZERO
+						n.face = role_face(game.player - n.pos)
+						get_viewport().set_input_as_handled()
+						return
 			push_error("No quiz feature could start the scheduled exam for %s." % str(n.role))
 		var exam_message := Schedule.teacher_exam_message(str(n.role), game.day)
 		if not exam_message.is_empty():

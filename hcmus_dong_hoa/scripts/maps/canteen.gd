@@ -177,6 +177,8 @@ const C_STEEL := Color("2f343c")
 const C_STEEL_HI := Color("5b636e")
 const C_STAFF := Color("2f8f4a")
 
+signal money_changed(amount: int, reason: String)
+
 var inside := false
 var money := 0               # số dư hiện tại (không bao giờ âm), đổi qua _money_add / _money_spend
 var _paid_weeks: Array = []  # các tuần trong game đã nhận tiền sinh hoạt
@@ -187,7 +189,6 @@ var _eco_ready := false
 var _layer: CanvasLayer
 var _painter: Node2D
 var _ui: CanvasLayer
-var _wallet: Label
 var _pos := START_POS
 var _face := 1
 var _anim := 0.0
@@ -1673,10 +1674,6 @@ func _build_ui() -> void:
 	root.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	root.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_ui.add_child(root)
-	# ví tiền (góc trên phải, dưới thanh minimap không bị che)
-	if PAYMENT:
-		_panel(root, Rect2(336, 2, 140, 15), Color(0.05, 0.08, 0.14, 0.85), Color("e0b020"))
-		_wallet = _lbl(root, "", Vector2(338, 2), Vector2(136, 15), 8, Color("ffe28a"), HORIZONTAL_ALIGNMENT_CENTER)
 	_hold_panel = _panel(root, Rect2(4, 2, 300, 15), Color(0.05, 0.08, 0.14, 0.88), Color("e0b020"))
 	_hold_lbl = _lbl(root, "", Vector2(8, 2), Vector2(292, 15), 8, Color("cfe8ff"))
 	_hold_panel.visible = false
@@ -2200,22 +2197,41 @@ func _on_buy(i: int) -> void:
 
 # ---------- giai đoạn 5: tiền, tiền sinh hoạt tuần, lưu / tải ----------
 
-func _money_refresh() -> void:
-	if _wallet != null:
-		_wallet.text = "Tiền: " + _fmt(money)
+func get_wallet_text() -> String:
+	return _fmt(money)
 
-func _money_add(n: int) -> void:
+func money_compact_text(amount: int) -> String:
+	return _fmt(amount)
+
+func set_wallet_balance(value: int, reason: String = "") -> void:
+	var new_balance := maxi(value, 0)
+	var change := new_balance - money
+	if change == 0:
+		return
+	money = new_balance
+	money_changed.emit(change, reason)
+	_eco_save()
+
+func _money_add(n: int, reason: String = "") -> void:
 	if n <= 0:
 		return
 	money += n
-	_money_refresh()
+	money_changed.emit(n, reason)
+
+func add_quiz_reward(amount: int) -> String:
+	if amount <= 0:
+		push_warning("Ignoring non-positive quiz reward: %d" % amount)
+		return ""
+	_money_add(amount, "Thưởng quiz")
+	_eco_save()
+	return _fmt(amount)
 
 # trả về false (và không đổi gì) nếu số tiền không hợp lệ hoặc không đủ
 func _money_spend(n: int) -> bool:
 	if n <= 0 or n > money:
 		return false
 	money -= n
-	_money_refresh()
+	money_changed.emit(-n, "Mua hàng căn tin")
 	return true
 
 func _week_now() -> int:
@@ -2232,7 +2248,6 @@ func _eco_init() -> void:
 			_inv[sid] = 1
 		_paid_weeks = [_week_now()]
 	_eco_ready = true
-	_money_refresh()
 	_eco_save()
 
 func _eco_load(cfg: ConfigFile) -> void:
@@ -2322,7 +2337,6 @@ func _toast_msg(t: String) -> void:
 	_toast_t = 2.5
 
 func _refresh_shop() -> void:
-	_money_refresh()
 	var total: int = int(MENU[_sel].price) * int(_qty[_sel])
 	_shop_money.text = "Số dư: %s   Tổng: %s" % [_fmt(money), _fmt(total)]
 	_shop_bag.text = "Túi đồ: %d/%d" % [_inv_total(), BAG_CAP]

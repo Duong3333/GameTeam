@@ -12,6 +12,7 @@ func setup_world() -> void:
 	setup_camera()
 	setup_overlay()
 	setup_hud()
+	_build_collision_index()
 
 func setup_map_modules() -> void:
 	pass
@@ -36,6 +37,21 @@ func setup_collision() -> void:
 	solids.append(Rect2(GUARD_BOOTH.position.x, GUARD_BOOTH.position.y, GUARD_BOOTH.size.x, GUARD_BOOTH.size.y))
 	solids.append(PARKING1_RECT)
 	solids.append(PARKING2_RECT)
+
+func _build_collision_index() -> void:
+	collision_buckets.clear()
+	for i in solids.size():
+		var solid: Rect2 = solids[i]
+		var min_x := floori(solid.position.x / COLLISION_CELL_SIZE)
+		var max_x := floori((solid.end.x - 0.001) / COLLISION_CELL_SIZE)
+		var min_y := floori(solid.position.y / COLLISION_CELL_SIZE)
+		var max_y := floori((solid.end.y - 0.001) / COLLISION_CELL_SIZE)
+		for x in range(min_x, max_x + 1):
+			for y in range(min_y, max_y + 1):
+				var cell := Vector2i(x, y)
+				var indices: Array = collision_buckets.get(cell, [])
+				indices.append(i)
+				collision_buckets[cell] = indices
 
 func setup_trees() -> void:
 	# Hàng cây dừa (type 2) vòng quanh đài phun nước (do draw_fountain_plaza vẽ)
@@ -131,6 +147,27 @@ func setup_decor() -> void:
 		solids.append(Rect2(b.x - 9, b.y - 5, 18, 5))
 	for i in 8:
 		clouds.append({"x": rng.randf_range(0, WORLD.x), "y": rng.randf_range(100, WORLD.y - 100), "r": rng.randf_range(70, 130), "sp": rng.randf_range(6, 14)})
+	_build_ground_detail_index()
+
+func _build_ground_detail_index() -> void:
+	ground_detail_buckets.clear()
+	for tuft in tufts:
+		_add_ground_detail(tuft, "tufts", tuft)
+	for flower in flowers:
+		_add_ground_detail(flower[0], "flowers", flower)
+
+func _add_ground_detail(position: Vector2, kind: String, item: Variant) -> void:
+	var cell := Vector2i(
+		floori(position.x / GROUND_DETAIL_CELL_SIZE),
+		floori(position.y / GROUND_DETAIL_CELL_SIZE)
+	)
+	if not ground_detail_buckets.has(cell):
+		ground_detail_buckets[cell] = {"tufts": [], "flowers": []}
+	var bucket: Dictionary = ground_detail_buckets[cell]
+	var items: Array = bucket[kind]
+	items.append(item)
+	bucket[kind] = items
+	ground_detail_buckets[cell] = bucket
 
 func setup_camera() -> void:
 	cam = Camera2D.new()

@@ -47,9 +47,21 @@ func blocked(p: Vector2) -> bool:
 	if p.x < 8.0 or p.x > WORLD.x - 8.0 or p.y < 22.0 or p.y > WORLD.y - 6.0:
 		return true
 	var hit := Rect2(p.x - 4.0, p.y - 4.0, 8.0, 4.0)
-	for s in solids:
-		if hit.intersects(s):
-			return true
+	if collision_buckets.is_empty():
+		for solid in solids:
+			if hit.intersects(solid):
+				return true
+	else:
+		var min_x := floori(hit.position.x / COLLISION_CELL_SIZE)
+		var max_x := floori((hit.end.x - 0.001) / COLLISION_CELL_SIZE)
+		var min_y := floori(hit.position.y / COLLISION_CELL_SIZE)
+		var max_y := floori((hit.end.y - 0.001) / COLLISION_CELL_SIZE)
+		for x in range(min_x, max_x + 1):
+			for y in range(min_y, max_y + 1):
+				var indices: Array = collision_buckets.get(Vector2i(x, y), [])
+				for index in indices:
+					if hit.intersects(solids[int(index)]):
+						return true
 	return false
 
 func move_entity(p: Vector2, v: Vector2) -> Vector2:

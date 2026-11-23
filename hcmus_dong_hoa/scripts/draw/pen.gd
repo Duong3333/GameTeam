@@ -42,8 +42,15 @@ func asphalt(r: Rect2) -> void:
 	if rr.size.x <= 0.0 or rr.size.y <= 0.0:
 		return
 	draw_rect(rr, Color("565b63"))
-	for t in tufts:
-		if rr.has_point(t):
-			rc(t.x, t.y, 2, 1, Color("6a7078") if int(t.x) % 2 == 0 else Color("4a4f56"))
+	var min_x := floori(rr.position.x / GROUND_DETAIL_CELL_SIZE)
+	var max_x := floori(rr.end.x / GROUND_DETAIL_CELL_SIZE)
+	var min_y := floori(rr.position.y / GROUND_DETAIL_CELL_SIZE)
+	var max_y := floori(rr.end.y / GROUND_DETAIL_CELL_SIZE)
+	for x in range(min_x, max_x + 1):
+		for y in range(min_y, max_y + 1):
+			var bucket: Dictionary = ground_detail_buckets.get(Vector2i(x, y), {})
+			for tuft in bucket.get("tufts", []):
+				if rr.has_point(tuft):
+					rc(tuft.x, tuft.y, 2, 1, Color("6a7078") if int(tuft.x) % 2 == 0 else Color("4a4f56"))
 	rc(rr.position.x, r.position.y, rr.size.x, 2, Color("7b818a"))
 	rc(rr.position.x, r.end.y - 2, rr.size.x, 2, Color("3f444b"))

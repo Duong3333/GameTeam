@@ -1,7 +1,11 @@
 extends "res://scripts/maps/campus_data.gd"
 # TRẠNG THÁI GAME - các biến dùng chung cho mọi file phía dưới (vị trí người chơi, NPC, giờ, camera...).
 
+const COLLISION_CELL_SIZE := 64.0
+const GROUND_DETAIL_CELL_SIZE := 128.0
+
 var solids: Array = []
+var collision_buckets: Dictionary = {}
 var trees: Array = []   # [x, y, loại] 0 thường, 1 phượng, 2 cọ
 var tufts: Array = []
 var npcs: Array = []
@@ -21,6 +25,7 @@ var clock := 0.0
 var view := Rect2()
 var flowers: Array = []
 var petals: Array = []
+var ground_detail_buckets: Dictionary = {}
 var lamps: Array = []
 var benches: Array = []
 var clouds: Array = []
