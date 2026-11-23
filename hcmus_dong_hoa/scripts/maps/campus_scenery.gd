@@ -146,9 +146,8 @@ func draw_ground() -> void:
 	# Gờ đá kết thúc đường dọc giao vào vỉa hè
 	rc(1804, 834, 133, 2, Color("b0a898"))
 	rc(2143, 834, 116, 2, Color("b0a898"))
-	# ── Vỉa hè trắng nối liền một dải từ dưới hồ nước tới Tòa G ──
-	var white_pave := Color("f4f1ea")
-	paved(Rect2(1377, 835, WORLD.x - 1377, 44), white_pave)
+	# ── Vỉa hè màu vàng đồng nhất nối liền từ dưới hồ nước tới Tòa G ──
+	paved(Rect2(1377, 835, WORLD.x - 1377, 44), beige)
 	asphalt(Rect2(
 		GATE_APPROACH_ROAD.position.x,
 		GATE_APPROACH_ROAD.position.y - 2.0,
