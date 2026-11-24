@@ -26,7 +26,7 @@ const NPC_CRY_TIME := 7.0       # NPC khóc bấy nhiêu giây
 const PLAYER_CRY_TIME := 6.0    # người chơi khóc khi tụt GPA
 const PUDDLE_FADE := 5.0        # vũng nước khô sau bấy nhiêu giây kể từ lúc nín
 const SOB_INTERVAL := 1.8       # chu kỳ tiếng nấc
-const ROLE_SCRIPT := "res://scripts/features/newcharacters.gd"
+const ROLE_SCRIPT := "res://scripts/features/character.gd"
 const CANTEEN_SCRIPT := "res://scripts/maps/canteen.gd"
 const SOB_WORDS := ["hic", "huhu", "hu hu", "hic hic"]
 const TEAR := Color("8fd3ff")
@@ -69,7 +69,7 @@ func _state(target: Variant) -> Variant:
 		return _player_cry
 	return target.get("cry")
 
-# Mọi NPC: sinh viên thường + NPC có tên (lấy từ features/newcharacters.gd, tìm theo đường dẫn script)
+# Mọi NPC: sinh viên thường + NPC có tên (lấy từ features/character.gd, tìm theo đường dẫn script)
 func _all_npcs() -> Array:
 	var out: Array = game.npcs.duplicate()
 	if _roles == null:

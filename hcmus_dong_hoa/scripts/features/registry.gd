@@ -7,11 +7,11 @@ extends RefCounted
 # Chỉ thêm entry mới trước dấu ] cuối danh sách; không xóa hoặc sắp xếp lại entry hiện có.
 
 const LIST := [
+	"res://scripts/features/character.gd",       # nhân vật / character controller
 	"res://scripts/features/student_hud.gd",     # GPA/rèn luyện, đồng hồ và thời khóa biểu
 	"res://scripts/features/student_panel.gd",   # sổ tay sinh viên
 	"res://scripts/features/building_doors.gd",  # vào / ra công trình và căn tin
 	"res://scripts/features/math_quiz.gd",       # NPC Cô Toán: nhấn E để làm quiz
-	"res://scripts/features/newcharacters.gd",   # NPC mới
 	"res://scripts/features/khoc.gd",            # bấm C để khóc; hiệu ứng khóc cho NPC
 	"res://scripts/features/danhnhau.gd",        # đứng gần NPC và bấm H để đánh trêu
 	"res://scripts/features/daily_summary.gd",   # Tổng kết cuối ngày (tự bật khi qua ngày mới hoặc nhấn F9)

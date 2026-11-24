@@ -39,7 +39,7 @@ const AWAY_MIN := 5.0           # NPC vắng mặt từ 5 tới 8 giây rồi xu
 const AWAY_MAX := 8.0
 const PUFF_TIME := 0.5          # thời gian làn khói lúc biến mất/xuất hiện
 
-const ROLE_SCRIPT := "res://scripts/features/newcharacters.gd"
+const ROLE_SCRIPT := "res://scripts/features/character.gd"
 const CANTEEN_SCRIPT := "res://scripts/maps/canteen.gd"
 const OUTLINE := Color("1a1a2e")
 const NAVY := Color("1b2f6e")
@@ -86,6 +86,20 @@ const REACTIONS := {
 		"cry": ["Hức... Moodles sập luôn rồi...", "Huhu... thầy buồn lắm đó...", "Hức... sao em lại đánh thầy..."],
 		"rant": [
 			["Thôi, thầy cho mấy em tự học đi!", "Thầy ra ngoài uống ly cà phê.", "Nhớ làm bài trên Moodles nha."],
+		],
+	},
+	"thay_lkh": {
+		"angry": ["Này em, bài lab hôm nay em làm chưa mà nghịch?", "Thầy trừ điểm thực hành bây giờ đó nha!", "Ê, đừng có chọc thầy nữa."],
+		"cry": ["Hức... thầy dạy đạo hàm tận tình mà...", "Huhu... sao em lại đánh thầy..."],
+		"rant": [
+			["Em nghịch quá rồi đó!", "Thầy đi uống ly cà phê cho bớt giận.", "Nhớ nộp bài lab đúng hạn nha."],
+		],
+	},
+	"thay_nkt": {
+		"angry": ["Này em, giỡn vừa thôi, thầy lớn tuổi rồi nha!", "Thầy cho em chứng minh lại định lý đó nha.", "Ơ hay, em làm gì thầy vậy?"],
+		"cry": ["Hức... thầy dạy Toán rời rạc bao năm mà...", "Huhu... thầy buồn lắm đó em..."],
+		"rant": [
+			["Thôi, thầy không thèm chấp em!", "Thầy ra ghế đá nghỉ một lát.", "Mai nhớ nộp bài tập đồ thị nha."],
 		],
 	},
 	"bao_ve": {
@@ -171,7 +185,7 @@ func _find_target() -> Variant:
 			best_d = d
 	return best
 
-# Mọi NPC đang hiện: sinh viên thường + NPC có tên (lấy từ features/newcharacters.gd, tìm theo đường dẫn script)
+# Mọi NPC đang hiện: sinh viên thường + NPC có tên (lấy từ features/character.gd, tìm theo đường dẫn script)
 func _all_npcs() -> Array:
 	var out: Array = game.npcs.duplicate()
 	if _roles == null:
