@@ -126,6 +126,9 @@ func get_doorways() -> Array:
 					hall_door["position"] = Vector2(b[1] + b[3] * fraction, b[2] + b[4] + 7.0)
 					hall_door["interior"] = "hall_b"   # nội thất riêng: scripts/maps/hoitruongB.gd
 					doors.append(hall_door)
+			elif building_name == "C":
+				door["interior"] = "thu_vien"      # nội thất riêng: scripts/maps/thu_vien.gd
+				doors.append(door)
 			else:
 				doors.append(door)
 

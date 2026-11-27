@@ -345,7 +345,9 @@ func _lookup() -> void:
 	if _looked:
 		return
 	_looked = true
-	for f in game.features:
+	# Tìm trong cả features lẫn map modules (phong_hoc là map module, không nằm trong game.features)
+	var all_nodes: Array = game.features + game.get_children()
+	for f in all_nodes:
 		if f == self:
 			continue
 		if _quiz == null and f.has_method("start_round") and f.has_method("begin"):
@@ -1296,3 +1298,16 @@ func _paint_choice(p: Node2D) -> void:
 	p.draw_string(p.font, Vector2(114, 156), "[Esc] Hủy", HORIZONTAL_ALIGNMENT_LEFT, -1, 9, Color(1, 1, 1, 0.65))
 	if _choice_msg != "":
 		p.draw_string(p.font, Vector2(112, 172), _choice_msg, HORIZONTAL_ALIGNMENT_LEFT, 262.0, 8, Color("ff9b9b"))
+
+func draw_front_layer() -> void:
+	if inside or _choice or game.is_busy():
+		return
+	if not _near_door_outside():
+		return
+	var label := "Bấm [E] để vào Tòa C (Thư viện / Phòng học)"
+	var w: float = game.font.get_string_size(label, HORIZONTAL_ALIGNMENT_LEFT, -1, 8).x + 10.0
+	var px: float = game.player.x
+	var py: float = game.player.y - 46.0
+	game.rc(px - w / 2.0 - 1.0, py - 10.0, w + 2.0, 14, Color("333333"))
+	game.rc(px - w / 2.0, py - 9.0, w, 12, Color(0.08, 0.1, 0.18, 0.92))
+	game.ctext(label, px - w / 2.0, py, w, 8, Color("ffd23f"))

@@ -1,4 +1,5 @@
 extends "res://scripts/features/feature.gd"
+signal money_changed(amount: int, reason: String)
 # CĂN TIN HCMUS ĐÔNG HÒA (toàn bộ nằm trong file này).
 #
 # Ngoài trời : tòa căn tin kem có cửa kính, mái hiên xanh, bảng "CĂN TIN HCMUS", sân sỏi trắng xám với bàn ghế sắt đen
@@ -13,8 +14,8 @@ extends "res://scripts/features/feature.gd"
 #
 # Dùng lại của game: BUILDINGS (va chạm, minimap, tên khu vực), ZONES, solids, trees, draw_person/draw_speech/rc/ctext/
 # shadow/paved/hedge/draw_tree/draw_kiosk, begin()/finish()/active của feature.gd, is_busy().
-# Game chưa có hệ thống tiền hay lưu game chung -> ví (money), tiền tuần và bản lưu (user://canteen_economy.cfg) nằm trong file này.
-#   Ví hiện ở góc trên phải. 2.000.000đ cấp một lần khi chưa có bản lưu; +500.000đ mỗi tuần mới trong game.
+# Ví chung của game được giữ tại đây; StudentStats, HUD, ATM và mini quiz NPC dùng cùng số dư.
+#   Bắt đầu với 0đ; nhận +500.000đ mỗi tuần mới trong game.
 
 # ---------- Tiến độ triển khai (giai đoạn) ----------
 # 2: vị trí, nền sân, đăng ký module, cửa vào/ra (nội thất tạm), kiosk Nhà ăn cũ trong sân đã bị xóa khỏi KIOSKS (campus_data.gd).
@@ -102,7 +103,7 @@ const BAG_CAP := 24              # sức chứa túi đồ (tổng số món)
 const START_ITEMS := ["sach", "vo", "giay", "but", "laptop", "dien_thoai", "may_tinh_bang", "hop_but", "tui_nho"]
 const NOT_EDIBLE := ["coc_nhua", "coc_da_dung", "binh_nuoc"]
 const USE_MAP := {"coc_nuoc": "coc_da_dung", "binh_nuoc_day": "binh_nuoc"}   # đồ uống còn vỏ sau khi dùng
-const START_MONEY := 2000000     # giai đoạn 5: tiền cấp một lần khi bắt đầu game mới
+const START_MONEY := 0           # bắt đầu học kỳ với ví trống
 const WEEKLY_MONEY := 500000     # tiền sinh hoạt mỗi tuần trong game
 const PAYMENT := true            # giai đoạn 5: mua hàng tính tiền thật
 const SHOW_WALLET_UI := false     # Ẩn khung ví trên HUD; không tắt hệ thống thanh toán
@@ -1655,18 +1656,40 @@ func _money_refresh() -> void:
 	if _wallet != null:
 		_wallet.text = "Tiền: " + _fmt(money)
 
-func _money_add(n: int) -> void:
+func get_wallet_text() -> String:
+	return _fmt(money)
+
+func set_wallet_balance(balance: int, reason: String = "") -> void:
+	var target := maxi(balance, 0)
+	var delta := target - money
+	if delta > 0:
+		_money_add(delta, reason)
+	elif delta < 0:
+		_money_spend(-delta, reason)
+	_eco_save()
+
+# Điểm nối tương thích với vòng quay thưởng của mini quiz NPC.
+func add_quiz_reward(amount: int) -> String:
+	if amount <= 0:
+		return ""
+	_money_add(amount, "Thưởng mini quiz NPC")
+	_eco_save()
+	return _fmt(amount)
+
+func _money_add(n: int, reason: String = "") -> void:
 	if n <= 0:
 		return
 	money += n
 	_money_refresh()
+	money_changed.emit(n, reason)
 
 # trả về false (và không đổi gì) nếu số tiền không hợp lệ hoặc không đủ
-func _money_spend(n: int) -> bool:
+func _money_spend(n: int, reason: String = "") -> bool:
 	if n <= 0 or n > money:
 		return false
 	money -= n
 	_money_refresh()
+	money_changed.emit(-n, reason)
 	return true
 
 func _week_now() -> int:
@@ -1688,8 +1711,11 @@ func _eco_init() -> void:
 
 func _eco_load(cfg: ConfigFile) -> void:
 	var m: Variant = cfg.get_value("eco", "money", null)
-	if m == null:
-		money = START_MONEY   # bản lưu cũ chưa có dữ liệu tiền: cấp một lần rồi lưu lại
+	var save_version := int(cfg.get_value("eco", "version", 0))
+	if save_version < 2:
+		money = START_MONEY   # reset số dư một lần khi nâng từ bản kinh tế cũ
+	elif m == null:
+		money = START_MONEY
 	else:
 		money = maxi(int(m), 0)
 	_paid_weeks = []
@@ -1719,7 +1745,7 @@ func _eco_save() -> void:
 	if not _eco_ready:
 		return
 	var cfg := ConfigFile.new()
-	cfg.set_value("eco", "version", 1)
+	cfg.set_value("eco", "version", 2)
 	cfg.set_value("eco", "money", money)
 	cfg.set_value("eco", "paid_weeks", _paid_weeks.duplicate())
 	cfg.set_value("eco", "inv", _inv.duplicate())

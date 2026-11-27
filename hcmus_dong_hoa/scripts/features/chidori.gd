@@ -3,12 +3,12 @@ extends "res://scripts/features/feature.gd"
 
 const ABILITY_KEY := KEY_J
 const TARGET_RANGE := 150.0
-const CHARGE_TIME := 0.18
-const DASH_TIME := 0.14
+const DASH_TIME := 0.24
 const RECOVER_TIME := 0.28
 const COOLDOWN := 1.0
 const ROLE_SCRIPT := "res://scripts/features/character.gd"
 const CANTEEN_SCRIPT := "res://scripts/maps/canteen.gd"
+const CHIDORI_SOUND: AudioStream = preload("res://assets/audio/chidori.mp3")
 const ELECTRIC_BLUE := Color("63d9ff")
 const ELECTRIC_CORE := Color("e4fbff")
 
@@ -22,13 +22,14 @@ var _dash_dir := Vector2.RIGHT
 var _hit_done := false
 var _clock := 0.0
 var _electric_player: AudioStreamPlayer
+var _cast_duration := 0.0
 
 
 func _ready() -> void:
 	_electric_player = AudioStreamPlayer.new()
-	_electric_player.volume_db = -9.0
+	_electric_player.volume_db = linear_to_db(0.3)
 	add_child(_electric_player)
-	_electric_player.stream = _build_electric_sound()
+	_electric_player.stream = CHIDORI_SOUND
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -58,11 +59,13 @@ func _start_chidori(target: Dictionary) -> void:
 	if canteen != null and bool(canteen.get("inside")):
 		canteen.set("_face", game.facing)
 	_dash_end = _choose_dash_end(target["pos"], -_dash_dir)
+	_cast_duration = maxf(CHIDORI_SOUND.get_length(), DASH_TIME + RECOVER_TIME + 0.25)
 	_phase = "charge"
 	_phase_time = 0.0
 	_hit_done = false
 	_cooldown = COOLDOWN
 	_electric_player.play()
+	game.hidden_arms = 3
 	begin()
 
 
@@ -74,7 +77,9 @@ func _process(delta: float) -> void:
 	_phase_time += delta
 	match _phase:
 		"charge":
-			if _phase_time >= CHARGE_TIME:
+			if _phase_time >= _cast_duration - DASH_TIME - RECOVER_TIME:
+				if _target is Dictionary and not bool(_target.get("hidden", false)):
+					_dash_end = _choose_dash_end(_target["pos"], -_dash_dir)
 				_phase = "dash"
 				_phase_time = 0.0
 		"dash":
@@ -97,6 +102,7 @@ func finish() -> void:
 	_phase = ""
 	_phase_time = 0.0
 	_target = null
+	game.hidden_arms = 0
 	super()
 
 
@@ -237,26 +243,69 @@ func draw_front_layer() -> void:
 		if not game.is_busy() and _cooldown <= 0.0:
 			var nearby: Variant = _find_target()
 			if nearby != null and game.view.grow(34.0).has_point(nearby["pos"]):
-				game.ctext("[J] Chidori", nearby["pos"].x - 32.0, nearby["pos"].y + 18.0, 64.0, 8, ELECTRIC_BLUE)
+				game.ctext("[J] Chidori   [K] Rasengan", nearby["pos"].x - 69.0, nearby["pos"].y - 53.0, 138.0, 8, ELECTRIC_BLUE)
 		return
 	var player := _player_pos()
 	var target_pos: Vector2 = _target["pos"] if _target is Dictionary else player + _dash_dir * 24.0
 	if not game.view.grow(90.0).has_point(player):
 		return
-	var hand := player + _dash_dir * 12.0 + Vector2(-_dash_dir.y, _dash_dir.x) * 5.0
+	var hand := player + _dash_dir * 10.0 + Vector2(-_dash_dir.y, _dash_dir.x) * 3.0 + Vector2(0.0, -10.0)
 	var alpha := 1.0
 	if _phase == "recover":
 		alpha = clampf(1.0 - _phase_time / RECOVER_TIME, 0.0, 1.0)
-	_draw_bolt(hand, target_pos, alpha)
+	var arm_tip := hand
 	if _phase == "charge":
-		_draw_bolt(hand + Vector2(2.0, -2.0), player + _dash_dir * 20.0, alpha * 0.8)
+		var charge := clampf(_phase_time / maxf(_cast_duration - DASH_TIME - RECOVER_TIME, 0.01), 0.0, 1.0)
+		var orb_radius := 3.0 + charge * 5.0
+		_draw_chidori_arms(player, hand)
+		game.draw_circle(hand, orb_radius + 6.0, Color(ELECTRIC_BLUE, 0.10 + charge * 0.12))
+		game.draw_circle(hand, orb_radius + 2.0, Color(ELECTRIC_BLUE, 0.32 + charge * 0.25))
+		game.draw_circle(hand, orb_radius, Color("8beaff"))
+		game.draw_circle(hand, orb_radius * 0.38, ELECTRIC_CORE)
+		for i in 5:
+			var angle := _clock * 17.0 + float(i) * TAU / 5.0
+			var spark := hand + Vector2.from_angle(angle) * (orb_radius + 2.0 + fmod(_clock * 10.0 + float(i) * 2.0, 7.0))
+			game.draw_line(spark, hand, Color(ELECTRIC_BLUE, alpha * 0.75), 1.2, true)
 	if _phase == "dash":
-		_draw_bolt(_dash_start, player, alpha * 0.7)
+		var strike := clampf(_phase_time / DASH_TIME, 0.0, 1.0)
+		arm_tip = player + _dash_dir * (14.0 + 8.0 * strike) + Vector2(0.0, -10.0)
+		_draw_chidori_arms(player, arm_tip)
+		# Keep the lightning bound to the striking hand: no beam stretching across the scene.
+		_draw_bolt(arm_tip, arm_tip + _dash_dir * 14.0, alpha)
 	if _phase == "recover":
+		_draw_chidori_arms(player, hand)
+	if _phase == "recover":
+		var impact_radius := 6.0 + (1.0 - alpha) * 13.0
+		game.draw_arc(target_pos, impact_radius, 0.0, TAU, 24, Color(ELECTRIC_BLUE, alpha * 0.8), 1.5, true)
 		for i in 8:
 			var spark := target_pos + Vector2.from_angle(float(i) * TAU / 8.0 + _clock * 3.0) * (9.0 + fmod(_clock * 16.0 + float(i), 5.0))
 			game.rc(roundf(spark.x), roundf(spark.y), 2, 2, Color(ELECTRIC_CORE, alpha))
-		game.ctext("CHIDORI", target_pos.x - 30.0, target_pos.y - 34.0, 60.0, 9, Color(ELECTRIC_BLUE, alpha))
+		game.ctext("CHIDORI", target_pos.x - 30.0, target_pos.y - 39.0, 60.0, 9, Color(ELECTRIC_BLUE, alpha))
+
+
+func _draw_chidori_arms(player: Vector2, lead_hand: Vector2) -> void:
+	var side := Vector2(-_dash_dir.y, _dash_dir.x)
+	var up := Vector2(0.0, -10.0)
+	var lead_shoulder := player + side * 4.0 + up
+	var lead_elbow := player + _dash_dir * 3.0 + side * 7.0 + up
+	var support_shoulder := player - side * 4.0 + up
+	var support_elbow := player - _dash_dir * 2.0 - side * 6.0 + up
+	_draw_sleeve(lead_shoulder, lead_elbow)
+	_draw_sleeve(lead_elbow, lead_hand)
+	_draw_hand_pixel(lead_hand)
+	_draw_sleeve(support_shoulder, support_elbow)
+	_draw_sleeve(support_elbow, support_elbow + _dash_dir * 2.0)
+	_draw_hand_pixel(support_elbow + _dash_dir * 2.0)
+
+
+func _draw_sleeve(from: Vector2, to: Vector2) -> void:
+	game.draw_line(from.round(), to.round(), Color("1a1a2e"), 5.0, false)
+	game.draw_line(from.round(), to.round(), Color("1b2f6e"), 3.0, false)
+
+
+func _draw_hand_pixel(at: Vector2) -> void:
+	game.draw_circle(at.round(), 2.2, Color("1a1a2e"))
+	game.draw_circle(at.round(), 1.5, Color("f1c27d"))
 
 
 func _draw_bolt(start: Vector2, end: Vector2, alpha: float) -> void:
@@ -271,31 +320,3 @@ func _draw_bolt(start: Vector2, end: Vector2, alpha: float) -> void:
 	for i in range(points.size() - 1):
 		game.draw_line(points[i], points[i + 1], Color(ELECTRIC_BLUE, alpha * 0.8), 4.0, true)
 		game.draw_line(points[i], points[i + 1], Color(ELECTRIC_CORE, alpha), 1.5, true)
-
-
-func _build_electric_sound() -> AudioStreamWAV:
-	const SAMPLE_RATE := 22050
-	const DURATION := 0.48
-	var count := int(SAMPLE_RATE * DURATION)
-	var samples := PackedByteArray()
-	samples.resize(count * 2)
-	var burst_length := int(SAMPLE_RATE * 0.018)
-	for i in count:
-		var t := float(i) / float(SAMPLE_RATE)
-		var envelope := pow(maxf(0.0, 1.0 - t / DURATION), 1.5)
-		var burst := 1.0 if int(i / burst_length) % 3 != 2 else 0.28
-		var frequency := 720.0 + 1450.0 * (0.5 + 0.5 * sin(t * 37.0))
-		var crackle := randf_range(-1.0, 1.0) * 0.58
-		var tone := sin(TAU * frequency * t + sin(t * 91.0) * 2.0) * 0.42
-		var sample := clampf((crackle + tone) * envelope * burst * 0.42, -1.0, 1.0)
-		var value := int(sample * 32767.0)
-		if value < 0:
-			value += 65536
-		samples[i * 2] = value & 0xff
-		samples[i * 2 + 1] = (value >> 8) & 0xff
-	var stream := AudioStreamWAV.new()
-	stream.format = AudioStreamWAV.FORMAT_16_BITS
-	stream.mix_rate = SAMPLE_RATE
-	stream.stereo = false
-	stream.data = samples
-	return stream

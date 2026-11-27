@@ -38,7 +38,7 @@ const LOGO_GUESSES := [
 # ---- CỐT TRUYỆN KHI CHƠI MỚI (sửa chữ ở đây) ----
 const STORY_NEW := [
 	{"who": "Người dẫn chuyện", "text": "Đậu US rồi thì đời màu gì cũng được. Sáng thứ Hai, tuần đầu tiên của học kỳ, bạn đứng trước cổng trường mà vẫn chưa tin là mình đậu thật."},
-	{"who": "Mục tiêu", "text": "Vào rồi thì phải học thôi: giữ GPA, tích lũy điểm rèn luyện và sống tới cuối tháng với 2.000.000đ. Nhớ là tiền thi lại không nằm trong ngân sách đâu nha."},
+	{"who": "Mục tiêu", "text": "Vào rồi thì phải học thôi: giữ GPA, tích lũy điểm rèn luyện và xoay xở từ chiếc ví 0đ. Tiền sinh hoạt sẽ về theo tuần; tiền thi lại thì không nằm trong ngân sách đâu nha."},
 	{"who": "Bác bảo vệ", "text": "Em sinh viên mới hả? Tiết đầu của em là Thể dục ở Nhà TD, 8 giờ 20. Còn sớm thì đi dạo cho quen đường, đi lạc cũng đừng ngại hỏi, năm nhất ai mà chẳng lạc."},
 	{"who": "Hướng dẫn", "text": "Dùng các phím dưới đây để di chuyển và tương tác. Chúc bạn một học kỳ qua môn hết, khỏi phải gặp lại ai trong phòng thi lần hai!",
 		"keys": [["W A S D", "Di chuyển"], ["E", "Tương tác"], ["Tab", "Sổ tay"]]},
@@ -81,6 +81,10 @@ var _story_hint: Label
 var _story_keys: HBoxContainer
 var _story_tween: Tween
 var _story_typing := false
+var _story_last_chars := 0
+var _tick_player: AudioStreamPlayer
+var _tick_data := PackedVector2Array()
+var _last_tick_ms := 0
 var _blink: Tween
 
 
@@ -900,11 +904,54 @@ func _show_story_page() -> void:
 		for k in pg["keys"]:
 			_story_keys.add_child(_keycap(str(k[0]), str(k[1])))
 	_story_typing = true
+	_story_last_chars = 0
+	if _tick_player == null:
+		_setup_type_tick()
 	if _story_tween:
 		_story_tween.kill()
 	_story_tween = create_tween()
-	_story_tween.tween_property(_story_text, "visible_ratio", 1.0, maxf(0.3, txt.length() * 0.028))
+	_story_tween.tween_method(_on_story_type_step.bind(txt), 0.0, 1.0, maxf(0.3, txt.length() * 0.028))
 	_story_tween.finished.connect(func(): _story_typing = false)
+
+
+func _on_story_type_step(ratio: float, txt: String) -> void:
+	_story_text.visible_ratio = ratio
+	var chars := int(floor(ratio * float(txt.length())))
+	if chars > _story_last_chars:
+		_story_last_chars = chars
+		if chars > 0 and chars <= txt.length():
+			var ch := txt.substr(chars - 1, 1)
+			if ch != " " and ch != "\n" and ch != "\t":
+				_play_type_tick()
+
+
+func _setup_type_tick() -> void:
+	var gen := AudioStreamGenerator.new()
+	gen.mix_rate = 11025.0
+	gen.buffer_length = 0.1
+	_tick_player = AudioStreamPlayer.new()
+	_tick_player.stream = gen
+	add_child(_tick_player)
+	var n := int(gen.mix_rate * 0.022)
+	_tick_data.resize(n)
+	for i in n:
+		var env := 1.0 - float(i) / float(n)
+		var smp := sin(TAU * 860.0 * float(i) / gen.mix_rate) * 0.15 * env * env
+		_tick_data[i] = Vector2(smp, smp)
+
+
+func _play_type_tick() -> void:
+	if _tick_player == null:
+		return
+	var now := Time.get_ticks_msec()
+	if now - _last_tick_ms < 48:
+		return
+	_last_tick_ms = now
+	if not _tick_player.playing:
+		_tick_player.play()
+	var pb := _tick_player.get_stream_playback() as AudioStreamGeneratorPlayback
+	if pb != null and pb.can_push_buffer(_tick_data.size()):
+		pb.push_buffer(_tick_data)
 
 
 func _story_advance() -> void:

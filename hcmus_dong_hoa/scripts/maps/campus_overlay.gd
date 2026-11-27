@@ -62,6 +62,9 @@ func draw_sorted_items() -> void:
 	if SHOW_VEGETATION:
 		for sec in WALKWAY_SECTIONS:
 			items.append([sec.y + WW.WALKWAY_H + 1.0, 7, sec])
+	for f in features:
+		if f.has_method("draw_booth") and f.has_method("get_sort_y"):
+			items.append([float(f.get_sort_y()), 8, f])
 	items.append([player.y, 2, null])
 	items.sort_custom(func(a, b): return a[0] < b[0])
 	for it in items:
@@ -79,6 +82,8 @@ func draw_sorted_items() -> void:
 		elif it[1] == 7:
 			var sec: Dictionary = it[2]
 			WW.draw_walkway_roof(self, sec.start_x, sec.end_x, sec.y, view, player)
+		elif it[1] == 8:
+			it[2].draw_booth()
 		elif it[1] == 1:
 			var n: Dictionary = it[2]
 			if not view.has_point(n.pos):
