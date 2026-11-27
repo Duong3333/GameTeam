@@ -8,7 +8,7 @@ extends "res://scripts/features/feature.gd"
 # Tính năng bên trong:
 #   - W A S D: đi lại. Giữ Shift để chạy (thủ thư sẽ nhắc; từ lần 2 bị -1 điểm rèn luyện).
 #   - [E] trước tủ 12 ô (góc dưới trái): gửi cặp / lấy cặp (khi gửi, nhân vật bỏ ba lô trên lưng).
-#   - [E] ở ghế trống: ngồi học (thời gian trôi x4, cộng GPA theo mỗi 30 phút game, đủ 2h +1 ĐRL,
+#   - [E] ở ghế trống: ngồi học (thời gian trôi x16, cộng GPA theo mỗi 30 phút game, đủ 2h +1 ĐRL,
 #     nhân 1.5 tốc độ cộng GPA nếu đang mượn sách; ngồi học trùng giờ có tiết bị -2 ĐRL "Bỏ tiết").
 #   - [Q] khi đang ngồi học: mở bộ đề ôn tập giữa kỳ (math_quiz).
 #   - [E] trước quầy "MƯỢN - TRẢ SÁCH" (góc dưới phải): nói chuyện với cô thủ thư để mượn/trả sách
@@ -56,7 +56,7 @@ const OPEN_HOURS := [[420, 720], [780, 1020]]   # 07:00-12:00 và 13:00-17:00
 const CLOSED_WEEKDAY := 6                       # Chủ nhật
 
 # ---------- Thông số học tập & nhiệm vụ ----------
-const STUDY_TIME_MULT := 4.0
+const STUDY_TIME_MULT := 16.0
 const STUDY_STEP_MIN := 30.0
 const STUDY_GPA_STEP := 0.01
 const STUDY_GPA_DAILY_CAP := 0.12
@@ -220,6 +220,64 @@ func _build_room() -> void:
 	# Tạo danh sách ghế ngồi học ở 4 bàn lẻ sát tường
 	for wi in WALL_TABLES.size():
 		_add_wall_seat(wi)
+
+	_fix_seat_access_points()
+
+func _seat_access_clear(pos: Vector2, require_open_space: bool = false) -> bool:
+	if _blocked(pos):
+		return false
+	if LOCKER_ZONE.has_point(pos) or EXIT_ZONE.has_point(pos) or DESK_ZONE.has_point(pos):
+		return false
+	var clear_directions := 0
+	var step := 2.5
+	for direction in [Vector2.RIGHT, Vector2.LEFT, Vector2.UP, Vector2.DOWN]:
+		if not _blocked(pos + direction * step):
+			clear_directions += 1
+	if require_open_space:
+		return clear_directions == 4
+	return clear_directions >= 2
+
+func _find_clear_seat_access(seat: Dictionary) -> Vector2:
+	var origin: Vector2 = seat.access
+	var side := str(seat.side)
+	var directions: Array[Vector2] = []
+	if side == "s":
+		directions = [Vector2.RIGHT, Vector2.LEFT, Vector2.DOWN, Vector2.UP,
+			Vector2(1, 1).normalized(), Vector2(-1, 1).normalized(),
+			Vector2(1, -1).normalized(), Vector2(-1, -1).normalized()]
+	elif side == "n":
+		directions = [Vector2.LEFT, Vector2.RIGHT, Vector2.UP, Vector2.DOWN,
+			Vector2(-1, -1).normalized(), Vector2(1, -1).normalized(),
+			Vector2(-1, 1).normalized(), Vector2(1, 1).normalized()]
+	elif side == "l":
+		directions = [Vector2.RIGHT, Vector2.UP, Vector2.DOWN, Vector2.LEFT,
+			Vector2(1, -1).normalized(), Vector2(1, 1).normalized(),
+			Vector2(-1, -1).normalized(), Vector2(-1, 1).normalized()]
+	else:
+		directions = [Vector2.LEFT, Vector2.UP, Vector2.DOWN, Vector2.RIGHT,
+			Vector2(-1, -1).normalized(), Vector2(-1, 1).normalized(),
+			Vector2(1, -1).normalized(), Vector2(1, 1).normalized()]
+
+	for direction in directions:
+		for distance in range(2, 161, 2):
+			var candidate: Vector2 = origin + direction * float(distance)
+			if _seat_access_clear(candidate, true):
+				return candidate
+
+	for direction in directions:
+		for distance in range(2, 161, 2):
+			var candidate: Vector2 = origin + direction * float(distance)
+			if _seat_access_clear(candidate, false):
+				return candidate
+
+	return START_POS
+
+func _fix_seat_access_points() -> void:
+	for si in _seats.size():
+		var seat: Dictionary = _seats[si]
+		if not _seat_access_clear(seat.access, false):
+			seat.access = _find_clear_seat_access(seat)
+			_seats[si] = seat
 
 func _add_long_seat(t_idx: int, side: String, frac: float) -> void:
 	var tb: Array = TABLES[t_idx]
@@ -554,7 +612,7 @@ func _open_quiz() -> void:
 		return
 	var code := "VTP1" if randi() % 2 == 0 else "CSLT"
 	_quiz.begin()
-	_quiz.start_round(code, "ÔN TẬP · THƯ VIỆN")
+	_quiz.start_library_review_round(code, "ÔN TẬP · THƯ VIỆN")
 
 # ======================= HỌC: THỜI GIAN, GPA, ĐIỂM RÈN LUYỆN =======================
 

@@ -107,7 +107,6 @@ const ROOM_CONFIGS := {
 	"D_TRR": {
 		"title": "TÒA D · TOÁN RỜI RẠC",
 		"sub": "Logic mệnh đề · Đồ thị · Tổ hợp & Quan hệ",
-		"teacher": {"shirt": "1f4e78", "hair": "1b1b1b", "long": false, "name": "GV. Toán rời rạc"},
 		"npcs": [
 			{"col": 0, "row": 0, "frac": 0.22, "shirt": "3d5a80", "hair": "1b1b1b", "uni": true,  "long": false, "pack": true},
 			{"col": 0, "row": 0, "frac": 0.50, "shirt": "81b29a", "hair": "2a1d14", "uni": true,  "long": true,  "pack": true},
@@ -158,7 +157,6 @@ const ROOM_CONFIGS := {
 	"F_VTP": {
 		"title": "TÒA F (PHÒNG 1) · VI TÍCH PHÂN 1",
 		"sub": "Giới hạn · Đạo hàm · Xấp xỉ tuyến tính & Tích phân",
-		"teacher": {"shirt": "6b4226", "hair": "2a1d14", "long": false, "name": "GV. Vi tích phân"},
 		"npcs": [
 			{"col": 0, "row": 0, "frac": 0.22, "shirt": "3d5a80", "hair": "1b1b1b", "uni": true,  "long": false, "pack": true},
 			{"col": 0, "row": 0, "frac": 0.50, "shirt": "81b29a", "hair": "2a1d14", "uni": true,  "long": true,  "pack": true},
@@ -273,6 +271,7 @@ var _desks: Array = []
 var _seats: Array = []
 var _solid: Array = []
 var _lab_f: Node = null
+var _roles_f: Node = null   # features/character.gd: cho biết thầy nào đang dạy trong phòng này
 var _di_hoc_f: Node = null
 var _looked := false
 
@@ -300,6 +299,8 @@ func _lookup() -> void:
 			_lab_f = f
 		if f.has_method("notify_seat_entered"):
 			_di_hoc_f = f
+		if f.has_method("draw_teacher_indoor"):
+			_roles_f = f
 
 func _build_room() -> void:
 	_desks.clear()
@@ -400,6 +401,15 @@ func enter_room(d: Dictionary) -> void:
 		open_classroom("NDH")
 	else:
 		open_classroom("A")
+
+# character.gd hỏi: người chơi đang ở phòng nào và đứng ở đâu (để thầy giảng lại bài khi bấm G)
+func current_room_key() -> String:
+	if not inside or _choice_building != "":
+		return ""
+	return _room_key
+
+func room_player_pos() -> Vector2:
+	return _pos
 
 func begin() -> void:
 	super()
@@ -712,7 +722,18 @@ func _paint_floor_tiles(p: Node2D) -> void:
 			p.rc(tx, ty, 1, h, C_TILE_LINE)
 
 func _paint_teacher_area(p: Node2D) -> void:
-	if not _teacher_npc.is_empty():
+	# Phòng Toán rời rạc (D) và Vi tích phân (F) không còn GV vẽ cố định: thầy NKT / LTC (character.gd)
+	# chỉ xuất hiện đúng tiết. Lúc vắng, chỗ thầy đứng được thay bằng áp phích trên tường + ghế gỗ giảng viên.
+	var here: Dictionary = {}
+	if _roles_f != null and (_room_key == "D_TRR" or _room_key == "F_VTP"):
+		here = _roles_f.teacher_in_room(_room_key)
+	if _room_key == "D_TRR" or _room_key == "F_VTP":
+		_paint_wall_poster(p)
+	if not here.is_empty():
+		_roles_f.draw_teacher_indoor(p, str(here.role), here.get("pos", Vector2(72.0, 56.0)), int(here.get("face", 0)), str(here.name), str(here.get("act", "")))
+	elif _room_key == "D_TRR" or _room_key == "F_VTP":
+		_paint_teacher_chair(p)
+	elif not _teacher_npc.is_empty():
 		var tpos := Vector2(72.0, 56.0)
 		p.draw_person(
 			tpos,
@@ -735,6 +756,81 @@ func _paint_teacher_area(p: Node2D) -> void:
 	p.rc(d.position.x, d.position.y + 9, d.size.x, 7, C_WOOD_FRONT)
 	p.rc(d.position.x + 2, d.position.y + 16, 3, 9, C_WOOD_DARK)
 	p.rc(d.position.x + d.size.x - 5, d.position.y + 16, 3, 9, C_WOOD_DARK)
+	if _room_key == "D_TRR" or _room_key == "F_VTP":
+		_paint_teacher_desk_items(p, d)
+
+# Áp phích treo tường đúng chỗ thầy từng đứng (x 62-90, y 27-51), nằm giữa máy lạnh và đồng hồ,
+# khung gỗ cùng tông bàn giảng viên, nền giấy kem như tường lớp.
+func _paint_wall_poster(p: Node2D) -> void:
+	var x := 62.0
+	var y := 27.0
+	p.rc(x - 1, y - 1, 30, 26, Color("5e3816"))
+	p.rc(x, y, 28, 24, Color("fbf6e6"))
+	p.rc(x, y, 28, 2, Color("e9dfc4"))
+	p.rc(x + 27, y, 1, 24, Color("e2cfa4"))
+	if _room_key == "D_TRR":
+		# đồ thị 5 đỉnh: Toán rời rạc
+		var nodes: Array = [Vector2(6, 8), Vector2(14, 5), Vector2(22, 9), Vector2(10, 16), Vector2(20, 18)]
+		var edges: Array = [[0, 1], [1, 2], [0, 3], [1, 3], [2, 4], [3, 4], [1, 4]]
+		for e in edges:
+			var a: Vector2 = nodes[e[0]]
+			var b: Vector2 = nodes[e[1]]
+			p.draw_line(Vector2(x + a.x + 1, y + a.y + 1), Vector2(x + b.x + 1, y + b.y + 1), Color("2457c5"), 1.0)
+		for nd in nodes:
+			var v: Vector2 = nd
+			p.rc(x + v.x - 1, y + v.y - 1, 4, 4, Color("1e293b"))
+			p.rc(x + v.x, y + v.y, 2, 2, Color("fde68a"))
+		p.rc(x + 3, y + 21, 22, 1, Color("c0392b"))
+	else:
+		# đường cong y = f(x) và vùng tô dưới đường cong: Vi tích phân
+		p.rc(x + 4, y + 4, 1, 16, Color("1e293b"))
+		p.rc(x + 4, y + 19, 21, 1, Color("1e293b"))
+		for i in range(0, 20):
+			var cx: float = float(i)
+			var cy: float = 15.0 - 11.0 * sin(cx / 19.0 * PI * 0.9)
+			p.rc(x + 5 + cx, y + cy + 3.0, 1, 16.0 - cy, Color("cfe0fb"))
+			p.rc(x + 5 + cx, y + cy + 3.0, 1, 1, Color("2457c5"))
+		p.rc(x + 18, y + 8, 5, 1, Color("c0392b"))
+		p.rc(x + 20, y + 6, 1, 5, Color("c0392b"))
+
+# Ghế gỗ giảng viên sau bàn (khi thầy chưa tới tiết): lưng ghế lộ phía trên mặt bàn, áo khoác vắt lưng
+func _paint_teacher_chair(p: Node2D) -> void:
+	var x := 72.0
+	p.rc(x - 8, 34, 16, 19, C_WOOD_DARK)
+	p.rc(x - 7, 35, 14, 17, C_WOOD_TOP)
+	p.rc(x - 7, 35, 14, 2, C_WOOD_TOP.lightened(0.22))
+	p.rc(x - 5, 38, 2, 13, C_WOOD_FRONT)
+	p.rc(x - 1, 38, 2, 13, C_WOOD_FRONT)
+	p.rc(x + 3, 38, 2, 13, C_WOOD_FRONT)
+	p.rc(x - 9, 42, 18, 9, Color("1d2230"))
+	p.rc(x - 8, 43, 16, 7, Color("4a5568"))
+	p.rc(x - 8, 43, 16, 2, Color("66748c"))
+	p.rc(x - 3, 43, 6, 3, Color("2e3646"))
+
+# Đồ trên bàn giảng viên: laptop, xấp giáo trình, chai nước, hộp phấn/bút lông
+func _paint_teacher_desk_items(p: Node2D, d: Rect2) -> void:
+	var x: float = d.position.x
+	var y: float = d.position.y
+	# xấp giáo trình
+	p.rc(x + 3, y + 1, 12, 4, Color("1e3a8a"))
+	p.rc(x + 3, y - 2, 12, 3, Color("c0392b"))
+	p.rc(x + 4, y - 4, 11, 2, Color("2f7d32"))
+	p.rc(x + 3, y + 1, 12, 1, Color("5b8de8"))
+	# chai nước
+	p.rc(x + 19, y - 4, 4, 9, Color("9ad0f0"))
+	p.rc(x + 20, y - 6, 2, 2, Color("2457c5"))
+	p.rc(x + 19, y + 1, 4, 1, Color("ffffff"))
+	# laptop (màn hình nghiêng nhẹ về phía giảng viên)
+	p.rc(x + 40, y - 6, 18, 11, Color("2a2d36"))
+	p.rc(x + 41, y - 5, 16, 9, Color("3b86e0"))
+	p.rc(x + 41, y - 5, 16, 2, Color("6aa8f0"))
+	p.rc(x + 43, y - 1, 8, 1, Color("d6eaff"))
+	p.rc(x + 38, y + 5, 22, 3, Color("c7ccd3"))
+	p.rc(x + 38, y + 5, 22, 1, Color("eef1f4"))
+	# hộp bút lông
+	p.rc(x + 60, y + 1, 3, 4, Color("2b2d34"))
+	p.rc(x + 59, y - 1, 1, 3, Color("dc2626"))
+	p.rc(x + 61, y - 2, 1, 4, Color("2563eb"))
 
 func _paint_bench_desk(p: Node2D, d: Dictionary) -> void:
 	var r: Rect2 = d.rect

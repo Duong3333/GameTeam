@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="MAIN"
-run/main_scene="res://main.tscn"
+run/main_scene="res://scripts/menu/main_menu.tscn"
 config/features=PackedStringArray("4.7")
 
 [display]
@@ -21,6 +21,10 @@ window/size/viewport_height=270
 window/size/window_width_override=1280
 window/size/window_height_override=720
 window/stretch/mode="canvas_items"
+
+[hcmus]
+
+judge_endpoint="https://judge-server-gzsl.onrender.com/api/judge"
 
 [rendering]
 

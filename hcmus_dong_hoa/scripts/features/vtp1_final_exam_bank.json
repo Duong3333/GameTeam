@@ -1,0 +1,1253 @@
+{
+  "schema_version": 1,
+  "subject_code": "VTP1",
+  "subject": "Vi tích phân 1",
+  "exam_type": "final",
+  "answer_mode": "short_answer",
+  "question_count_per_exam": 5,
+  "source_note": "Đề luyện tập mô phỏng do GameTeam biên soạn, không phải đề chính thức hoặc đề được giảng viên phê duyệt.",
+  "exams": [
+    {
+      "exam_id": "VTP1_FINAL_PRACTICE_01",
+      "subject_code": "VTP1",
+      "subject": "Vi tích phân 1",
+      "title": "ĐỀ LUYỆN TẬP CUỐI KỲ VI TÍCH PHÂN 1 - 01",
+      "exam_type": "final",
+      "question_count": 5,
+      "source_kind": "ai_authored_practice_not_official_exam",
+      "source_note": "Bộ đề luyện tập mới, không phải đề thi chính thức của HCMUS. Phạm vi bám theo đề cương Vi tích phân 1B và Thực hành Vi tích phân 1B; câu hỏi tự biên soạn, có tham khảo dạng bài công khai.",
+      "questions": [
+        {
+          "id": "VTPF_01_01",
+          "question_number": 1,
+          "type": "short_answer",
+          "question_text": "Tính ∫ từ 0 đến 1 của 3x² dx.",
+          "question_latex": "Tính ∫ từ 0 đến 1 của 3x² dx.",
+          "answer_type": "integer",
+          "official_answer": "1",
+          "accepted_answers": [
+            "1"
+          ],
+          "grading_method": "exact",
+          "tolerance": 0.0,
+          "points": 2.0,
+          "solution_latex": "Nguyên hàm x³; thay cận được 1.",
+          "verified": true,
+          "answer_status": "verified_ai",
+          "verification_note": "Câu hỏi mô phỏng do dự án biên soạn; đáp án được tự giải và kiểm tra lại.",
+          "subject_code": "VTP1",
+          "subject": "Vi tích phân 1",
+          "exam_type": "final",
+          "topic": "Tích phân xác định",
+          "source_reference": "Đề cương chính thức Thực hành Vi tích phân 1B HCMUS, chương/mục nêu trong câu; bài tập được biên soạn mới theo dạng Stewart Calculus (2012), có tham khảo cách luyện tập từ OpenStax/MIT OCW. Không phải câu trích nguyên văn hay đề chính thức.",
+          "source_kind": "ai_authored_practice_based_on_public_syllabus",
+          "source_metadata": {
+            "primary_source_title": "Giáo trình Vi tích phân 1 - HCMUS",
+            "primary_source_chapter": "Chương 5 Phép tính tích phân",
+            "primary_source_section": "§5.1–§5.2",
+            "primary_source_printed_pages": "114–129",
+            "official_syllabus_url": "https://sites.google.com/view/math-hcmus-edu-vn-giaitich/trang-ch%E1%BB%A7/%C4%91%C3%A0o-t%E1%BA%A1o-%C4%91%E1%BA%A1i-h%E1%BB%8Dc/%C4%91%E1%BA%A1i-c%C6%B0%C6%A1ng-ng%C3%A0nh-kh%C3%A1c-to%C3%A1n",
+            "supplementary_sources": [
+              {
+                "title": "OpenStax Calculus Volume 1/2",
+                "url": "https://openstax.org/details/books/calculus-volume-1"
+              },
+              {
+                "title": "MIT OCW 18.01 – Exams and Solutions",
+                "url": "https://ocw.mit.edu/courses/18-01-single-variable-calculus-fall-2005/pages/exams/"
+              },
+              {
+                "title": "OpenStax Calculus Volume 2",
+                "url": "https://openstax.org/details/books/calculus-volume-2"
+              }
+            ],
+            "authorship": "AI-authored practice mock. Not a genuine HCMUS examination paper."
+          }
+        },
+        {
+          "id": "VTPF_01_02",
+          "question_number": 2,
+          "type": "short_answer",
+          "question_text": "Tính ∫ từ 1 đến e của 1/x dx.",
+          "question_latex": "Tính ∫ từ 1 đến e của 1/x dx.",
+          "answer_type": "integer",
+          "official_answer": "1",
+          "accepted_answers": [
+            "1"
+          ],
+          "grading_method": "exact",
+          "tolerance": 0.0,
+          "points": 2.0,
+          "solution_latex": "Nguyên hàm ln(x) trên [1,e]; ln(e)−ln(1)=1.",
+          "verified": true,
+          "answer_status": "verified_ai",
+          "verification_note": "Câu hỏi mô phỏng do dự án biên soạn; đáp án được tự giải và kiểm tra lại.",
+          "subject_code": "VTP1",
+          "subject": "Vi tích phân 1",
+          "exam_type": "final",
+          "topic": "Nguyên hàm",
+          "source_reference": "Đề cương chính thức Thực hành Vi tích phân 1B HCMUS, chương/mục nêu trong câu; bài tập được biên soạn mới theo dạng Stewart Calculus (2012), có tham khảo cách luyện tập từ OpenStax/MIT OCW. Không phải câu trích nguyên văn hay đề chính thức.",
+          "source_kind": "ai_authored_practice_based_on_public_syllabus",
+          "source_metadata": {
+            "primary_source_title": "Giáo trình Vi tích phân 1 - HCMUS",
+            "primary_source_chapter": "Chương 5 Phép tính tích phân",
+            "primary_source_section": "§5.2.1 Nguyên hàm",
+            "primary_source_printed_pages": "121–122",
+            "official_syllabus_url": "https://sites.google.com/view/math-hcmus-edu-vn-giaitich/trang-ch%E1%BB%A7/%C4%91%C3%A0o-t%E1%BA%A1o-%C4%91%E1%BA%A1i-h%E1%BB%8Dc/%C4%91%E1%BA%A1i-c%C6%B0%C6%A1ng-ng%C3%A0nh-kh%C3%A1c-to%C3%A1n",
+            "supplementary_sources": [
+              {
+                "title": "OpenStax Calculus Volume 1/2",
+                "url": "https://openstax.org/details/books/calculus-volume-1"
+              },
+              {
+                "title": "MIT OCW 18.01 – Exams and Solutions",
+                "url": "https://ocw.mit.edu/courses/18-01-single-variable-calculus-fall-2005/pages/exams/"
+              },
+              {
+                "title": "OpenStax Calculus Volume 2",
+                "url": "https://openstax.org/details/books/calculus-volume-2"
+              }
+            ],
+            "authorship": "AI-authored practice mock. Not a genuine HCMUS examination paper."
+          }
+        },
+        {
+          "id": "VTPF_01_03",
+          "question_number": 3,
+          "type": "short_answer",
+          "question_text": "Tính ∫ từ 0 đến 1 của x·e^(x²) dx. Làm tròn đến 3 chữ số sau dấu phẩy.",
+          "question_latex": "Tính ∫ từ 0 đến 1 của x·e^(x²) dx. Làm tròn đến 3 chữ số sau dấu phẩy.",
+          "answer_type": "decimal",
+          "official_answer": "0.859",
+          "accepted_answers": [
+            "0.859"
+          ],
+          "grading_method": "exact",
+          "tolerance": 0.001,
+          "points": 2.0,
+          "solution_latex": "Đặt u=x², du=2x dx; giá trị bằng (e−1)/2≈0.85914.",
+          "verified": true,
+          "answer_status": "verified_ai",
+          "verification_note": "Câu hỏi mô phỏng do dự án biên soạn; đáp án được tự giải và kiểm tra lại.",
+          "subject_code": "VTP1",
+          "subject": "Vi tích phân 1",
+          "exam_type": "final",
+          "topic": "Đổi biến",
+          "source_reference": "Đề cương chính thức Thực hành Vi tích phân 1B HCMUS, chương/mục nêu trong câu; bài tập được biên soạn mới theo dạng Stewart Calculus (2012), có tham khảo cách luyện tập từ OpenStax/MIT OCW. Không phải câu trích nguyên văn hay đề chính thức.",
+          "source_kind": "ai_authored_practice_based_on_public_syllabus",
+          "source_metadata": {
+            "primary_source_title": "Giáo trình Vi tích phân 1 - HCMUS",
+            "primary_source_chapter": "Chương 5 Phép tính tích phân",
+            "primary_source_section": "§5.3.1 Phép đổi biến trong tích phân",
+            "primary_source_printed_pages": "130–132",
+            "official_syllabus_url": "https://sites.google.com/view/math-hcmus-edu-vn-giaitich/trang-ch%E1%BB%A7/%C4%91%C3%A0o-t%E1%BA%A1o-%C4%91%E1%BA%A1i-h%E1%BB%8Dc/%C4%91%E1%BA%A1i-c%C6%B0%C6%A1ng-ng%C3%A0nh-kh%C3%A1c-to%C3%A1n",
+            "supplementary_sources": [
+              {
+                "title": "OpenStax Calculus Volume 1/2",
+                "url": "https://openstax.org/details/books/calculus-volume-1"
+              },
+              {
+                "title": "MIT OCW 18.01 – Exams and Solutions",
+                "url": "https://ocw.mit.edu/courses/18-01-single-variable-calculus-fall-2005/pages/exams/"
+              },
+              {
+                "title": "OpenStax Calculus Volume 2",
+                "url": "https://openstax.org/details/books/calculus-volume-2"
+              }
+            ],
+            "authorship": "AI-authored practice mock. Not a genuine HCMUS examination paper."
+          }
+        },
+        {
+          "id": "VTPF_01_04",
+          "question_number": 4,
+          "type": "short_answer",
+          "question_text": "Tích phân suy rộng ∫ từ 1 đến +∞ của 1/x² dx có hội tụ không? Nhập 1 nếu hội tụ, 0 nếu phân kỳ.",
+          "question_latex": "Tích phân suy rộng ∫ từ 1 đến +∞ của 1/x² dx có hội tụ không? Nhập 1 nếu hội tụ, 0 nếu phân kỳ.",
+          "answer_type": "integer",
+          "official_answer": "1",
+          "accepted_answers": [
+            "1"
+          ],
+          "grading_method": "exact",
+          "tolerance": 0.0,
+          "points": 2.0,
+          "solution_latex": "Tích phân bằng lim(b→∞)(1−1/b)=1 nên hội tụ.",
+          "verified": true,
+          "answer_status": "verified_ai",
+          "verification_note": "Câu hỏi mô phỏng do dự án biên soạn; đáp án được tự giải và kiểm tra lại.",
+          "subject_code": "VTP1",
+          "subject": "Vi tích phân 1",
+          "exam_type": "final",
+          "topic": "Tích phân suy rộng",
+          "source_reference": "Đề cương chính thức Thực hành Vi tích phân 1B HCMUS, chương/mục nêu trong câu; bài tập được biên soạn mới theo dạng Stewart Calculus (2012), có tham khảo cách luyện tập từ OpenStax/MIT OCW. Không phải câu trích nguyên văn hay đề chính thức.",
+          "source_kind": "ai_authored_practice_based_on_public_syllabus",
+          "source_metadata": {
+            "primary_source_title": "Giáo trình Vi tích phân 1 - HCMUS",
+            "primary_source_chapter": "Chương 5 Phép tính tích phân",
+            "primary_source_section": "§5.3.4 Tích phân suy rộng",
+            "primary_source_printed_pages": "140–147",
+            "official_syllabus_url": "https://sites.google.com/view/math-hcmus-edu-vn-giaitich/trang-ch%E1%BB%A7/%C4%91%C3%A0o-t%E1%BA%A1o-%C4%91%E1%BA%A1i-h%E1%BB%8Dc/%C4%91%E1%BA%A1i-c%C6%B0%C6%A1ng-ng%C3%A0nh-kh%C3%A1c-to%C3%A1n",
+            "supplementary_sources": [
+              {
+                "title": "OpenStax Calculus Volume 1/2",
+                "url": "https://openstax.org/details/books/calculus-volume-1"
+              },
+              {
+                "title": "MIT OCW 18.01 – Exams and Solutions",
+                "url": "https://ocw.mit.edu/courses/18-01-single-variable-calculus-fall-2005/pages/exams/"
+              },
+              {
+                "title": "OpenStax Calculus Volume 2",
+                "url": "https://openstax.org/details/books/calculus-volume-2"
+              }
+            ],
+            "authorship": "AI-authored practice mock. Not a genuine HCMUS examination paper."
+          }
+        },
+        {
+          "id": "VTPF_01_05",
+          "question_number": 5,
+          "type": "short_answer",
+          "question_text": "Tìm bán kính hội tụ của chuỗi lũy thừa ∑ từ n=0 đến ∞ của (x/3)^n.",
+          "question_latex": "Tìm bán kính hội tụ của chuỗi lũy thừa ∑ từ n=0 đến ∞ của (x/3)^n.",
+          "answer_type": "integer",
+          "official_answer": "3",
+          "accepted_answers": [
+            "3"
+          ],
+          "grading_method": "exact",
+          "tolerance": 0.0,
+          "points": 2.0,
+          "solution_latex": "Chuỗi hình học hội tụ khi |x/3|<1; bán kính R=3.",
+          "verified": true,
+          "answer_status": "verified_ai",
+          "verification_note": "Câu hỏi mô phỏng do dự án biên soạn; đáp án được tự giải và kiểm tra lại.",
+          "subject_code": "VTP1",
+          "subject": "Vi tích phân 1",
+          "exam_type": "final",
+          "topic": "Chuỗi lũy thừa",
+          "source_reference": "Đề cương chính thức Thực hành Vi tích phân 1B HCMUS, chương/mục nêu trong câu; bài tập được biên soạn mới theo dạng Stewart Calculus (2012), có tham khảo cách luyện tập từ OpenStax/MIT OCW. Không phải câu trích nguyên văn hay đề chính thức.",
+          "source_kind": "ai_authored_practice_based_on_public_syllabus",
+          "source_metadata": {
+            "primary_source_title": "Giáo trình Vi tích phân 1 - HCMUS",
+            "primary_source_chapter": "Chương 6 Chuỗi",
+            "primary_source_section": "§6.2.2 Chuỗi lũy thừa",
+            "primary_source_printed_pages": "189–191",
+            "official_syllabus_url": "https://sites.google.com/view/math-hcmus-edu-vn-giaitich/trang-ch%E1%BB%A7/%C4%91%C3%A0o-t%E1%BA%A1o-%C4%91%E1%BA%A1i-h%E1%BB%8Dc/%C4%91%E1%BA%A1i-c%C6%B0%C6%A1ng-ng%C3%A0nh-kh%C3%A1c-to%C3%A1n",
+            "supplementary_sources": [
+              {
+                "title": "OpenStax Calculus Volume 1/2",
+                "url": "https://openstax.org/details/books/calculus-volume-1"
+              },
+              {
+                "title": "MIT OCW 18.01 – Exams and Solutions",
+                "url": "https://ocw.mit.edu/courses/18-01-single-variable-calculus-fall-2005/pages/exams/"
+              },
+              {
+                "title": "OpenStax Calculus Volume 2",
+                "url": "https://openstax.org/details/books/calculus-volume-2"
+              }
+            ],
+            "authorship": "AI-authored practice mock. Not a genuine HCMUS examination paper."
+          }
+        }
+      ],
+      "duration_seconds": 3600
+    },
+    {
+      "exam_id": "VTP1_FINAL_PRACTICE_02",
+      "subject_code": "VTP1",
+      "subject": "Vi tích phân 1",
+      "title": "ĐỀ LUYỆN TẬP CUỐI KỲ VI TÍCH PHÂN 1 - 02",
+      "exam_type": "final",
+      "question_count": 5,
+      "source_kind": "ai_authored_practice_not_official_exam",
+      "source_note": "Bộ đề luyện tập mới, không phải đề thi chính thức của HCMUS. Phạm vi bám theo đề cương Vi tích phân 1B và Thực hành Vi tích phân 1B; câu hỏi tự biên soạn, có tham khảo dạng bài công khai.",
+      "questions": [
+        {
+          "id": "VTPF_02_01",
+          "question_number": 1,
+          "type": "short_answer",
+          "question_text": "Tính ∫ từ 0 đến 1 của x·e^x dx.",
+          "question_latex": "Tính ∫ từ 0 đến 1 của x·e^x dx.",
+          "answer_type": "integer",
+          "official_answer": "1",
+          "accepted_answers": [
+            "1"
+          ],
+          "grading_method": "exact",
+          "tolerance": 0.0,
+          "points": 2.0,
+          "solution_latex": "Từng phần: [xe^x−e^x]₀¹=1.",
+          "verified": true,
+          "answer_status": "verified_ai",
+          "verification_note": "Câu hỏi mô phỏng do dự án biên soạn; đáp án được tự giải và kiểm tra lại.",
+          "subject_code": "VTP1",
+          "subject": "Vi tích phân 1",
+          "exam_type": "final",
+          "topic": "Tích phân từng phần",
+          "source_reference": "Đề cương chính thức Thực hành Vi tích phân 1B HCMUS, chương/mục nêu trong câu; bài tập được biên soạn mới theo dạng Stewart Calculus (2012), có tham khảo cách luyện tập từ OpenStax/MIT OCW. Không phải câu trích nguyên văn hay đề chính thức.",
+          "source_kind": "ai_authored_practice_based_on_public_syllabus",
+          "source_metadata": {
+            "primary_source_title": "Giáo trình Vi tích phân 1 - HCMUS",
+            "primary_source_chapter": "Chương 5 Phép tính tích phân",
+            "primary_source_section": "§5.3.2 Tích phân từng phần",
+            "primary_source_printed_pages": "133–134",
+            "official_syllabus_url": "https://sites.google.com/view/math-hcmus-edu-vn-giaitich/trang-ch%E1%BB%A7/%C4%91%C3%A0o-t%E1%BA%A1o-%C4%91%E1%BA%A1i-h%E1%BB%8Dc/%C4%91%E1%BA%A1i-c%C6%B0%C6%A1ng-ng%C3%A0nh-kh%C3%A1c-to%C3%A1n",
+            "supplementary_sources": [
+              {
+                "title": "OpenStax Calculus Volume 1/2",
+                "url": "https://openstax.org/details/books/calculus-volume-1"
+              },
+              {
+                "title": "MIT OCW 18.01 – Exams and Solutions",
+                "url": "https://ocw.mit.edu/courses/18-01-single-variable-calculus-fall-2005/pages/exams/"
+              },
+              {
+                "title": "OpenStax Calculus Volume 2",
+                "url": "https://openstax.org/details/books/calculus-volume-2"
+              }
+            ],
+            "authorship": "AI-authored practice mock. Not a genuine HCMUS examination paper."
+          }
+        },
+        {
+          "id": "VTPF_02_02",
+          "question_number": 2,
+          "type": "short_answer",
+          "question_text": "Tính ∫ từ 0 đến 1 của 2x/(x²+1) dx. Làm tròn đến 3 chữ số sau dấu phẩy.",
+          "question_latex": "Tính ∫ từ 0 đến 1 của 2x/(x²+1) dx. Làm tròn đến 3 chữ số sau dấu phẩy.",
+          "answer_type": "decimal",
+          "official_answer": "0.693",
+          "accepted_answers": [
+            "0.693"
+          ],
+          "grading_method": "exact",
+          "tolerance": 0.001,
+          "points": 2.0,
+          "solution_latex": "Đặt u=x²+1; kết quả ln2≈0.693147.",
+          "verified": true,
+          "answer_status": "verified_ai",
+          "verification_note": "Câu hỏi mô phỏng do dự án biên soạn; đáp án được tự giải và kiểm tra lại.",
+          "subject_code": "VTP1",
+          "subject": "Vi tích phân 1",
+          "exam_type": "final",
+          "topic": "Đổi biến",
+          "source_reference": "Đề cương chính thức Thực hành Vi tích phân 1B HCMUS, chương/mục nêu trong câu; bài tập được biên soạn mới theo dạng Stewart Calculus (2012), có tham khảo cách luyện tập từ OpenStax/MIT OCW. Không phải câu trích nguyên văn hay đề chính thức.",
+          "source_kind": "ai_authored_practice_based_on_public_syllabus",
+          "source_metadata": {
+            "primary_source_title": "Giáo trình Vi tích phân 1 - HCMUS",
+            "primary_source_chapter": "Chương 5 Phép tính tích phân",
+            "primary_source_section": "§5.3.1 Phép đổi biến trong tích phân",
+            "primary_source_printed_pages": "130–132",
+            "official_syllabus_url": "https://sites.google.com/view/math-hcmus-edu-vn-giaitich/trang-ch%E1%BB%A7/%C4%91%C3%A0o-t%E1%BA%A1o-%C4%91%E1%BA%A1i-h%E1%BB%8Dc/%C4%91%E1%BA%A1i-c%C6%B0%C6%A1ng-ng%C3%A0nh-kh%C3%A1c-to%C3%A1n",
+            "supplementary_sources": [
+              {
+                "title": "OpenStax Calculus Volume 1/2",
+                "url": "https://openstax.org/details/books/calculus-volume-1"
+              },
+              {
+                "title": "MIT OCW 18.01 – Exams and Solutions",
+                "url": "https://ocw.mit.edu/courses/18-01-single-variable-calculus-fall-2005/pages/exams/"
+              },
+              {
+                "title": "OpenStax Calculus Volume 2",
+                "url": "https://openstax.org/details/books/calculus-volume-2"
+              }
+            ],
+            "authorship": "AI-authored practice mock. Not a genuine HCMUS examination paper."
+          }
+        },
+        {
+          "id": "VTPF_02_03",
+          "question_number": 3,
+          "type": "short_answer",
+          "question_text": "Tìm giá trị trung bình của f(x)=2x trên đoạn [0,3].",
+          "question_latex": "Tìm giá trị trung bình của f(x)=2x trên đoạn [0,3].",
+          "answer_type": "integer",
+          "official_answer": "3",
+          "accepted_answers": [
+            "3"
+          ],
+          "grading_method": "exact",
+          "tolerance": 0.0,
+          "points": 2.0,
+          "solution_latex": "f_tb=(1/3)∫₀³2x dx=9/3=3.",
+          "verified": true,
+          "answer_status": "verified_ai",
+          "verification_note": "Câu hỏi mô phỏng do dự án biên soạn; đáp án được tự giải và kiểm tra lại.",
+          "subject_code": "VTP1",
+          "subject": "Vi tích phân 1",
+          "exam_type": "final",
+          "topic": "Giá trị trung bình",
+          "source_reference": "Đề cương chính thức Thực hành Vi tích phân 1B HCMUS, chương/mục nêu trong câu; bài tập được biên soạn mới theo dạng Stewart Calculus (2012), có tham khảo cách luyện tập từ OpenStax/MIT OCW. Không phải câu trích nguyên văn hay đề chính thức.",
+          "source_kind": "ai_authored_practice_based_on_public_syllabus",
+          "source_metadata": {
+            "primary_source_title": "Giáo trình Vi tích phân 1 - HCMUS",
+            "primary_source_chapter": "Chương 5 Phép tính tích phân",
+            "primary_source_section": "§5.4.2 Giá trị trung bình",
+            "primary_source_printed_pages": "150–151",
+            "official_syllabus_url": "https://sites.google.com/view/math-hcmus-edu-vn-giaitich/trang-ch%E1%BB%A7/%C4%91%C3%A0o-t%E1%BA%A1o-%C4%91%E1%BA%A1i-h%E1%BB%8Dc/%C4%91%E1%BA%A1i-c%C6%B0%C6%A1ng-ng%C3%A0nh-kh%C3%A1c-to%C3%A1n",
+            "supplementary_sources": [
+              {
+                "title": "OpenStax Calculus Volume 1/2",
+                "url": "https://openstax.org/details/books/calculus-volume-1"
+              },
+              {
+                "title": "MIT OCW 18.01 – Exams and Solutions",
+                "url": "https://ocw.mit.edu/courses/18-01-single-variable-calculus-fall-2005/pages/exams/"
+              },
+              {
+                "title": "OpenStax Calculus Volume 2",
+                "url": "https://openstax.org/details/books/calculus-volume-2"
+              }
+            ],
+            "authorship": "AI-authored practice mock. Not a genuine HCMUS examination paper."
+          }
+        },
+        {
+          "id": "VTPF_02_04",
+          "question_number": 4,
+          "type": "short_answer",
+          "question_text": "Tính diện tích miền phẳng giới hạn bởi y=x và y=x² trên [0,1]. Làm tròn đến 3 chữ số sau dấu phẩy.",
+          "question_latex": "Tính diện tích miền phẳng giới hạn bởi y=x và y=x² trên [0,1]. Làm tròn đến 3 chữ số sau dấu phẩy.",
+          "answer_type": "decimal",
+          "official_answer": "0.167",
+          "accepted_answers": [
+            "0.167"
+          ],
+          "grading_method": "exact",
+          "tolerance": 0.001,
+          "points": 2.0,
+          "solution_latex": "Diện tích=∫₀¹(x−x²)dx=1/2−1/3=1/6≈0.167.",
+          "verified": true,
+          "answer_status": "verified_ai",
+          "verification_note": "Câu hỏi mô phỏng do dự án biên soạn; đáp án được tự giải và kiểm tra lại.",
+          "subject_code": "VTP1",
+          "subject": "Vi tích phân 1",
+          "exam_type": "final",
+          "topic": "Ứng dụng tích phân",
+          "source_reference": "Đề cương chính thức Thực hành Vi tích phân 1B HCMUS, chương/mục nêu trong câu; bài tập được biên soạn mới theo dạng Stewart Calculus (2012), có tham khảo cách luyện tập từ OpenStax/MIT OCW. Không phải câu trích nguyên văn hay đề chính thức.",
+          "source_kind": "ai_authored_practice_based_on_public_syllabus",
+          "source_metadata": {
+            "primary_source_title": "Giáo trình Vi tích phân 1 - HCMUS",
+            "primary_source_chapter": "Chương 5 Phép tính tích phân",
+            "primary_source_section": "§5.4 Ứng dụng của tích phân",
+            "primary_source_printed_pages": "148–162",
+            "official_syllabus_url": "https://sites.google.com/view/math-hcmus-edu-vn-giaitich/trang-ch%E1%BB%A7/%C4%91%C3%A0o-t%E1%BA%A1o-%C4%91%E1%BA%A1i-h%E1%BB%8Dc/%C4%91%E1%BA%A1i-c%C6%B0%C6%A1ng-ng%C3%A0nh-kh%C3%A1c-to%C3%A1n",
+            "supplementary_sources": [
+              {
+                "title": "OpenStax Calculus Volume 1/2",
+                "url": "https://openstax.org/details/books/calculus-volume-1"
+              },
+              {
+                "title": "MIT OCW 18.01 – Exams and Solutions",
+                "url": "https://ocw.mit.edu/courses/18-01-single-variable-calculus-fall-2005/pages/exams/"
+              },
+              {
+                "title": "OpenStax Calculus Volume 2",
+                "url": "https://openstax.org/details/books/calculus-volume-2"
+              }
+            ],
+            "authorship": "AI-authored practice mock. Not a genuine HCMUS examination paper."
+          }
+        },
+        {
+          "id": "VTPF_02_05",
+          "question_number": 5,
+          "type": "short_answer",
+          "question_text": "Tính lim(x→∞) x/e^x.",
+          "question_latex": "Tính lim(x→∞) x/e^x.",
+          "answer_type": "integer",
+          "official_answer": "0",
+          "accepted_answers": [
+            "0"
+          ],
+          "grading_method": "exact",
+          "tolerance": 0.0,
+          "points": 2.0,
+          "solution_latex": "Dùng quy tắc L’Hôpital: lim 1/e^x=0.",
+          "verified": true,
+          "answer_status": "verified_ai",
+          "verification_note": "Câu hỏi mô phỏng do dự án biên soạn; đáp án được tự giải và kiểm tra lại.",
+          "subject_code": "VTP1",
+          "subject": "Vi tích phân 1",
+          "exam_type": "final",
+          "topic": "L’Hôpital",
+          "source_reference": "Đề cương chính thức Thực hành Vi tích phân 1B HCMUS, chương/mục nêu trong câu; bài tập được biên soạn mới theo dạng Stewart Calculus (2012), có tham khảo cách luyện tập từ OpenStax/MIT OCW. Không phải câu trích nguyên văn hay đề chính thức.",
+          "source_kind": "ai_authored_practice_based_on_public_syllabus",
+          "source_metadata": {
+            "primary_source_title": "Giáo trình Vi tích phân 1 - HCMUS",
+            "primary_source_chapter": "Chương 4 Ứng dụng của đạo hàm",
+            "primary_source_section": "§4.2.4 Quy tắc l’Hôpital tính giới hạn",
+            "primary_source_printed_pages": "100–113",
+            "official_syllabus_url": "https://sites.google.com/view/math-hcmus-edu-vn-giaitich/trang-ch%E1%BB%A7/%C4%91%C3%A0o-t%E1%BA%A1o-%C4%91%E1%BA%A1i-h%E1%BB%8Dc/%C4%91%E1%BA%A1i-c%C6%B0%C6%A1ng-ng%C3%A0nh-kh%C3%A1c-to%C3%A1n",
+            "supplementary_sources": [
+              {
+                "title": "OpenStax Calculus Volume 1/2",
+                "url": "https://openstax.org/details/books/calculus-volume-1"
+              },
+              {
+                "title": "MIT OCW 18.01 – Exams and Solutions",
+                "url": "https://ocw.mit.edu/courses/18-01-single-variable-calculus-fall-2005/pages/exams/"
+              },
+              {
+                "title": "OpenStax Calculus Volume 2",
+                "url": "https://openstax.org/details/books/calculus-volume-2"
+              }
+            ],
+            "authorship": "AI-authored practice mock. Not a genuine HCMUS examination paper."
+          }
+        }
+      ],
+      "duration_seconds": 3600
+    },
+    {
+      "exam_id": "VTP1_FINAL_PRACTICE_03",
+      "subject_code": "VTP1",
+      "subject": "Vi tích phân 1",
+      "title": "ĐỀ LUYỆN TẬP CUỐI KỲ VI TÍCH PHÂN 1 - 03",
+      "exam_type": "final",
+      "question_count": 5,
+      "source_kind": "ai_authored_practice_not_official_exam",
+      "source_note": "Bộ đề luyện tập mới, không phải đề thi chính thức của HCMUS. Phạm vi bám theo đề cương Vi tích phân 1B và Thực hành Vi tích phân 1B; câu hỏi tự biên soạn, có tham khảo dạng bài công khai.",
+      "questions": [
+        {
+          "id": "VTPF_03_01",
+          "question_number": 1,
+          "type": "short_answer",
+          "question_text": "Cho f(x)=x²ln(x). Tính f′(e). Làm tròn đến 3 chữ số sau dấu phẩy.",
+          "question_latex": "Cho f(x)=x²ln(x). Tính f′(e). Làm tròn đến 3 chữ số sau dấu phẩy.",
+          "answer_type": "decimal",
+          "official_answer": "8.155",
+          "accepted_answers": [
+            "8.155"
+          ],
+          "grading_method": "exact",
+          "tolerance": 0.001,
+          "points": 2.0,
+          "solution_latex": "f′(x)=2xlnx+x; tại x=e được 3e≈8.155.",
+          "verified": true,
+          "answer_status": "verified_ai",
+          "verification_note": "Câu hỏi mô phỏng do dự án biên soạn; đáp án được tự giải và kiểm tra lại.",
+          "subject_code": "VTP1",
+          "subject": "Vi tích phân 1",
+          "exam_type": "final",
+          "topic": "Đạo hàm tích",
+          "source_reference": "Đề cương chính thức Thực hành Vi tích phân 1B HCMUS, chương/mục nêu trong câu; bài tập được biên soạn mới theo dạng Stewart Calculus (2012), có tham khảo cách luyện tập từ OpenStax/MIT OCW. Không phải câu trích nguyên văn hay đề chính thức.",
+          "source_kind": "ai_authored_practice_based_on_public_syllabus",
+          "source_metadata": {
+            "primary_source_title": "Giáo trình Vi tích phân 1 - HCMUS",
+            "primary_source_chapter": "Chương 3 Phép tính vi phân",
+            "primary_source_section": "§3.2.3 Đạo hàm hàm sơ cấp",
+            "primary_source_printed_pages": "68–70",
+            "official_syllabus_url": "https://sites.google.com/view/math-hcmus-edu-vn-giaitich/trang-ch%E1%BB%A7/%C4%91%C3%A0o-t%E1%BA%A1o-%C4%91%E1%BA%A1i-h%E1%BB%8Dc/%C4%91%E1%BA%A1i-c%C6%B0%C6%A1ng-ng%C3%A0nh-kh%C3%A1c-to%C3%A1n",
+            "supplementary_sources": [
+              {
+                "title": "OpenStax Calculus Volume 1/2",
+                "url": "https://openstax.org/details/books/calculus-volume-1"
+              },
+              {
+                "title": "MIT OCW 18.01 – Exams and Solutions",
+                "url": "https://ocw.mit.edu/courses/18-01-single-variable-calculus-fall-2005/pages/exams/"
+              },
+              {
+                "title": "OpenStax Calculus Volume 2",
+                "url": "https://openstax.org/details/books/calculus-volume-2"
+              }
+            ],
+            "authorship": "AI-authored practice mock. Not a genuine HCMUS examination paper."
+          }
+        },
+        {
+          "id": "VTPF_03_02",
+          "question_number": 2,
+          "type": "short_answer",
+          "question_text": "Tìm giá trị lớn nhất của f(x)=x³−3x trên đoạn [−2,2].",
+          "question_latex": "Tìm giá trị lớn nhất của f(x)=x³−3x trên đoạn [−2,2].",
+          "answer_type": "integer",
+          "official_answer": "2",
+          "accepted_answers": [
+            "2"
+          ],
+          "grading_method": "exact",
+          "tolerance": 0.0,
+          "points": 2.0,
+          "solution_latex": "Xét x=−2,2 và điểm tới hạn ±1: các giá trị −2,2,2,−2; max=2.",
+          "verified": true,
+          "answer_status": "verified_ai",
+          "verification_note": "Câu hỏi mô phỏng do dự án biên soạn; đáp án được tự giải và kiểm tra lại.",
+          "subject_code": "VTP1",
+          "subject": "Vi tích phân 1",
+          "exam_type": "final",
+          "topic": "Cực trị trên đoạn",
+          "source_reference": "Đề cương chính thức Thực hành Vi tích phân 1B HCMUS, chương/mục nêu trong câu; bài tập được biên soạn mới theo dạng Stewart Calculus (2012), có tham khảo cách luyện tập từ OpenStax/MIT OCW. Không phải câu trích nguyên văn hay đề chính thức.",
+          "source_kind": "ai_authored_practice_based_on_public_syllabus",
+          "source_metadata": {
+            "primary_source_title": "Giáo trình Vi tích phân 1 - HCMUS",
+            "primary_source_chapter": "Chương 4 Ứng dụng của đạo hàm",
+            "primary_source_section": "§4.1 Cực trị của hàm số",
+            "primary_source_printed_pages": "77–86",
+            "official_syllabus_url": "https://sites.google.com/view/math-hcmus-edu-vn-giaitich/trang-ch%E1%BB%A7/%C4%91%C3%A0o-t%E1%BA%A1o-%C4%91%E1%BA%A1i-h%E1%BB%8Dc/%C4%91%E1%BA%A1i-c%C6%B0%C6%A1ng-ng%C3%A0nh-kh%C3%A1c-to%C3%A1n",
+            "supplementary_sources": [
+              {
+                "title": "OpenStax Calculus Volume 1/2",
+                "url": "https://openstax.org/details/books/calculus-volume-1"
+              },
+              {
+                "title": "MIT OCW 18.01 – Exams and Solutions",
+                "url": "https://ocw.mit.edu/courses/18-01-single-variable-calculus-fall-2005/pages/exams/"
+              },
+              {
+                "title": "OpenStax Calculus Volume 2",
+                "url": "https://openstax.org/details/books/calculus-volume-2"
+              }
+            ],
+            "authorship": "AI-authored practice mock. Not a genuine HCMUS examination paper."
+          }
+        },
+        {
+          "id": "VTPF_03_03",
+          "question_number": 3,
+          "type": "short_answer",
+          "question_text": "Tính ∫ từ 0 đến π của x·sin(x) dx.",
+          "question_latex": "Tính ∫ từ 0 đến π của x·sin(x) dx.",
+          "answer_type": "decimal",
+          "official_answer": "3.141593",
+          "accepted_answers": [
+            "3.141593"
+          ],
+          "grading_method": "exact",
+          "tolerance": 1e-05,
+          "points": 2.0,
+          "solution_latex": "Từng phần cho giá trị [−xcosx+sinx]₀^π=π≈3.141593.",
+          "verified": true,
+          "answer_status": "verified_ai",
+          "verification_note": "Câu hỏi mô phỏng do dự án biên soạn; đáp án được tự giải và kiểm tra lại.",
+          "subject_code": "VTP1",
+          "subject": "Vi tích phân 1",
+          "exam_type": "final",
+          "topic": "Tích phân từng phần",
+          "source_reference": "Đề cương chính thức Thực hành Vi tích phân 1B HCMUS, chương/mục nêu trong câu; bài tập được biên soạn mới theo dạng Stewart Calculus (2012), có tham khảo cách luyện tập từ OpenStax/MIT OCW. Không phải câu trích nguyên văn hay đề chính thức.",
+          "source_kind": "ai_authored_practice_based_on_public_syllabus",
+          "source_metadata": {
+            "primary_source_title": "Giáo trình Vi tích phân 1 - HCMUS",
+            "primary_source_chapter": "Chương 5 Phép tính tích phân",
+            "primary_source_section": "§5.3.2 Tích phân từng phần",
+            "primary_source_printed_pages": "133–134",
+            "official_syllabus_url": "https://sites.google.com/view/math-hcmus-edu-vn-giaitich/trang-ch%E1%BB%A7/%C4%91%C3%A0o-t%E1%BA%A1o-%C4%91%E1%BA%A1i-h%E1%BB%8Dc/%C4%91%E1%BA%A1i-c%C6%B0%C6%A1ng-ng%C3%A0nh-kh%C3%A1c-to%C3%A1n",
+            "supplementary_sources": [
+              {
+                "title": "OpenStax Calculus Volume 1/2",
+                "url": "https://openstax.org/details/books/calculus-volume-1"
+              },
+              {
+                "title": "MIT OCW 18.01 – Exams and Solutions",
+                "url": "https://ocw.mit.edu/courses/18-01-single-variable-calculus-fall-2005/pages/exams/"
+              },
+              {
+                "title": "OpenStax Calculus Volume 2",
+                "url": "https://openstax.org/details/books/calculus-volume-2"
+              }
+            ],
+            "authorship": "AI-authored practice mock. Not a genuine HCMUS examination paper."
+          }
+        },
+        {
+          "id": "VTPF_03_04",
+          "question_number": 4,
+          "type": "short_answer",
+          "question_text": "Tính tích phân suy rộng ∫ từ 0 đến 1 của 1/√x dx.",
+          "question_latex": "Tính tích phân suy rộng ∫ từ 0 đến 1 của 1/√x dx.",
+          "answer_type": "integer",
+          "official_answer": "2",
+          "accepted_answers": [
+            "2"
+          ],
+          "grading_method": "exact",
+          "tolerance": 0.0,
+          "points": 2.0,
+          "solution_latex": "Nguyên hàm 2√x; giới hạn tại 0 tồn tại và kết quả bằng 2.",
+          "verified": true,
+          "answer_status": "verified_ai",
+          "verification_note": "Câu hỏi mô phỏng do dự án biên soạn; đáp án được tự giải và kiểm tra lại.",
+          "subject_code": "VTP1",
+          "subject": "Vi tích phân 1",
+          "exam_type": "final",
+          "topic": "Tích phân suy rộng",
+          "source_reference": "Đề cương chính thức Thực hành Vi tích phân 1B HCMUS, chương/mục nêu trong câu; bài tập được biên soạn mới theo dạng Stewart Calculus (2012), có tham khảo cách luyện tập từ OpenStax/MIT OCW. Không phải câu trích nguyên văn hay đề chính thức.",
+          "source_kind": "ai_authored_practice_based_on_public_syllabus",
+          "source_metadata": {
+            "primary_source_title": "Giáo trình Vi tích phân 1 - HCMUS",
+            "primary_source_chapter": "Chương 5 Phép tính tích phân",
+            "primary_source_section": "§5.3.4 Tích phân suy rộng",
+            "primary_source_printed_pages": "140–147",
+            "official_syllabus_url": "https://sites.google.com/view/math-hcmus-edu-vn-giaitich/trang-ch%E1%BB%A7/%C4%91%C3%A0o-t%E1%BA%A1o-%C4%91%E1%BA%A1i-h%E1%BB%8Dc/%C4%91%E1%BA%A1i-c%C6%B0%C6%A1ng-ng%C3%A0nh-kh%C3%A1c-to%C3%A1n",
+            "supplementary_sources": [
+              {
+                "title": "OpenStax Calculus Volume 1/2",
+                "url": "https://openstax.org/details/books/calculus-volume-1"
+              },
+              {
+                "title": "MIT OCW 18.01 – Exams and Solutions",
+                "url": "https://ocw.mit.edu/courses/18-01-single-variable-calculus-fall-2005/pages/exams/"
+              },
+              {
+                "title": "OpenStax Calculus Volume 2",
+                "url": "https://openstax.org/details/books/calculus-volume-2"
+              }
+            ],
+            "authorship": "AI-authored practice mock. Not a genuine HCMUS examination paper."
+          }
+        },
+        {
+          "id": "VTPF_03_05",
+          "question_number": 5,
+          "type": "short_answer",
+          "question_text": "Trong khai triển Maclaurin của e^x, hệ số của x² là bao nhiêu?",
+          "question_latex": "Trong khai triển Maclaurin của e^x, hệ số của x² là bao nhiêu?",
+          "answer_type": "decimal",
+          "official_answer": "0.5",
+          "accepted_answers": [
+            "0.5"
+          ],
+          "grading_method": "exact",
+          "tolerance": 1e-06,
+          "points": 2.0,
+          "solution_latex": "e^x=1+x+x²/2!+..., hệ số x² là 1/2.",
+          "verified": true,
+          "answer_status": "verified_ai",
+          "verification_note": "Câu hỏi mô phỏng do dự án biên soạn; đáp án được tự giải và kiểm tra lại.",
+          "subject_code": "VTP1",
+          "subject": "Vi tích phân 1",
+          "exam_type": "final",
+          "topic": "Chuỗi Maclaurin",
+          "source_reference": "Đề cương chính thức Thực hành Vi tích phân 1B HCMUS, chương/mục nêu trong câu; bài tập được biên soạn mới theo dạng Stewart Calculus (2012), có tham khảo cách luyện tập từ OpenStax/MIT OCW. Không phải câu trích nguyên văn hay đề chính thức.",
+          "source_kind": "ai_authored_practice_based_on_public_syllabus",
+          "source_metadata": {
+            "primary_source_title": "Giáo trình Vi tích phân 1 - HCMUS",
+            "primary_source_chapter": "Chương 6 Chuỗi",
+            "primary_source_section": "§6.2.1 Chuỗi Taylor và chuỗi Maclaurin",
+            "primary_source_printed_pages": "184–188",
+            "official_syllabus_url": "https://sites.google.com/view/math-hcmus-edu-vn-giaitich/trang-ch%E1%BB%A7/%C4%91%C3%A0o-t%E1%BA%A1o-%C4%91%E1%BA%A1i-h%E1%BB%8Dc/%C4%91%E1%BA%A1i-c%C6%B0%C6%A1ng-ng%C3%A0nh-kh%C3%A1c-to%C3%A1n",
+            "supplementary_sources": [
+              {
+                "title": "OpenStax Calculus Volume 1/2",
+                "url": "https://openstax.org/details/books/calculus-volume-1"
+              },
+              {
+                "title": "MIT OCW 18.01 – Exams and Solutions",
+                "url": "https://ocw.mit.edu/courses/18-01-single-variable-calculus-fall-2005/pages/exams/"
+              },
+              {
+                "title": "OpenStax Calculus Volume 2",
+                "url": "https://openstax.org/details/books/calculus-volume-2"
+              }
+            ],
+            "authorship": "AI-authored practice mock. Not a genuine HCMUS examination paper."
+          }
+        }
+      ],
+      "duration_seconds": 3600
+    },
+    {
+      "exam_id": "VTP1_FINAL_PRACTICE_04",
+      "subject_code": "VTP1",
+      "subject": "Vi tích phân 1",
+      "title": "ĐỀ LUYỆN TẬP CUỐI KỲ VI TÍCH PHÂN 1 - 04",
+      "exam_type": "final",
+      "question_count": 5,
+      "source_kind": "ai_authored_practice_not_official_exam",
+      "source_note": "Bộ đề luyện tập mới, không phải đề thi chính thức của HCMUS. Phạm vi bám theo đề cương Vi tích phân 1B và Thực hành Vi tích phân 1B; câu hỏi tự biên soạn, có tham khảo dạng bài công khai.",
+      "questions": [
+        {
+          "id": "VTPF_04_01",
+          "question_number": 1,
+          "type": "short_answer",
+          "question_text": "Cho f(x)=x³+x. Tính đạo hàm của hàm ngược tại y=2, biết f(1)=2.",
+          "question_latex": "Cho f(x)=x³+x. Tính đạo hàm của hàm ngược tại y=2, biết f(1)=2.",
+          "answer_type": "decimal",
+          "official_answer": "0.25",
+          "accepted_answers": [
+            "0.25"
+          ],
+          "grading_method": "exact",
+          "tolerance": 1e-06,
+          "points": 2.0,
+          "solution_latex": "(f⁻¹)′(2)=1/f′(1); f′(1)=3·1²+1=4, nên bằng 1/4.",
+          "verified": true,
+          "answer_status": "verified_ai",
+          "verification_note": "Câu hỏi mô phỏng do dự án biên soạn; đáp án được tự giải và kiểm tra lại.",
+          "subject_code": "VTP1",
+          "subject": "Vi tích phân 1",
+          "exam_type": "final",
+          "topic": "Đạo hàm hàm ngược",
+          "source_reference": "Đề cương chính thức Thực hành Vi tích phân 1B HCMUS, chương/mục nêu trong câu; bài tập được biên soạn mới theo dạng Stewart Calculus (2012), có tham khảo cách luyện tập từ OpenStax/MIT OCW. Không phải câu trích nguyên văn hay đề chính thức.",
+          "source_kind": "ai_authored_practice_based_on_public_syllabus",
+          "source_metadata": {
+            "primary_source_title": "Giáo trình Vi tích phân 1 - HCMUS",
+            "primary_source_chapter": "Chương 3 Phép tính vi phân",
+            "primary_source_section": "§3.2.2 Đạo hàm của hàm ngược",
+            "primary_source_printed_pages": "67–68",
+            "official_syllabus_url": "https://sites.google.com/view/math-hcmus-edu-vn-giaitich/trang-ch%E1%BB%A7/%C4%91%C3%A0o-t%E1%BA%A1o-%C4%91%E1%BA%A1i-h%E1%BB%8Dc/%C4%91%E1%BA%A1i-c%C6%B0%C6%A1ng-ng%C3%A0nh-kh%C3%A1c-to%C3%A1n",
+            "supplementary_sources": [
+              {
+                "title": "OpenStax Calculus Volume 1/2",
+                "url": "https://openstax.org/details/books/calculus-volume-1"
+              },
+              {
+                "title": "MIT OCW 18.01 – Exams and Solutions",
+                "url": "https://ocw.mit.edu/courses/18-01-single-variable-calculus-fall-2005/pages/exams/"
+              },
+              {
+                "title": "OpenStax Calculus Volume 2",
+                "url": "https://openstax.org/details/books/calculus-volume-2"
+              }
+            ],
+            "authorship": "AI-authored practice mock. Not a genuine HCMUS examination paper."
+          }
+        },
+        {
+          "id": "VTPF_04_02",
+          "question_number": 2,
+          "type": "short_answer",
+          "question_text": "Dùng xấp xỉ tuyến tính của f(x)=√x tại x₀=4 để ước lượng √4.1. Làm tròn đến 3 chữ số sau dấu phẩy.",
+          "question_latex": "Dùng xấp xỉ tuyến tính của f(x)=√x tại x₀=4 để ước lượng √4.1. Làm tròn đến 3 chữ số sau dấu phẩy.",
+          "answer_type": "decimal",
+          "official_answer": "2.025",
+          "accepted_answers": [
+            "2.025"
+          ],
+          "grading_method": "exact",
+          "tolerance": 0.001,
+          "points": 2.0,
+          "solution_latex": "L(x)=2+(x−4)/4; L(4.1)=2.025.",
+          "verified": true,
+          "answer_status": "verified_ai",
+          "verification_note": "Câu hỏi mô phỏng do dự án biên soạn; đáp án được tự giải và kiểm tra lại.",
+          "subject_code": "VTP1",
+          "subject": "Vi tích phân 1",
+          "exam_type": "final",
+          "topic": "Xấp xỉ tuyến tính",
+          "source_reference": "Đề cương chính thức Thực hành Vi tích phân 1B HCMUS, chương/mục nêu trong câu; bài tập được biên soạn mới theo dạng Stewart Calculus (2012), có tham khảo cách luyện tập từ OpenStax/MIT OCW. Không phải câu trích nguyên văn hay đề chính thức.",
+          "source_kind": "ai_authored_practice_based_on_public_syllabus",
+          "source_metadata": {
+            "primary_source_title": "Giáo trình Vi tích phân 1 - HCMUS",
+            "primary_source_chapter": "Chương 4 Ứng dụng của đạo hàm",
+            "primary_source_section": "§4.2.3 Xấp xỉ tuyến tính",
+            "primary_source_printed_pages": "97–99",
+            "official_syllabus_url": "https://sites.google.com/view/math-hcmus-edu-vn-giaitich/trang-ch%E1%BB%A7/%C4%91%C3%A0o-t%E1%BA%A1o-%C4%91%E1%BA%A1i-h%E1%BB%8Dc/%C4%91%E1%BA%A1i-c%C6%B0%C6%A1ng-ng%C3%A0nh-kh%C3%A1c-to%C3%A1n",
+            "supplementary_sources": [
+              {
+                "title": "OpenStax Calculus Volume 1/2",
+                "url": "https://openstax.org/details/books/calculus-volume-1"
+              },
+              {
+                "title": "MIT OCW 18.01 – Exams and Solutions",
+                "url": "https://ocw.mit.edu/courses/18-01-single-variable-calculus-fall-2005/pages/exams/"
+              },
+              {
+                "title": "OpenStax Calculus Volume 2",
+                "url": "https://openstax.org/details/books/calculus-volume-2"
+              }
+            ],
+            "authorship": "AI-authored practice mock. Not a genuine HCMUS examination paper."
+          }
+        },
+        {
+          "id": "VTPF_04_03",
+          "question_number": 3,
+          "type": "short_answer",
+          "question_text": "Tính ∫ từ 0 đến 2 của (2x+3) dx.",
+          "question_latex": "Tính ∫ từ 0 đến 2 của (2x+3) dx.",
+          "answer_type": "integer",
+          "official_answer": "10",
+          "accepted_answers": [
+            "10"
+          ],
+          "grading_method": "exact",
+          "tolerance": 0.0,
+          "points": 2.0,
+          "solution_latex": "Nguyên hàm x²+3x; thay cận được 4+6=10.",
+          "verified": true,
+          "answer_status": "verified_ai",
+          "verification_note": "Câu hỏi mô phỏng do dự án biên soạn; đáp án được tự giải và kiểm tra lại.",
+          "subject_code": "VTP1",
+          "subject": "Vi tích phân 1",
+          "exam_type": "final",
+          "topic": "Tích phân xác định",
+          "source_reference": "Đề cương chính thức Thực hành Vi tích phân 1B HCMUS, chương/mục nêu trong câu; bài tập được biên soạn mới theo dạng Stewart Calculus (2012), có tham khảo cách luyện tập từ OpenStax/MIT OCW. Không phải câu trích nguyên văn hay đề chính thức.",
+          "source_kind": "ai_authored_practice_based_on_public_syllabus",
+          "source_metadata": {
+            "primary_source_title": "Giáo trình Vi tích phân 1 - HCMUS",
+            "primary_source_chapter": "Chương 5 Phép tính tích phân",
+            "primary_source_section": "§5.1–§5.2",
+            "primary_source_printed_pages": "114–129",
+            "official_syllabus_url": "https://sites.google.com/view/math-hcmus-edu-vn-giaitich/trang-ch%E1%BB%A7/%C4%91%C3%A0o-t%E1%BA%A1o-%C4%91%E1%BA%A1i-h%E1%BB%8Dc/%C4%91%E1%BA%A1i-c%C6%B0%C6%A1ng-ng%C3%A0nh-kh%C3%A1c-to%C3%A1n",
+            "supplementary_sources": [
+              {
+                "title": "OpenStax Calculus Volume 1/2",
+                "url": "https://openstax.org/details/books/calculus-volume-1"
+              },
+              {
+                "title": "MIT OCW 18.01 – Exams and Solutions",
+                "url": "https://ocw.mit.edu/courses/18-01-single-variable-calculus-fall-2005/pages/exams/"
+              },
+              {
+                "title": "OpenStax Calculus Volume 2",
+                "url": "https://openstax.org/details/books/calculus-volume-2"
+              }
+            ],
+            "authorship": "AI-authored practice mock. Not a genuine HCMUS examination paper."
+          }
+        },
+        {
+          "id": "VTPF_04_04",
+          "question_number": 4,
+          "type": "short_answer",
+          "question_text": "Tính ∫ từ 0 đến 2 của x/(x²+4) dx. Làm tròn đến 3 chữ số sau dấu phẩy.",
+          "question_latex": "Tính ∫ từ 0 đến 2 của x/(x²+4) dx. Làm tròn đến 3 chữ số sau dấu phẩy.",
+          "answer_type": "decimal",
+          "official_answer": "0.347",
+          "accepted_answers": [
+            "0.347"
+          ],
+          "grading_method": "exact",
+          "tolerance": 0.001,
+          "points": 2.0,
+          "solution_latex": "Đặt u=x²+4; tích phân bằng 1/2 ln(8/4)=0.5ln2≈0.347.",
+          "verified": true,
+          "answer_status": "verified_ai",
+          "verification_note": "Câu hỏi mô phỏng do dự án biên soạn; đáp án được tự giải và kiểm tra lại.",
+          "subject_code": "VTP1",
+          "subject": "Vi tích phân 1",
+          "exam_type": "final",
+          "topic": "Đổi biến",
+          "source_reference": "Đề cương chính thức Thực hành Vi tích phân 1B HCMUS, chương/mục nêu trong câu; bài tập được biên soạn mới theo dạng Stewart Calculus (2012), có tham khảo cách luyện tập từ OpenStax/MIT OCW. Không phải câu trích nguyên văn hay đề chính thức.",
+          "source_kind": "ai_authored_practice_based_on_public_syllabus",
+          "source_metadata": {
+            "primary_source_title": "Giáo trình Vi tích phân 1 - HCMUS",
+            "primary_source_chapter": "Chương 5 Phép tính tích phân",
+            "primary_source_section": "§5.3.1 Phép đổi biến trong tích phân",
+            "primary_source_printed_pages": "130–132",
+            "official_syllabus_url": "https://sites.google.com/view/math-hcmus-edu-vn-giaitich/trang-ch%E1%BB%A7/%C4%91%C3%A0o-t%E1%BA%A1o-%C4%91%E1%BA%A1i-h%E1%BB%8Dc/%C4%91%E1%BA%A1i-c%C6%B0%C6%A1ng-ng%C3%A0nh-kh%C3%A1c-to%C3%A1n",
+            "supplementary_sources": [
+              {
+                "title": "OpenStax Calculus Volume 1/2",
+                "url": "https://openstax.org/details/books/calculus-volume-1"
+              },
+              {
+                "title": "MIT OCW 18.01 – Exams and Solutions",
+                "url": "https://ocw.mit.edu/courses/18-01-single-variable-calculus-fall-2005/pages/exams/"
+              },
+              {
+                "title": "OpenStax Calculus Volume 2",
+                "url": "https://openstax.org/details/books/calculus-volume-2"
+              }
+            ],
+            "authorship": "AI-authored practice mock. Not a genuine HCMUS examination paper."
+          }
+        },
+        {
+          "id": "VTPF_04_05",
+          "question_number": 5,
+          "type": "short_answer",
+          "question_text": "Tìm bán kính hội tụ của chuỗi lũy thừa ∑ từ n=0 đến ∞ của ((x−1)/2)^n.",
+          "question_latex": "Tìm bán kính hội tụ của chuỗi lũy thừa ∑ từ n=0 đến ∞ của ((x−1)/2)^n.",
+          "answer_type": "integer",
+          "official_answer": "2",
+          "accepted_answers": [
+            "2"
+          ],
+          "grading_method": "exact",
+          "tolerance": 0.0,
+          "points": 2.0,
+          "solution_latex": "Chuỗi hình học hội tụ khi |x−1|<2, bán kính R=2.",
+          "verified": true,
+          "answer_status": "verified_ai",
+          "verification_note": "Câu hỏi mô phỏng do dự án biên soạn; đáp án được tự giải và kiểm tra lại.",
+          "subject_code": "VTP1",
+          "subject": "Vi tích phân 1",
+          "exam_type": "final",
+          "topic": "Chuỗi lũy thừa",
+          "source_reference": "Đề cương chính thức Thực hành Vi tích phân 1B HCMUS, chương/mục nêu trong câu; bài tập được biên soạn mới theo dạng Stewart Calculus (2012), có tham khảo cách luyện tập từ OpenStax/MIT OCW. Không phải câu trích nguyên văn hay đề chính thức.",
+          "source_kind": "ai_authored_practice_based_on_public_syllabus",
+          "source_metadata": {
+            "primary_source_title": "Giáo trình Vi tích phân 1 - HCMUS",
+            "primary_source_chapter": "Chương 6 Chuỗi",
+            "primary_source_section": "§6.2.2 Chuỗi lũy thừa",
+            "primary_source_printed_pages": "189–191",
+            "official_syllabus_url": "https://sites.google.com/view/math-hcmus-edu-vn-giaitich/trang-ch%E1%BB%A7/%C4%91%C3%A0o-t%E1%BA%A1o-%C4%91%E1%BA%A1i-h%E1%BB%8Dc/%C4%91%E1%BA%A1i-c%C6%B0%C6%A1ng-ng%C3%A0nh-kh%C3%A1c-to%C3%A1n",
+            "supplementary_sources": [
+              {
+                "title": "OpenStax Calculus Volume 1/2",
+                "url": "https://openstax.org/details/books/calculus-volume-1"
+              },
+              {
+                "title": "MIT OCW 18.01 – Exams and Solutions",
+                "url": "https://ocw.mit.edu/courses/18-01-single-variable-calculus-fall-2005/pages/exams/"
+              },
+              {
+                "title": "OpenStax Calculus Volume 2",
+                "url": "https://openstax.org/details/books/calculus-volume-2"
+              }
+            ],
+            "authorship": "AI-authored practice mock. Not a genuine HCMUS examination paper."
+          }
+        }
+      ],
+      "duration_seconds": 3600
+    },
+    {
+      "exam_id": "VTP1_FINAL_PRACTICE_05",
+      "subject_code": "VTP1",
+      "subject": "Vi tích phân 1",
+      "title": "ĐỀ LUYỆN TẬP CUỐI KỲ VI TÍCH PHÂN 1 - 05",
+      "exam_type": "final",
+      "question_count": 5,
+      "source_kind": "ai_authored_practice_not_official_exam",
+      "source_note": "Bộ đề luyện tập mới, không phải đề thi chính thức của HCMUS. Phạm vi bám theo đề cương Vi tích phân 1B và Thực hành Vi tích phân 1B; câu hỏi tự biên soạn, có tham khảo dạng bài công khai.",
+      "questions": [
+        {
+          "id": "VTPF_05_01",
+          "question_number": 1,
+          "type": "short_answer",
+          "question_text": "Cho f(x)=cos(2x). Tính f″(0).",
+          "question_latex": "Cho f(x)=cos(2x). Tính f″(0).",
+          "answer_type": "integer",
+          "official_answer": "-4",
+          "accepted_answers": [
+            "-4"
+          ],
+          "grading_method": "exact",
+          "tolerance": 0.0,
+          "points": 2.0,
+          "solution_latex": "f′(x)=−2sin(2x), f″(x)=−4cos(2x); f″(0)=−4.",
+          "verified": true,
+          "answer_status": "verified_ai",
+          "verification_note": "Câu hỏi mô phỏng do dự án biên soạn; đáp án được tự giải và kiểm tra lại.",
+          "subject_code": "VTP1",
+          "subject": "Vi tích phân 1",
+          "exam_type": "final",
+          "topic": "Đạo hàm bậc cao",
+          "source_reference": "Đề cương chính thức Thực hành Vi tích phân 1B HCMUS, chương/mục nêu trong câu; bài tập được biên soạn mới theo dạng Stewart Calculus (2012), có tham khảo cách luyện tập từ OpenStax/MIT OCW. Không phải câu trích nguyên văn hay đề chính thức.",
+          "source_kind": "ai_authored_practice_based_on_public_syllabus",
+          "source_metadata": {
+            "primary_source_title": "Giáo trình Vi tích phân 1 - HCMUS",
+            "primary_source_chapter": "Chương 3 Phép tính vi phân",
+            "primary_source_section": "§3.2.5 Đạo hàm bậc cao",
+            "primary_source_printed_pages": "73–76",
+            "official_syllabus_url": "https://sites.google.com/view/math-hcmus-edu-vn-giaitich/trang-ch%E1%BB%A7/%C4%91%C3%A0o-t%E1%BA%A1o-%C4%91%E1%BA%A1i-h%E1%BB%8Dc/%C4%91%E1%BA%A1i-c%C6%B0%C6%A1ng-ng%C3%A0nh-kh%C3%A1c-to%C3%A1n",
+            "supplementary_sources": [
+              {
+                "title": "OpenStax Calculus Volume 1/2",
+                "url": "https://openstax.org/details/books/calculus-volume-1"
+              },
+              {
+                "title": "MIT OCW 18.01 – Exams and Solutions",
+                "url": "https://ocw.mit.edu/courses/18-01-single-variable-calculus-fall-2005/pages/exams/"
+              },
+              {
+                "title": "OpenStax Calculus Volume 2",
+                "url": "https://openstax.org/details/books/calculus-volume-2"
+              }
+            ],
+            "authorship": "AI-authored practice mock. Not a genuine HCMUS examination paper."
+          }
+        },
+        {
+          "id": "VTPF_05_02",
+          "question_number": 2,
+          "type": "short_answer",
+          "question_text": "Hàm f(x)=x³−3x có bao nhiêu điểm tới hạn thực?",
+          "question_latex": "Hàm f(x)=x³−3x có bao nhiêu điểm tới hạn thực?",
+          "answer_type": "integer",
+          "official_answer": "2",
+          "accepted_answers": [
+            "2"
+          ],
+          "grading_method": "exact",
+          "tolerance": 0.0,
+          "points": 2.0,
+          "solution_latex": "f′(x)=3(x²−1)=0 có hai nghiệm thực x=−1 và x=1.",
+          "verified": true,
+          "answer_status": "verified_ai",
+          "verification_note": "Câu hỏi mô phỏng do dự án biên soạn; đáp án được tự giải và kiểm tra lại.",
+          "subject_code": "VTP1",
+          "subject": "Vi tích phân 1",
+          "exam_type": "final",
+          "topic": "Cực trị",
+          "source_reference": "Đề cương chính thức Thực hành Vi tích phân 1B HCMUS, chương/mục nêu trong câu; bài tập được biên soạn mới theo dạng Stewart Calculus (2012), có tham khảo cách luyện tập từ OpenStax/MIT OCW. Không phải câu trích nguyên văn hay đề chính thức.",
+          "source_kind": "ai_authored_practice_based_on_public_syllabus",
+          "source_metadata": {
+            "primary_source_title": "Giáo trình Vi tích phân 1 - HCMUS",
+            "primary_source_chapter": "Chương 4 Ứng dụng của đạo hàm",
+            "primary_source_section": "§4.1–§4.2",
+            "primary_source_printed_pages": "77–96",
+            "official_syllabus_url": "https://sites.google.com/view/math-hcmus-edu-vn-giaitich/trang-ch%E1%BB%A7/%C4%91%C3%A0o-t%E1%BA%A1o-%C4%91%E1%BA%A1i-h%E1%BB%8Dc/%C4%91%E1%BA%A1i-c%C6%B0%C6%A1ng-ng%C3%A0nh-kh%C3%A1c-to%C3%A1n",
+            "supplementary_sources": [
+              {
+                "title": "OpenStax Calculus Volume 1/2",
+                "url": "https://openstax.org/details/books/calculus-volume-1"
+              },
+              {
+                "title": "MIT OCW 18.01 – Exams and Solutions",
+                "url": "https://ocw.mit.edu/courses/18-01-single-variable-calculus-fall-2005/pages/exams/"
+              },
+              {
+                "title": "OpenStax Calculus Volume 2",
+                "url": "https://openstax.org/details/books/calculus-volume-2"
+              }
+            ],
+            "authorship": "AI-authored practice mock. Not a genuine HCMUS examination paper."
+          }
+        },
+        {
+          "id": "VTPF_05_03",
+          "question_number": 3,
+          "type": "short_answer",
+          "question_text": "Tính ∫ từ 0 đến 1 của 1/(1+x²) dx. Làm tròn đến 3 chữ số sau dấu phẩy.",
+          "question_latex": "Tính ∫ từ 0 đến 1 của 1/(1+x²) dx. Làm tròn đến 3 chữ số sau dấu phẩy.",
+          "answer_type": "decimal",
+          "official_answer": "0.785",
+          "accepted_answers": [
+            "0.785"
+          ],
+          "grading_method": "exact",
+          "tolerance": 0.001,
+          "points": 2.0,
+          "solution_latex": "Nguyên hàm arctan(x); kết quả π/4≈0.785398.",
+          "verified": true,
+          "answer_status": "verified_ai",
+          "verification_note": "Câu hỏi mô phỏng do dự án biên soạn; đáp án được tự giải và kiểm tra lại.",
+          "subject_code": "VTP1",
+          "subject": "Vi tích phân 1",
+          "exam_type": "final",
+          "topic": "Nguyên hàm",
+          "source_reference": "Đề cương chính thức Thực hành Vi tích phân 1B HCMUS, chương/mục nêu trong câu; bài tập được biên soạn mới theo dạng Stewart Calculus (2012), có tham khảo cách luyện tập từ OpenStax/MIT OCW. Không phải câu trích nguyên văn hay đề chính thức.",
+          "source_kind": "ai_authored_practice_based_on_public_syllabus",
+          "source_metadata": {
+            "primary_source_title": "Giáo trình Vi tích phân 1 - HCMUS",
+            "primary_source_chapter": "Chương 5 Phép tính tích phân",
+            "primary_source_section": "§5.2.1 Nguyên hàm",
+            "primary_source_printed_pages": "121–122",
+            "official_syllabus_url": "https://sites.google.com/view/math-hcmus-edu-vn-giaitich/trang-ch%E1%BB%A7/%C4%91%C3%A0o-t%E1%BA%A1o-%C4%91%E1%BA%A1i-h%E1%BB%8Dc/%C4%91%E1%BA%A1i-c%C6%B0%C6%A1ng-ng%C3%A0nh-kh%C3%A1c-to%C3%A1n",
+            "supplementary_sources": [
+              {
+                "title": "OpenStax Calculus Volume 1/2",
+                "url": "https://openstax.org/details/books/calculus-volume-1"
+              },
+              {
+                "title": "MIT OCW 18.01 – Exams and Solutions",
+                "url": "https://ocw.mit.edu/courses/18-01-single-variable-calculus-fall-2005/pages/exams/"
+              },
+              {
+                "title": "OpenStax Calculus Volume 2",
+                "url": "https://openstax.org/details/books/calculus-volume-2"
+              }
+            ],
+            "authorship": "AI-authored practice mock. Not a genuine HCMUS examination paper."
+          }
+        },
+        {
+          "id": "VTPF_05_04",
+          "question_number": 4,
+          "type": "short_answer",
+          "question_text": "Cho mật độ xác suất f(x)=2x trên [0,1]. Tính P(0≤X≤0.5).",
+          "question_latex": "Cho mật độ xác suất f(x)=2x trên [0,1]. Tính P(0≤X≤0.5).",
+          "answer_type": "decimal",
+          "official_answer": "0.25",
+          "accepted_answers": [
+            "0.25"
+          ],
+          "grading_method": "exact",
+          "tolerance": 1e-06,
+          "points": 2.0,
+          "solution_latex": "Tích phân ∫₀^0.5 2x dx = [x²]₀^0.5=0.25.",
+          "verified": true,
+          "answer_status": "verified_ai",
+          "verification_note": "Câu hỏi mô phỏng do dự án biên soạn; đáp án được tự giải và kiểm tra lại.",
+          "subject_code": "VTP1",
+          "subject": "Vi tích phân 1",
+          "exam_type": "final",
+          "topic": "Ứng dụng tích phân và xác suất",
+          "source_reference": "Đề cương chính thức Thực hành Vi tích phân 1B HCMUS, chương/mục nêu trong câu; bài tập được biên soạn mới theo dạng Stewart Calculus (2012), có tham khảo cách luyện tập từ OpenStax/MIT OCW. Không phải câu trích nguyên văn hay đề chính thức.",
+          "source_kind": "ai_authored_practice_based_on_public_syllabus",
+          "source_metadata": {
+            "primary_source_title": "Giáo trình Vi tích phân 1 - HCMUS",
+            "primary_source_chapter": "Chương 5 Phép tính tích phân",
+            "primary_source_section": "§5.4.4 Xác suất",
+            "primary_source_printed_pages": "154–162",
+            "official_syllabus_url": "https://sites.google.com/view/math-hcmus-edu-vn-giaitich/trang-ch%E1%BB%A7/%C4%91%C3%A0o-t%E1%BA%A1o-%C4%91%E1%BA%A1i-h%E1%BB%8Dc/%C4%91%E1%BA%A1i-c%C6%B0%C6%A1ng-ng%C3%A0nh-kh%C3%A1c-to%C3%A1n",
+            "supplementary_sources": [
+              {
+                "title": "OpenStax Calculus Volume 1/2",
+                "url": "https://openstax.org/details/books/calculus-volume-1"
+              },
+              {
+                "title": "MIT OCW 18.01 – Exams and Solutions",
+                "url": "https://ocw.mit.edu/courses/18-01-single-variable-calculus-fall-2005/pages/exams/"
+              },
+              {
+                "title": "OpenStax Calculus Volume 2",
+                "url": "https://openstax.org/details/books/calculus-volume-2"
+              }
+            ],
+            "authorship": "AI-authored practice mock. Not a genuine HCMUS examination paper."
+          }
+        },
+        {
+          "id": "VTPF_05_05",
+          "question_number": 5,
+          "type": "short_answer",
+          "question_text": "Tìm bán kính hội tụ của chuỗi hình học 1+x+x²+x³+... .",
+          "question_latex": "Tìm bán kính hội tụ của chuỗi hình học 1+x+x²+x³+... .",
+          "answer_type": "integer",
+          "official_answer": "1",
+          "accepted_answers": [
+            "1"
+          ],
+          "grading_method": "exact",
+          "tolerance": 0.0,
+          "points": 2.0,
+          "solution_latex": "Chuỗi có công bội x và hội tụ khi |x|<1; bán kính R=1.",
+          "verified": true,
+          "answer_status": "verified_ai",
+          "verification_note": "Câu hỏi mô phỏng do dự án biên soạn; đáp án được tự giải và kiểm tra lại.",
+          "subject_code": "VTP1",
+          "subject": "Vi tích phân 1",
+          "exam_type": "final",
+          "topic": "Chuỗi lũy thừa",
+          "source_reference": "Đề cương chính thức Thực hành Vi tích phân 1B HCMUS, chương/mục nêu trong câu; bài tập được biên soạn mới theo dạng Stewart Calculus (2012), có tham khảo cách luyện tập từ OpenStax/MIT OCW. Không phải câu trích nguyên văn hay đề chính thức.",
+          "source_kind": "ai_authored_practice_based_on_public_syllabus",
+          "source_metadata": {
+            "primary_source_title": "Giáo trình Vi tích phân 1 - HCMUS",
+            "primary_source_chapter": "Chương 6 Chuỗi",
+            "primary_source_section": "§6.2.2 Chuỗi lũy thừa",
+            "primary_source_printed_pages": "189–191",
+            "official_syllabus_url": "https://sites.google.com/view/math-hcmus-edu-vn-giaitich/trang-ch%E1%BB%A7/%C4%91%C3%A0o-t%E1%BA%A1o-%C4%91%E1%BA%A1i-h%E1%BB%8Dc/%C4%91%E1%BA%A1i-c%C6%B0%C6%A1ng-ng%C3%A0nh-kh%C3%A1c-to%C3%A1n",
+            "supplementary_sources": [
+              {
+                "title": "OpenStax Calculus Volume 1/2",
+                "url": "https://openstax.org/details/books/calculus-volume-1"
+              },
+              {
+                "title": "MIT OCW 18.01 – Exams and Solutions",
+                "url": "https://ocw.mit.edu/courses/18-01-single-variable-calculus-fall-2005/pages/exams/"
+              },
+              {
+                "title": "OpenStax Calculus Volume 2",
+                "url": "https://openstax.org/details/books/calculus-volume-2"
+              }
+            ],
+            "authorship": "AI-authored practice mock. Not a genuine HCMUS examination paper."
+          }
+        }
+      ],
+      "duration_seconds": 3600
+    }
+  ],
+  "metadata_note": "Các bộ đề cuối kỳ là đề luyện tập mô phỏng do dự án biên soạn, không phải đề thi chính thức HCMUS. MathQuiz sử dụng duration_seconds làm đồng hồ tổng cho kỳ thi chính thức; thời lượng hiện cấu hình là 3600 giây.",
+  "duration_seconds": 3600
+}

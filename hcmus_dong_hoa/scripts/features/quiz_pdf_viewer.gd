@@ -83,10 +83,21 @@ func _update_page() -> void:
 	_page_index = clampi(_page_index, 0, _questions.size() - 1)
 	var question: Dictionary = _questions[_page_index]
 	var source := str(question.get("question_latex", question.get("question_text", "")))
-	_content.text = "CÂU %d\n\n%s" % [
+	var page_text := "CÂU %d\n\n%s" % [
 		int(question.get("question_number", _page_index + 1)),
 		MathQuestions.latex_to_readable_text(source)
 	]
+	var options_value: Variant = question.get("options", [])
+	if typeof(options_value) == TYPE_ARRAY:
+		var options: Array = options_value
+		if not options.is_empty():
+			page_text += "\n\nCÁC PHƯƠNG ÁN\n"
+		for option_value in options:
+			if typeof(option_value) != TYPE_DICTIONARY:
+				continue
+			var option: Dictionary = option_value
+			page_text += "%s. %s\n" % [str(option.get("value", "")), str(option.get("text", option.get("label", "")))]
+	_content.text = page_text
 	_content.add_theme_font_size_override("normal_font_size", _font_size)
 	_page_label.text = "%d / %d" % [_page_index + 1, _questions.size()]
 	_content.scroll_to_line(0)
