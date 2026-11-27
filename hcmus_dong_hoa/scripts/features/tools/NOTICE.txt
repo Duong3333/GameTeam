@@ -1,0 +1,23 @@
+GCC TOOLCHAIN SETUP NOTICE
+
+This feature package does not contain GCC binaries. Run install_gcc.ps1 on a
+Windows development machine with Internet access to download and install the
+toolchain into this folder:
+
+  scripts/features/tools/gcc/
+
+Toolchain source:
+  WinLibs standalone GCC + MinGW-w64
+  https://winlibs.com/
+
+Selected package:
+  GCC 16.2.0, x86_64, UCRT, POSIX threads, MinGW-w64 14.0.0
+  C++17 is selected by the IDE runner with -std=c++17.
+
+After this one-time download, the compiler itself can be used offline.
+For a packaged/exported Godot game, make sure the complete gcc folder is
+copied beside the exported game in a location searched by programming_runner.gd.
+Godot PCK resources are not directly executable as external compiler binaries.
+
+Review and include the applicable GCC, MinGW-w64, and bundled runtime license
+notices/source obligations before distributing the game.

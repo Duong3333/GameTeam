@@ -17,7 +17,7 @@ Read this file before changing anything in this project.
 - `scripts/features/` contains reusable gameplay systems, such as doors, quiz, HUD, and named-character behavior. A reusable system that happens to interact with the map still belongs here; put only location-specific content and behavior in `scripts/maps/`.
 - `scripts/core/game_state.gd` holds shared runtime state. `scripts/draw/pen.gd` and `scripts/draw/characters.gd` provide reusable drawing helpers.
 - `main.gd` is the composition/orchestration layer. Avoid putting map content or feature-specific behavior there.
-- `scripts/draw/newcharacters.gd` is a compatibility layer in the inheritance chain. Named NPCs are implemented by `scripts/features/newcharacters.gd`; do not restore a second NPC implementation in the draw layer.
+- `scripts/draw/newcharacters.gd` is a compatibility layer in the inheritance chain. Named NPCs are implemented by `scripts/features/character.gd`; do not restore a second NPC implementation in the draw layer.
 
 ## Registry rules
 

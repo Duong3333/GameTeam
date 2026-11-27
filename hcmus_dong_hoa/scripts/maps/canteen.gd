@@ -105,6 +105,7 @@ const USE_MAP := {"coc_nuoc": "coc_da_dung", "binh_nuoc_day": "binh_nuoc"}   # �
 const START_MONEY := 2000000     # giai đoạn 5: tiền cấp một lần khi bắt đầu game mới
 const WEEKLY_MONEY := 500000     # tiền sinh hoạt mỗi tuần trong game
 const PAYMENT := true            # giai đoạn 5: mua hàng tính tiền thật
+const SHOW_WALLET_UI := false     # Ẩn khung ví trên HUD; không tắt hệ thống thanh toán
 const BUY_LOCK := 0.25           # giây khoá giữa hai lần mua: nhấn/giữ phím liên tục không nhân đôi giao dịch
 const SAVE_PATH := "user://canteen_economy.cfg"
 const Schedule := preload("res://scripts/features/schedule_data.gd")
@@ -1344,7 +1345,8 @@ func _build_ui() -> void:
 	root.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_ui.add_child(root)
 	# ví tiền (góc trên phải, dưới thanh minimap không bị che)
-	if PAYMENT:
+	# Có thể ẩn riêng giao diện ví; PAYMENT vẫn bật cho các giao dịch.
+	if PAYMENT and SHOW_WALLET_UI:
 		_panel(root, Rect2(336, 2, 140, 15), Color(0.05, 0.08, 0.14, 0.85), Color("e0b020"))
 		_wallet = _lbl(root, "", Vector2(338, 2), Vector2(136, 15), 8, Color("ffe28a"), HORIZONTAL_ALIGNMENT_CENTER)
 	# thông báo nổi

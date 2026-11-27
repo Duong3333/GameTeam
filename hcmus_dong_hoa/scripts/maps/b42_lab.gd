@@ -30,7 +30,6 @@ const LAB_PRESETS := {
 	"B42_VTP": {
 		"title": "PHÒNG LAB B4.2 · THỰC HÀNH VI TÍCH PHÂN",
 		"npcs": [
-			{"seat": 0,  "shirt": "2c3e50", "hair": "2a1d14", "uni": false, "long": false, "pack": false, "label": "GV. Vi tích phân"},
 			{"seat": 1,  "shirt": "3d5a80", "hair": "1b1b1b", "uni": true,  "long": false, "pack": true},
 			{"seat": 3,  "shirt": "81b29a", "hair": "2a1d14", "uni": true,  "long": true,  "pack": true},
 			{"seat": 5,  "shirt": "e07a5f", "hair": "2a1d14", "uni": false, "long": true,  "pack": true},
@@ -45,7 +44,6 @@ const LAB_PRESETS := {
 	"D_CSLT": {
 		"title": "PHÒNG MÁY TÒA D · THỰC HÀNH CƠ SỞ LẬP TRÌNH",
 		"npcs": [
-			{"seat": 0,  "shirt": "1f4e78", "hair": "1b1b1b", "uni": false, "long": true,  "pack": false, "label": "GV. Cơ sở lập trình"},
 			{"seat": 1,  "shirt": "3d5a80", "hair": "1b1b1b", "uni": true,  "long": false, "pack": true},
 			{"seat": 3,  "shirt": "81b29a", "hair": "2a1d14", "uni": true,  "long": true,  "pack": true},
 			{"seat": 5,  "shirt": "e07a5f", "hair": "5a3a22", "uni": false, "long": false, "pack": true},
@@ -76,6 +74,7 @@ var _solid: Array = []
 var _board_title := "PHÒNG LAB B4.2 · THỰC HÀNH VI TÍCH PHÂN"
 var _seat_npcs: Dictionary = {}
 var _di_hoc_f: Node = null
+var _roles_f: Node = null   # features/character.gd: cho biết thầy nào đang dạy trong phòng này
 var _looked: bool = false
 var _active_preset: String = "B42_VTP"
 
@@ -101,6 +100,8 @@ func _lookup() -> void:
 	for f in game.features:
 		if f != self and f.has_method("notify_seat_entered"):
 			_di_hoc_f = f
+		if f != self and f.has_method("draw_teacher_indoor"):
+			_roles_f = f
 
 func _build_room() -> void:
 	_groups.clear()
@@ -137,6 +138,7 @@ func _apply_preset(preset_key: String, custom_title: String = "") -> void:
 				_seat_npcs[si] = n
 
 func open_lab(preset_key: String = "B42_VTP", custom_title: String = "") -> void:
+	_lookup()
 	_apply_preset(preset_key, custom_title)
 	begin()
 
@@ -145,6 +147,15 @@ func _door_outside() -> Vector2:
 
 func _near_door_outside() -> bool:
 	return game.player.distance_to(_door_outside()) < DOOR_RANGE
+
+# character.gd hỏi: người chơi đang ở phòng nào và đứng ở đâu (để thầy giảng lại bài khi bấm G)
+func current_room_key() -> String:
+	if not inside:
+		return ""
+	return _active_preset
+
+func room_player_pos() -> Vector2:
+	return _pos
 
 func begin() -> void:
 	super()
@@ -259,7 +270,7 @@ func _nearest_seat() -> int:
 	var best: int = -1
 	var bd: float = SEAT_RANGE
 	for i in _seats.size():
-		if _seat_npcs.has(i):
+		if _seat_npcs.has(i) or i == 0:   # ghế 0 là máy của giảng viên, sinh viên không ngồi
 			continue
 		var d: float = _pos.distance_to(_seats[i].stand)
 		if d < bd:
@@ -307,6 +318,8 @@ func _paint() -> void:
 			_paint_group(p, it[2])
 		else:
 			_paint_player(p)
+	# Vẽ thầy sau toàn bộ bàn ghế/vật dụng để tên và trạng thái không bị che.
+	_paint_teacher_spot(p, 240.0, TEACHER_DESK.position.y)
 	_paint_prompt(p)
 	if _fade > 0.0:
 		p.rc(0, 0, VIEW.x, VIEW.y, Color(0, 0, 0, _fade))
@@ -408,6 +421,8 @@ func _paint_group(p: Node2D, g: Dictionary) -> void:
 	p.rc(desk.position.x, top + 13.0, desk.size.x, 1, C_WOOD_FRONT.darkened(0.3))
 	for x in xs:
 		_paint_computer(p, x, top, teacher)
+	if teacher:
+		_paint_teacher_desk_items(p, desk)
 	if not teacher:
 		_paint_seat_occupants(p, int(g.id))
 		for x in xs:
@@ -416,6 +431,55 @@ func _paint_group(p: Node2D, g: Dictionary) -> void:
 			p.rc(x - 7, top + 16, 14, 11, Color("2b3550"))
 			p.rc(x - 6, top + 17, 12, 9, Color("3d4d70"))
 			p.rc(x - 6, top + 17, 12, 2, Color("56688f"))
+
+func x_first(xs: Array) -> float:
+	return float(xs[0]) if xs.size() > 0 else 240.0
+
+# Chỗ ngồi của giảng viên (ghế 0). Thầy dạy Vi tích phân (LKH) chỉ có mặt đúng tiết; khi vắng, ghế để trống
+# với chiếc áo khoác vắt lưng ghế (cùng tông màu ghế xanh của phòng lab).
+func _paint_teacher_spot(p: Node2D, x: float, top: float) -> void:
+	var here: Dictionary = {}
+	if _roles_f != null and (_active_preset == "B42_VTP" or _active_preset == "D_CSLT"):
+		here = _roles_f.teacher_in_room(_active_preset)
+	if not here.is_empty():
+		_roles_f.draw_teacher_indoor(p, str(here.role), here.get("pos", Vector2(x, top + 4.0)), int(here.get("face", 0)), str(here.name), here.get("act", ""))
+		return
+	if _active_preset != "B42_VTP":
+		return
+	# áo khoác vắt lưng ghế
+	p.rc(x - 10, top - 19, 20, 12, Color("1d2230"))
+	p.rc(x - 9, top - 18, 18, 10, Color("4a5568"))
+	p.rc(x - 9, top - 18, 18, 2, Color("66748c"))
+	p.rc(x - 4, top - 18, 8, 3, Color("2e3646"))
+	p.rc(x - 10, top - 9, 4, 6, Color("4a5568"))
+	p.rc(x + 6, top - 9, 4, 6, Color("4a5568"))
+	p.rc(x - 1, top - 15, 2, 7, Color("39424f"))
+
+# Đồ trên bàn giảng viên phòng Lab Vi tích phân: cốc cà phê, xấp bài, sổ ghi chép
+func _paint_teacher_desk_items(p: Node2D, desk: Rect2) -> void:
+	if _active_preset != "B42_VTP":
+		return
+	var top: float = desk.position.y
+	# xấp bài kiểm tra + bút đỏ
+	p.rc(desk.position.x + 6, top + 2, 16, 4, Color("8d949c"))
+	p.rc(desk.position.x + 5, top + 1, 16, 4, Color("f4f6f8"))
+	p.rc(desk.position.x + 5, top + 1, 16, 1, Color("ffffff"))
+	p.rc(desk.position.x + 8, top + 2, 8, 1, Color("2457c5"))
+	p.rc(desk.position.x + 8, top + 6, 10, 1, Color("c0392b"))
+	# cốc cà phê có hơi nóng
+	p.rc(desk.position.x + 26, top - 3, 6, 7, Color("2b2d34"))
+	p.rc(desk.position.x + 27, top - 2, 4, 5, Color("f4f4f4"))
+	p.rc(desk.position.x + 27, top - 2, 4, 1, Color("6b4226"))
+	p.rc(desk.position.x + 32, top - 1, 2, 3, Color("2b2d34"))
+	var steam: int = int(_clock * 2.0) % 2
+	p.rc(desk.position.x + 28 + steam, top - 6, 1, 2, Color(1, 1, 1, 0.5))
+	# sổ tay mở bên phải
+	p.rc(desk.end.x - 24, top + 1, 18, 6, Color("5c4126"))
+	p.rc(desk.end.x - 23, top + 2, 8, 4, Color("fbf6e6"))
+	p.rc(desk.end.x - 14, top + 2, 8, 4, Color("fbf6e6"))
+	p.rc(desk.end.x - 15, top + 2, 1, 4, Color("c9bfa2"))
+	p.rc(desk.end.x - 22, top + 3, 5, 1, Color("2457c5"))
+	p.rc(desk.end.x - 12, top + 3, 5, 1, Color("2457c5"))
 
 func _paint_computer(p: Node2D, x: float, top: float, big: bool) -> void:
 	var hw: float = 11.0 if big else 9.0

@@ -6,7 +6,7 @@ Project này được ghép từ:
 - Các file rời đi kèm: dùng `main.gd`, `main.tscn`, `project.godot`, font và tài liệu nhóm làm file cấu hình/đầu vào của project.
 
 ## Các điểm tích hợp quan trọng
-1. `scripts/draw/newcharacters.gd` chỉ giữ chuỗi kế thừa tương thích sau `characters.gd`; NPC có tên được tạo, cập nhật và vẽ duy nhất bởi feature `scripts/features/newcharacters.gd`.
+1. `scripts/draw/newcharacters.gd` chỉ giữ chuỗi kế thừa tương thích sau `characters.gd`; NPC có tên được tạo, cập nhật và vẽ duy nhất bởi feature `scripts/features/character.gd`.
 2. `maps/campus_overlay.gd` vẽ NPC thường và NPC quiz; feature NPC có tên vẽ lớp riêng để tránh tạo/vẽ trùng.
 3. `maps/campus_data.gd` giữ `get_doorways()` của bản GameTeam và thêm `QUIZ_NPC_POS` của bản Quiz.
 4. `maps/campus_setup.gd` tạo NPC quiz; `maps/campus_update.gd` không cho NPC quiz tự đi lang thang.

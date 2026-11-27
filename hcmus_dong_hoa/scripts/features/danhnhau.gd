@@ -17,7 +17,7 @@ extends "res://scripts/features/feature.gd"
 #
 # Chỉnh cho hợp ý: các hằng số bên dưới (phím, tầm với, xác suất khóc, số cú đánh làm NPC bỏ đi...) và bảng câu thoại REACTIONS.
 # Phụ thuộc mềm: nếu khoc.gd chưa đăng ký thì NPC luôn giận, game vẫn chạy bình thường.
-# Đăng ký SAU newcharacters.gd trong scripts/features/registry.gd để hiệu ứng vẽ đè lên NPC có tên.
+# Đăng ký SAU character.gd trong scripts/features/registry.gd để hiệu ứng vẽ đè lên NPC có tên.
 
 const POKE_KEY := KEY_H
 
@@ -39,7 +39,7 @@ const AWAY_MIN := 5.0           # NPC vắng mặt từ 5 tới 8 giây rồi xu
 const AWAY_MAX := 8.0
 const PUFF_TIME := 0.5          # thời gian làn khói lúc biến mất/xuất hiện
 
-const ROLE_SCRIPT := "res://scripts/features/newcharacters.gd"
+const ROLE_SCRIPT := "res://scripts/features/character.gd"
 const CANTEEN_SCRIPT := "res://scripts/maps/canteen.gd"
 const OUTLINE := Color("1a1a2e")
 const NAVY := Color("1b2f6e")
@@ -56,7 +56,7 @@ const IMPACT_WORDS := ["BỐP!", "CỐC!", "BỘP!", "PẶC!"]
 #   rant  = các "tràng" nói liên tiếp trước khi bỏ đi (mỗi tràng là một danh sách câu, bốc ngẫu nhiên 1 tràng).
 # Mỗi lần chọn ngẫu nhiên 1 câu (không lặp câu vừa nói). Vai nào thiếu mục nào thì dùng mục của "default".
 # NPC thường chỉ hiện 1 dòng nên giữ câu ngắn (khoảng 30 ký tự); NPC có tên tự xuống dòng nên có thể dài hơn.
-# Khóa là id vai trong newcharacters.gd ("thay_ltc"...), "quiz" là Cô Toán, "default" là sinh viên thường.
+# Khóa là id vai trong character.gd ("thay_ltc"...), "quiz" là Cô Toán, "default" là sinh viên thường.
 const REACTIONS := {
 	"default": {
 		"angry": ["Ê! Làm gì đó hả?", "Đau nha! Chọc hoài!", "Rảnh quá ha?", "Đừng có đụng vào tui!", "Ơ hay! Bị gì vậy?", "Tui giận thiệt đó nha!"],
@@ -86,6 +86,20 @@ const REACTIONS := {
 		"cry": ["Hức... Moodles sập luôn rồi...", "Huhu... thầy buồn lắm đó...", "Hức... sao em lại đánh thầy..."],
 		"rant": [
 			["Thôi, thầy cho mấy em tự học đi!", "Thầy ra ngoài uống ly cà phê.", "Nhớ làm bài trên Moodles nha."],
+		],
+	},
+	"thay_lkh": {
+		"angry": ["Này em, bài lab hôm nay em làm chưa mà nghịch?", "Thầy trừ điểm thực hành bây giờ đó nha!", "Ê, đừng có chọc thầy nữa."],
+		"cry": ["Hức... thầy dạy đạo hàm tận tình mà...", "Huhu... sao em lại đánh thầy..."],
+		"rant": [
+			["Em nghịch quá rồi đó!", "Thầy đi uống ly cà phê cho bớt giận.", "Nhớ nộp bài lab đúng hạn nha."],
+		],
+	},
+	"thay_nkt": {
+		"angry": ["Này em, giỡn vừa thôi, thầy lớn tuổi rồi nha!", "Thầy cho em chứng minh lại định lý đó nha.", "Ơ hay, em làm gì thầy vậy?"],
+		"cry": ["Hức... thầy dạy Toán rời rạc bao năm mà...", "Huhu... thầy buồn lắm đó em..."],
+		"rant": [
+			["Thôi, thầy không thèm chấp em!", "Thầy ra ghế đá nghỉ một lát.", "Mai nhớ nộp bài tập đồ thị nha."],
 		],
 	},
 	"bao_ve": {
@@ -171,7 +185,7 @@ func _find_target() -> Variant:
 			best_d = d
 	return best
 
-# Mọi NPC đang hiện: sinh viên thường + NPC có tên (lấy từ features/newcharacters.gd, tìm theo đường dẫn script)
+# Mọi NPC đang hiện: sinh viên thường + NPC có tên (lấy từ features/character.gd, tìm theo đường dẫn script)
 func _all_npcs() -> Array:
 	var out: Array = game.npcs.duplicate()
 	if _roles == null:
@@ -267,7 +281,7 @@ func _hit(n: Dictionary) -> void:
 	var spot: Vector2 = n["pos"] + Vector2(randf_range(-3.0, 3.0), -12.0 + randf_range(-3.0, 3.0))
 	_impacts.append({"pos": spot, "t": 0.0, "word": str(IMPACT_WORDS.pick_random())})
 
-# NPC đứng yên một lúc: NPC thường không chọn hướng đi mới, NPC có tên dùng cờ "talk" của newcharacters.gd
+# NPC đứng yên một lúc: NPC thường không chọn hướng đi mới, NPC có tên dùng cờ "talk" của character.gd
 func _freeze(n: Dictionary, t: float) -> void:
 	n["dir"] = Vector2.ZERO
 	if n.has("role"):
@@ -370,7 +384,7 @@ func _vanish(n: Dictionary) -> void:
 				local_npcs.remove_at(i)
 				break
 	elif n.has("role"):
-		n["hidden"] = true   # newcharacters.gd bỏ qua NPC hidden (không cập nhật, không vẽ, không nói chuyện được)
+		n["hidden"] = true   # character.gd bỏ qua NPC hidden (không cập nhật, không vẽ, không nói chuyện được)
 	else:
 		for i in game.npcs.size():
 			if is_same(game.npcs[i], n):

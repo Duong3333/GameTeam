@@ -19,14 +19,14 @@ extends "res://scripts/features/feature.gd"
 #           f.start_crying(null, 0.0)     # thời gian <= 0: khóc mãi cho tới khi gọi stop_crying()
 #           f.stop_crying(npc)
 #           f.is_crying(npc)
-# Đăng ký SAU newcharacters.gd trong registry để lớp nước mắt được vẽ đè lên NPC có tên.
+# Đăng ký SAU character.gd trong registry để lớp nước mắt được vẽ đè lên NPC có tên.
 
 const CRY_KEY := KEY_C
 const NPC_CRY_TIME := 7.0       # NPC khóc bấy nhiêu giây
 const PLAYER_CRY_TIME := 6.0    # người chơi khóc khi tụt GPA
 const PUDDLE_FADE := 5.0        # vũng nước khô sau bấy nhiêu giây kể từ lúc nín
 const SOB_INTERVAL := 1.8       # chu kỳ tiếng nấc
-const ROLE_SCRIPT := "res://scripts/features/newcharacters.gd"
+const ROLE_SCRIPT := "res://scripts/features/character.gd"
 const CANTEEN_SCRIPT := "res://scripts/maps/canteen.gd"
 const SOB_WORDS := ["hic", "huhu", "hu hu", "hic hic"]
 const TEAR := Color("8fd3ff")
@@ -69,7 +69,7 @@ func _state(target: Variant) -> Variant:
 		return _player_cry
 	return target.get("cry")
 
-# Mọi NPC: sinh viên thường + NPC có tên (lấy từ features/newcharacters.gd, tìm theo đường dẫn script)
+# Mọi NPC: sinh viên thường + NPC có tên (lấy từ features/character.gd, tìm theo đường dẫn script)
 func _all_npcs() -> Array:
 	var out: Array = game.npcs.duplicate()
 	if _roles == null:
@@ -152,7 +152,7 @@ func _tick(target: Variant, st: Dictionary, delta: float) -> void:
 		else:
 			target.erase("cry")
 
-# NPC đang khóc thì đứng yên (NPC thường: không chọn hướng đi mới; NPC có tên: dùng cờ "talk" của newcharacters.gd)
+# NPC đang khóc thì đứng yên (NPC thường: không chọn hướng đi mới; NPC có tên: dùng cờ "talk" của character.gd)
 func _hold_still(n: Dictionary) -> void:
 	n["dir"] = Vector2.ZERO
 	if n.has("role"):

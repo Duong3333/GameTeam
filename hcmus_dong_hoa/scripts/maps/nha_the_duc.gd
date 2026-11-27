@@ -841,7 +841,7 @@ func _update_dialogue(delta: float) -> void:
 func _text_w(t: String) -> float:
 	return _painter.font.get_string_size(t, HORIZONTAL_ALIGNMENT_LEFT, -1, 8).x
 
-# Tự xuống dòng theo độ rộng chữ (cỡ 8), giống wrap_text() của newcharacters.gd; từ dài hơn cả dòng thì cắt cứng
+# Tự xuống dòng theo độ rộng chữ (cỡ 8), giống wrap_text() của character.gd; từ dài hơn cả dòng thì cắt cứng
 func _wrap(t: String, max_w: float) -> Array:
 	var out: Array = []
 	var cur := ""

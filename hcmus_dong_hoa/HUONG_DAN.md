@@ -33,7 +33,7 @@ scripts/
   maps/b42_lab.gd          module Tòa B4.2 và phòng lab
   draw/pen.gd              bút vẽ cơ bản (hình chữ nhật pixel, bóng, chữ)
   draw/characters.gd       người, NPC thường, bóng thoại, xe máy
-  draw/newcharacters.gd    lớp chuyển tiếp; NPC có tên do features/newcharacters.gd quản lý
+  draw/newcharacters.gd    lớp chuyển tiếp; NPC có tên do features/character.gd quản lý
   systems/audio_manager.gd phát âm thanh (thiếu file thì im lặng, không lỗi)
   features/registry.gd     registry gameplay dùng chung (quiz, HUD...)
   features/_mau_feature.gd file mẫu để copy khi làm feature mới (không chạy trong game)
@@ -131,7 +131,7 @@ Xem `HUONG_DAN_GIT.md`.
 - Đứng gần NPC rồi bấm **H** để đánh trêu; giữ H để đấm liên hoàn bằng hai tay.
 - NPC bị đánh có thể khóc hoặc giận. NPC giận đủ số cú đánh sẽ nói một tràng rồi bỏ đi tạm thời và xuất hiện lại; Cô Toán không biến mất.
 - Bấm **C** để nhân vật của bạn khóc, bấm lại để nín. Nhân vật cũng tự khóc khi GPA bị tụt.
-- Code ở `scripts/features/danhnhau.gd` và `scripts/features/khoc.gd`. Cả hai feature được đăng ký sau `newcharacters.gd` trong `scripts/features/registry.gd`.
+- Code ở `scripts/features/danhnhau.gd` và `scripts/features/khoc.gd`. Cả hai feature được đăng ký sau `character.gd` trong `scripts/features/registry.gd`.
 - Đây là tính năng trêu vui: không có máu, sát thương hoặc chế độ đối kháng.
 
 ## Quiz ôn đề
