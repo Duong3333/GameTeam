@@ -191,6 +191,8 @@ func _choose_dash_end(target_pos: Vector2, away: Vector2) -> Vector2:
 
 
 func _apply_chidori_hit(npc: Dictionary) -> void:
+	if game.stats != null:
+		game.stats.add_drl(-1, "Dùng Chidori đánh NPC")
 	var player := _player_pos()
 	var away: Vector2 = npc["pos"] - player
 	away = away.normalized() if away.length() > 0.1 else _dash_dir

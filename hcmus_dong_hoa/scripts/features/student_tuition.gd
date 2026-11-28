@@ -12,6 +12,7 @@ var _details_label: Label
 var _balance_label: Label
 var _pay_button: Button
 var _defer_button: Button
+var _exit_button: Button
 var _stage := ""
 var _amount := 0
 var _available := 0
@@ -90,6 +91,11 @@ func _build_dialog() -> void:
 	_defer_button = _make_button(Rect2(206, 106, 170, 26), Color("334155"), Color("475569"))
 	_defer_button.pressed.connect(_on_defer_pressed)
 	_panel.add_child(_defer_button)
+	_exit_button = _make_button(Rect2(113, 106, 170, 26), Color("8b2635"), Color("b94b58"))
+	_exit_button.text = "VỀ MENU CHÍNH"
+	_exit_button.pressed.connect(_go_to_main_menu)
+	_exit_button.hide()
+	_panel.add_child(_exit_button)
 
 func _on_tuition_decision_requested(stage: String, amount: int, available: int) -> void:
 	_stage = stage
@@ -160,12 +166,49 @@ func _on_student_expelled() -> void:
 	_balance_label.add_theme_color_override("font_color", Color("ff9c8b"))
 	_pay_button.hide()
 	_defer_button.hide()
+	_exit_button.show()
+	_exit_button.grab_focus()
+
+func _go_to_main_menu() -> void:
+	_root.visible = false
+	get_tree().paused = false
+	Input.mouse_mode = _previous_mouse_mode
+	finish()
+	get_tree().change_scene_to_file("res://scripts/menu/main_menu.tscn")
+
+func _unhandled_input(event: InputEvent) -> void:
+	if _stage == "expelled" and event is InputEventKey and event.pressed and not event.echo:
+		if event.keycode == KEY_ESCAPE:
+			_go_to_main_menu()
+			get_viewport().set_input_as_handled()
 
 func _close_modal() -> void:
 	_root.visible = false
 	super.finish()
-	get_tree().paused = _was_paused
+	get_tree().paused = _has_other_pause_screen()
 	Input.mouse_mode = _previous_mouse_mode
+
+func _has_other_pause_screen() -> bool:
+	if not _was_paused:
+		return false
+	for feature in game.features:
+		if feature == self:
+			continue
+		var script: Variant = feature.get_script()
+		if not script is Script:
+			continue
+		var path := str(script.resource_path)
+		if path.ends_with("/daily_story.gd") and bool(feature.get("_visible")):
+			return true
+		if path.ends_with("/pause_menu.gd") or path.ends_with("/admin_time.gd"):
+			var layer: Variant = feature.get("_layer") if path.ends_with("/pause_menu.gd") else feature.get("layer")
+			if layer is CanvasLayer and layer.visible:
+				return true
+		if path.ends_with("/daily_summary.gd"):
+			var layer: Variant = feature.get("layer")
+			if layer is CanvasLayer and layer.visible:
+				return true
+	return false
 
 func _show_menu_notice(title: String, body: String) -> void:
 	for feature in game.features:

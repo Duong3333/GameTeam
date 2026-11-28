@@ -132,7 +132,6 @@ const ROOM_CONFIGS := {
 	"E": {
 		"title": "TÒA E · NHẬP MÔN CÔNG NGHỆ THÔNG TIN",
 		"sub": "Tổng quan ngành CNTT · Kiến trúc máy tính · Hướng nghiệp",
-		"teacher": {"shirt": "2f7d4c", "hair": "1b1b1b", "long": true, "name": "GV. Nhập môn CNTT"},
 		"npcs": [
 			{"col": 0, "row": 0, "frac": 0.22, "shirt": "3d5a80", "hair": "1b1b1b", "uni": true,  "long": false, "pack": true},
 			{"col": 0, "row": 0, "frac": 0.78, "shirt": "81b29a", "hair": "2a1d14", "uni": true,  "long": true,  "pack": true},
@@ -725,7 +724,7 @@ func _paint_teacher_area(p: Node2D) -> void:
 	# Phòng Toán rời rạc (D) và Vi tích phân (F) không còn GV vẽ cố định: thầy NKT / LTC (character.gd)
 	# chỉ xuất hiện đúng tiết. Lúc vắng, chỗ thầy đứng được thay bằng áp phích trên tường + ghế gỗ giảng viên.
 	var here: Dictionary = {}
-	if _roles_f != null and (_room_key == "D_TRR" or _room_key == "F_VTP"):
+	if _roles_f != null and (_room_key == "D_TRR" or _room_key == "F_VTP" or _room_key == "E"):
 		here = _roles_f.teacher_in_room(_room_key)
 	if _room_key == "D_TRR" or _room_key == "F_VTP":
 		_paint_wall_poster(p)

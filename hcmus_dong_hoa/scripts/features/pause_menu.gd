@@ -9,6 +9,12 @@ var _was_paused := false
 var _cfg := ConfigFile.new()
 var _vol_slider: HSlider
 var _vol_label: Label
+var _drl_slider: HSlider
+var _gpa_slider: HSlider
+var _wallet_slider: HSlider
+var _drl_value_label: Label
+var _gpa_value_label: Label
+var _wallet_value_label: Label
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -33,6 +39,12 @@ func _unhandled_input(event: InputEvent) -> void:
 			_close_pause()
 			get_viewport().set_input_as_handled()
 		elif kc == KEY_2 or kc == KEY_KP_2:
+			_adjust_drl(1)
+			get_viewport().set_input_as_handled()
+		elif kc == KEY_3 or kc == KEY_KP_3:
+			_adjust_drl(-1)
+			get_viewport().set_input_as_handled()
+		elif kc == KEY_4 or kc == KEY_KP_4:
 			_go_to_main_menu()
 			get_viewport().set_input_as_handled()
 		return
@@ -43,6 +55,7 @@ func _unhandled_input(event: InputEvent) -> void:
 func _open_pause() -> void:
 	_was_paused = get_tree().paused
 	_sync_volume_ui()
+	_sync_test_stats_ui()
 	begin()
 	_layer.visible = true
 	get_tree().paused = true
@@ -64,6 +77,67 @@ func _open_time_admin() -> void:
 			feature.call("open_admin")
 			return
 	push_warning("Không tìm thấy công cụ admin tua thời gian.")
+
+func _adjust_drl(amount: int) -> void:
+	if game.stats == null:
+		return
+	game.stats.add_drl(amount, "Điều chỉnh ĐRL để test")
+	_sync_test_stats_ui()
+
+func _sync_test_stats_ui() -> void:
+	if game.stats == null:
+		return
+	_ensure_wallet_bound()
+	var drl := int(game.stats.get("drl"))
+	var gpa := float(game.stats.get("gpa"))
+	var wallet := int(game.stats.get("money"))
+	if _drl_slider != null:
+		_drl_slider.set_value_no_signal(drl)
+	if _gpa_slider != null:
+		_gpa_slider.set_value_no_signal(gpa)
+	if _wallet_slider != null:
+		_wallet_slider.set_value_no_signal(clampf(float(wallet), _wallet_slider.min_value, _wallet_slider.max_value))
+	if _drl_value_label != null:
+		_drl_value_label.text = "Điểm rèn luyện: %d/100" % drl
+	if _gpa_value_label != null:
+		_gpa_value_label.text = "GPA: %.2f/4.00" % gpa
+	if _wallet_value_label != null:
+		_wallet_value_label.text = "Ví: %s" % game.stats.money_compact_text(wallet)
+
+func _ensure_wallet_bound() -> void:
+	if game.stats.has_method("has_wallet") and game.stats.call("has_wallet"):
+		return
+	var candidates: Array = game.features.duplicate()
+	candidates.append_array(game.get_children())
+	for feature in candidates:
+		if feature != game and feature.has_method("get_wallet_text") and feature.has_method("set_wallet_balance"):
+			game.stats.call("bind_wallet", feature)
+			return
+
+func _on_drl_slider_changed(value: float) -> void:
+	if game.stats == null:
+		return
+	var target := roundi(value)
+	game.stats.add_drl(target - int(game.stats.get("drl")), "Điều chỉnh ĐRL để test")
+	_sync_test_stats_ui()
+
+func _on_gpa_slider_changed(value: float) -> void:
+	if game.stats == null:
+		return
+	game.stats.set_gpa(value)
+	_sync_test_stats_ui()
+
+func _on_wallet_slider_changed(value: float) -> void:
+	if game.stats == null:
+		return
+	game.stats.set("money", roundi(value))
+	_sync_test_stats_ui()
+
+func _adjust_wallet(amount: int) -> void:
+	if game.stats == null:
+		return
+	game.stats.set("money", maxi(0, int(game.stats.get("money")) + amount))
+	_sync_test_stats_ui()
 
 func _sync_volume_ui() -> void:
 	var bus := AudioServer.get_bus_index("Master")
@@ -97,20 +171,20 @@ func _build_ui() -> void:
 	panel.set_anchors_preset(Control.PRESET_CENTER)
 	panel.offset_left = -125.0
 	panel.offset_right = 125.0
-	panel.offset_top = -100.0
-	panel.offset_bottom = 100.0
+	panel.offset_top = -127.0
+	panel.offset_bottom = 127.0
 
 	var style := StyleBoxFlat.new()
 	style.bg_color = Color("0f1b2d")
 	style.border_color = Color("e0b020")
 	style.set_border_width_all(2)
 	style.set_corner_radius_all(8)
-	style.set_content_margin_all(12)
+	style.set_content_margin_all(8)
 	panel.add_theme_stylebox_override("panel", style)
 	_layer.add_child(panel)
 
 	var box := VBoxContainer.new()
-	box.add_theme_constant_override("separation", 8)
+	box.add_theme_constant_override("separation", 2)
 	panel.add_child(box)
 
 	var title := Label.new()
@@ -156,18 +230,85 @@ func _build_ui() -> void:
 	box.add_child(_vol_slider)
 
 	var btn_resume := _make_btn("[1] Tiếp tục chơi (Esc)", Color("1e3a5f"))
+	btn_resume.custom_minimum_size.y = 20
 	btn_resume.pressed.connect(_close_pause)
 	box.add_child(btn_resume)
 
 	var btn_time := _make_btn("Thời gian (tua để test)", Color("34533f"))
+	btn_time.custom_minimum_size.y = 20
 	btn_time.pressed.connect(_open_time_admin)
 	box.add_child(btn_time)
 
-	var btn_menu := _make_btn("[2] Về Menu chính", Color("8b2635"))
+	_drl_value_label = _make_stat_label()
+	box.add_child(_drl_value_label)
+	_drl_slider = _make_stat_slider(0.0, 100.0, 1.0)
+	_drl_slider.value_changed.connect(_on_drl_slider_changed)
+	box.add_child(_drl_slider)
+	var drl_hint := Label.new()
+	drl_hint.text = "Phím 2: +1  ·  Phím 3: −1"
+	drl_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	drl_hint.add_theme_font_size_override("font_size", 7)
+	drl_hint.add_theme_color_override("font_color", Color("cbd5e1"))
+	box.add_child(drl_hint)
+
+	_gpa_value_label = _make_stat_label()
+	box.add_child(_gpa_value_label)
+	_gpa_slider = _make_stat_slider(0.0, 4.0, 0.1)
+	_gpa_slider.value_changed.connect(_on_gpa_slider_changed)
+	box.add_child(_gpa_slider)
+
+	_wallet_value_label = _make_stat_label()
+	box.add_child(_wallet_value_label)
+	_wallet_slider = _make_stat_slider(0.0, 10000000.0, 50000.0)
+	_wallet_slider.value_changed.connect(_on_wallet_slider_changed)
+	box.add_child(_wallet_slider)
+	var wallet_row := HBoxContainer.new()
+	wallet_row.add_theme_constant_override("separation", 4)
+	box.add_child(wallet_row)
+	var wallet_down := _make_btn("−100k", Color("8b3a3a"))
+	wallet_down.custom_minimum_size.y = 18
+	wallet_down.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	wallet_down.pressed.connect(_adjust_wallet.bind(-100000))
+	wallet_row.add_child(wallet_down)
+	var wallet_up := _make_btn("+100k", Color("256b4a"))
+	wallet_up.custom_minimum_size.y = 18
+	wallet_up.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	wallet_up.pressed.connect(_adjust_wallet.bind(100000))
+	wallet_row.add_child(wallet_up)
+
+	var btn_menu := _make_btn("[4] Về Menu chính", Color("8b2635"))
+	btn_menu.custom_minimum_size.y = 20
 	btn_menu.pressed.connect(_go_to_main_menu)
 	box.add_child(btn_menu)
 
 	_sync_volume_ui()
+	_sync_test_stats_ui()
+
+func _make_stat_label() -> Label:
+	var label := Label.new()
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.add_theme_font_size_override("font_size", 8)
+	label.add_theme_color_override("font_color", Color("f8fafc"))
+	return label
+
+func _make_stat_slider(min_value: float, max_value: float, step: float) -> HSlider:
+	var slider := HSlider.new()
+	slider.min_value = min_value
+	slider.max_value = max_value
+	slider.step = step
+	slider.custom_minimum_size = Vector2(0, 12)
+	var track := StyleBoxFlat.new()
+	track.bg_color = Color("1b2a42")
+	track.border_color = Color("64748b")
+	track.set_border_width_all(1)
+	track.content_margin_top = 2
+	track.content_margin_bottom = 2
+	var fill := StyleBoxFlat.new()
+	fill.bg_color = Color("e0b020")
+	slider.add_theme_stylebox_override("slider", track)
+	slider.add_theme_stylebox_override("grabber_area", fill)
+	slider.add_theme_stylebox_override("grabber_area_highlight", fill)
+	return slider
 
 func _make_btn(label_text: String, bg: Color) -> Button:
 	var btn := Button.new()

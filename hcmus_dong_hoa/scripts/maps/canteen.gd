@@ -1712,8 +1712,8 @@ func _eco_init() -> void:
 func _eco_load(cfg: ConfigFile) -> void:
 	var m: Variant = cfg.get_value("eco", "money", null)
 	var save_version := int(cfg.get_value("eco", "version", 0))
-	if save_version < 2:
-		money = START_MONEY   # reset số dư một lần khi nâng từ bản kinh tế cũ
+	if save_version < 3:
+		money = START_MONEY   # reset số dư một lần khi nâng lên ví khởi đầu 0đ
 	elif m == null:
 		money = START_MONEY
 	else:
@@ -1724,6 +1724,8 @@ func _eco_load(cfg: ConfigFile) -> void:
 		for w in pw:
 			if not _paid_weeks.has(int(w)):
 				_paid_weeks.append(int(w))
+	if save_version < 3 and not _paid_weeks.has(_week_now()):
+		_paid_weeks.append(_week_now())  # không cộng trợ cấp tuần ngay khi mở bản mới
 	if _paid_weeks.is_empty():
 		_paid_weeks.append(_week_now())   # không rõ đã nhận tuần nào: không trả bù, tránh nhận trùng
 	_trash = maxi(int(cfg.get_value("eco", "trash", 0)), 0)
@@ -1745,7 +1747,7 @@ func _eco_save() -> void:
 	if not _eco_ready:
 		return
 	var cfg := ConfigFile.new()
-	cfg.set_value("eco", "version", 2)
+	cfg.set_value("eco", "version", 3)
 	cfg.set_value("eco", "money", money)
 	cfg.set_value("eco", "paid_weeks", _paid_weeks.duplicate())
 	cfg.set_value("eco", "inv", _inv.duplicate())

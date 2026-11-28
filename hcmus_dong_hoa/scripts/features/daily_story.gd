@@ -163,7 +163,7 @@ const DAY_STORIES: Dictionary = {
 const STORY_OBJECTIVES: Array[Dictionary] = [
 	{"day": 0, "title": "Ngày đầu ở HCMUS", "text": "Tìm và vào Nhà Thể Dục — nơi có tiết học đầu tiên.", "kind": "enter_module", "module": "nha_the_duc.gd"},
 	{"day": 2, "title": "Mượn giáo trình", "text": "Vào Thư viện Tòa C, nói chuyện với thủ thư và mượn một cuốn sách.", "kind": "borrow_book"},
-	{"day": 3, "title": "Quiz CSLT đầu tiên", "text": "Đến lớp đúng giờ, ngồi vào bàn để bắt đầu quiz Cơ sở lập trình.", "kind": "class_started", "course": "CSLT", "available_day": 3},
+	{"day": 3, "title": "Quiz Nhập môn CNTT đầu tiên", "text": "Đến lớp đúng giờ, ngồi vào bàn để bắt đầu quiz Nhập môn Công nghệ Thông tin.", "kind": "class_started", "course": "INTRO_IT", "available_day": 3},
 	{"day": 13, "title": "Bài tập đầu tiên", "text": "Mở sổ tay bằng Tab → B và hoàn thành bài tập CSLT.", "kind": "homework_completed", "course": "CSLT"},
 	{"day": 34, "title": "Chuẩn bị giữa kỳ", "text": "Tự học 2 giờ trong game ở thư viện để tăng GPA và nhận ĐRL.", "kind": "library_study", "minutes": 120.0},
 	{"day": 42, "title": "Ôn tập lần cuối", "text": "Tự học thêm 2 giờ trong game ở thư viện trước tuần thi.", "kind": "library_study", "minutes": 120.0},

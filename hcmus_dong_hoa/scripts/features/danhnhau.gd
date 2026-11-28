@@ -249,6 +249,8 @@ func _fx(n: Dictionary) -> Dictionary:
 	return n["fx"]
 
 func _hit(n: Dictionary) -> void:
+	if game.stats != null:
+		game.stats.add_drl(-1, "Đánh NPC")
 	var fx := _fx(n)
 	var player: Vector2 = _player_pos()
 	var away: Vector2 = n["pos"] - player

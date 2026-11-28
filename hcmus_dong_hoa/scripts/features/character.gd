@@ -32,6 +32,14 @@ const ROLE_NPCS := {
 		"name": "Thầy NKT", "home": Vector2(892, 960),
 		"lines": ["Đồ thị này thầy cho các em vẽ bằng tay, đừng chép của bạn nha.", "Quan hệ mà không có tính phản xạ là thầy trừ điểm đó."],
 	},
+	"thay_dnhd": {
+		"name": "Thầy DNHD", "home": Vector2(1177, 930),
+		"lines": [
+			"Các em làm game vibe code mà không hiểu gì thì có khác gì thầy thời 10 năm trước đâu",
+			"Tại sao người ta lại không cấm thuốc lá",
+			"Bài toán 10 tỷ VND cho ai xử lí được vấn đề lụt ở thành phố",
+		],
+	},
 	"bao_ve": {
 		"name": "Bác bảo vệ", "home": Vector2(770, 928),
 		"lines": ["Hôm nay ăn mặc đẹp đấy chàng trai.", "Mà thẻ sinh viên của em đâu?"],
@@ -319,6 +327,8 @@ func role_style(role: String) -> Dictionary:
 			return {"skin": Color("f1c27d"), "hair": Color("2a1d14"), "shirt": Color("e8c9a0"), "sleeve": Color("e8c9a0"), "pants": Color("2b3a55"), "shoe": Color("111118"), "tie": Color("2f6b4f"), "pocket": true}
 		"thay_nkt":   # thầy lớn tuổi: sơ mi xanh xám, quần tây nâu than, kính, tóc muối tiêu
 			return {"skin": Color("f5cf94"), "hair": Color("6b6b74"), "shirt": Color("c9d3e6"), "sleeve": Color("c9d3e6"), "pants": Color("3a3a46"), "shoe": Color("1a1a1a"), "glasses": true, "pocket": true}
+		"thay_dnhd":
+			return {"skin": Color("f1c27d"), "hair": Color("2a1d14"), "shirt": Color("f2f2f2"), "sleeve": Color("f2f2f2"), "pants": Color("2b2f4a"), "shoe": Color("111118"), "pocket": true}
 		"bao_ve":     # áo và mũ kê-pi xanh navy, quần tây đen, thắt lưng, ria
 			return {"skin": Color("d9a066"), "hair": Color("8a8a8a"), "shirt": Color("1f3a7a"), "sleeve": Color("1f3a7a"), "pants": Color("1c1c24"), "shoe": Color("1a1a1a"), "cap": Color("1b2f5e"), "belt": true, "stache": true}
 		"giu_xe":     # áo phản quang cam trên áo xám, mũ lưỡi trai trắng
@@ -535,7 +545,7 @@ const BENCH_SEAT := Vector2(1516.0, 630.0)   # chỗ ngồi trên ghế đá (đ
 const NODES := {
 	"gate_out": Vector2(1322, 1488), "gate": Vector2(1322, 1420), "s1": Vector2(1322, 1284),
 	"p1_door": Vector2(990, 1284), "p1_j": Vector2(1040, 1284), "p1_n": Vector2(1040, 960),
-	"j": Vector2(1322, 960), "m_w": Vector2(892, 960), "d_door": Vector2(892, 792),
+	"j": Vector2(1322, 960), "m_w": Vector2(892, 960), "d_door": Vector2(892, 792), "e_door": Vector2(1177, 861),
 	"m_e": Vector2(1870, 960), "f_in": Vector2(1870, 804), "f_door": Vector2(2005, 804),
 	"v641": Vector2(1322, 641), "bench_ap": Vector2(1516, 641), "v_n": Vector2(1322, 220), "v_b": Vector2(1322, 150),
 	"b42_ap": Vector2(1115, 150), "b42_door": Vector2(1115, 114),
@@ -544,7 +554,7 @@ const NODES := {
 }
 const EDGES := [
 	["gate_out", "gate"], ["gate", "s1"], ["s1", "p1_j"], ["p1_j", "p1_door"], ["p1_j", "p1_n"], ["p1_n", "j"], ["p1_n", "m_w"],
-	["s1", "j"], ["j", "m_w"], ["m_w", "d_door"], ["j", "m_e"], ["m_e", "f_in"], ["f_in", "f_door"],
+	["s1", "j"], ["j", "m_w"], ["m_w", "d_door"], ["j", "e_door"], ["j", "m_e"], ["m_e", "f_in"], ["f_in", "f_door"],
 	["j", "v641"], ["v641", "bench_ap"], ["v641", "v_n"], ["v_n", "v_b"], ["v_b", "b42_ap"], ["b42_ap", "b42_door"],
 	["b42_ap", "cant_e"], ["cant_e", "cant_m"], ["cant_m", "cant_s"], ["cant_s", "cant_door"],
 	["v_n", "pk2_in"], ["pk2_in", "pk2"], ["pk2_in", "f_in"],
@@ -563,10 +573,12 @@ const TEACHERS := {
 		"early": 75.0, "off_arrive": 480.0, "bike": Color("282828"), "seed": 11},
 	"thay_ldk": {"course": "Cơ sở lập trình", "kind": "TH", "room": "D_CSLT", "door": "d_door", "park_node": "p1_door",
 		"early": 30.0, "off_arrive": 525.0, "bike": Color("1f4e78"), "seed": 5},
+	"thay_dnhd": {"course": "Nhập môn Công nghệ Thông tin", "kind": "LT", "room": "E", "door": "e_door", "park_node": "p1_door",
+		"early": 45.0, "off_arrive": 510.0, "bike": Color("287a4b"), "seed": 13},
 }
 # chỗ thầy đứng/ngồi trong phòng (toạ độ của canvas phòng)
-const ROOM_SPOTS := {"D_TRR": Vector2(72, 56), "F_VTP": Vector2(72, 56), "B42_VTP": Vector2(176, 78), "D_CSLT": Vector2(176, 78)}
-const ROOM_DOOR_SPOTS := {"D_TRR": Vector2(240, 242), "F_VTP": Vector2(240, 242), "B42_VTP": Vector2(412, 240), "D_CSLT": Vector2(412, 240)}
+const ROOM_SPOTS := {"D_TRR": Vector2(72, 56), "F_VTP": Vector2(72, 56), "B42_VTP": Vector2(176, 78), "D_CSLT": Vector2(176, 78), "E": Vector2(72, 56)}
+const ROOM_DOOR_SPOTS := {"D_TRR": Vector2(240, 242), "F_VTP": Vector2(240, 242), "B42_VTP": Vector2(412, 240), "D_CSLT": Vector2(412, 240), "E": Vector2(240, 242)}
 # Lộ trình trong canvas phòng (từ cửa phòng tới bàn giáo viên), đã kiểm tra với vùng va chạm thật của từng phòng:
 # D/F: cửa -> lối đi giữa -> dọc sân khấu -> cạnh bàn -> sau bàn tới ghế giảng viên (đoạn cuối đi sau bàn, bàn vẽ đè lên thầy).
 # B4.2: cửa -> sát tường phải -> lối đi phía trên dãy máy -> cạnh bàn giảng viên (bên trái).
@@ -574,7 +586,8 @@ const ROOM_WAYPOINTS := {
 	"D_TRR": [Vector2(240, 84), Vector2(112, 84), Vector2(112, 56), Vector2(72, 56)],
 	"F_VTP": [Vector2(240, 84), Vector2(112, 84), Vector2(112, 56), Vector2(72, 56)],
 	"B42_VTP": [Vector2(440, 240), Vector2(440, 100), Vector2(176, 100), Vector2(176, 78)],
-	"D_CSLT": [Vector2(440, 240), Vector2(440, 100), Vector2(176, 100), Vector2(176, 78)]
+	"D_CSLT": [Vector2(440, 240), Vector2(440, 100), Vector2(176, 100), Vector2(176, 78)],
+	"E": [Vector2(240, 84), Vector2(112, 84), Vector2(112, 56), Vector2(72, 56)]
 }
 const ROOM_WALK_SPEED := 42.0   # đi chậm trong phòng, tốc độ không đổi
 const NEAR_RANGE := 46.0        # người chơi vào phạm vi này: thầy đi chậm lại
@@ -602,6 +615,7 @@ const ASK_LINES := {
 	"thay_lkh": ["Đạo hàm hàm hợp: đạo hàm hàm ngoài nhân đạo hàm hàm trong. Em nhớ đừng quên nhân đạo hàm của phần trong.", "Em kiểm tra lại dấu khi lấy giới hạn tại vô cực rồi chạy lại bài lab nhé."],
 	"thay_ltc": ["Tích phân từng phần: chọn u dễ đạo hàm, dv dễ tích phân. Em thử lại bài này nhé.", "Giới hạn mà ra dạng vô định thì mình khử bằng nhân lượng liên hợp hoặc L'Hôpital đó em."],
 	"thay_ldk": ["Con trỏ lưu địa chỉ ô nhớ của biến; em vẽ sơ đồ vùng nhớ ra trước khi viết code nhé.", "Khi truyền mảng vào hàm C/C++, nhớ truyền kèm kích thước mảng để tránh truy cập vượt biên em nha."],
+	"thay_dnhd": ["Trước khi thêm tính năng mới, thử giải thích bằng lời cách chương trình đang chạy nhé.", "Một game tốt không chỉ chạy được; người làm ra nó còn phải hiểu vì sao nó chạy."],
 }
 
 var _rk := ""                       # khóa phòng học mà người chơi đang ở trong (rỗng nếu ở ngoài trời)

@@ -140,6 +140,8 @@ func _player_pos() -> Vector2:
 func _apply_rasengan_hit() -> void:
 	if not _target is Dictionary or bool(_target.get("hidden", false)):
 		return
+	if game.stats != null:
+		game.stats.add_drl(-1, "Dùng Rasengan đánh NPC")
 	var npc: Dictionary = _target
 	var away: Vector2 = npc["pos"] - _player_pos()
 	away = away.normalized() if away.length() > 0.1 else _direction
