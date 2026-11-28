@@ -1,0 +1,5 @@
+{
+  "remote_endpoint": "http://127.0.0.1:8000/api/judge",
+  "timeout_seconds": 45.0,
+  "force_remote_on_desktop": true
+}

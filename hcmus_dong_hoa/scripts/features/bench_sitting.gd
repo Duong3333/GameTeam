@@ -33,8 +33,6 @@ func _process(delta: float) -> void:
 
 func draw_front_layer() -> void:
 	if _seated_index >= 0:
-		if _seated_index < game.benches.size():
-			game.draw_bench(game.benches[_seated_index])
 		_draw_prompt("E: Đứng dậy")
 		return
 	if game.is_busy():
@@ -61,7 +59,8 @@ func _sit(index: int) -> void:
 	var bench_pos: Vector2 = game.get_bench_position(bench)
 	_seated_index = index
 	_sit_time = 0.0
-	game.player = bench_pos
+	var seat_offset := Vector2(4.0, 0.0) if _is_vertical(bench) else Vector2.ZERO
+	game.player = bench_pos + seat_offset
 	game.facing = int(bench.get("face", 2 if _is_vertical(bench) else 0)) if bench is Dictionary else 0
 	active = true
 

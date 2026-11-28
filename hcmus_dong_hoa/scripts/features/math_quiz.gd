@@ -123,6 +123,8 @@ func _ready() -> void:
 	programming_runner = ProgrammingRunner.new()
 	add_child(programming_runner)
 	programming_runner.connect("run_completed", _on_cpp_run_completed)
+	if is_instance_valid(code_editor) and code_editor.has_method("set_backend_info"):
+		code_editor.call("set_backend_info", str(programming_runner.call("get_backend_name")), int(programming_runner.get("backend_mode")) == 1)
 	grading_config = GradingEngine.load_config()
 	_load_official_exam_attempts()
 	_prepare_official_exam_attempts_for_game_mode()
@@ -701,7 +703,8 @@ func next_question() -> void:
 		time_limit = 180.0
 		time_left = time_limit
 	var question_source := str(question.get("question_latex", question.get("question_text", "")))
-	var readable_question := MathQuestions.latex_to_readable_text(question_source)
+	var is_code_question := str(question.get("answer_type", "")) in ["short_code", "code_output"]
+	var readable_question := question_source if is_code_question else MathQuestions.latex_to_readable_text(question_source)
 	question_label.text = readable_question
 	question_input.text = ""
 	question_input.editable = true
@@ -813,14 +816,17 @@ func _run_code_from_editor(source_code: String, input_text: String) -> void:
 		code_editor.call("set_status", "Câu này chưa có bộ khung Run tự động.", true)
 		return
 	pending_cpp_action = "run"
-	pending_cpp_expected_cases.clear()
+	pending_cpp_expected_cases = built["expected_cases"].duplicate() if built.has("expected_cases") else []
 	pending_cpp_source = source_code
+	var effective_input := input_text
+	if str(question.get("id", "")).begins_with("CSLT_MID_") or (effective_input.strip_edges().is_empty() and not str(built.get("input", "")).is_empty()):
+		effective_input = str(built.get("input", ""))
 	var run_context := {
 		"action": "run",
 		"question_id": str(question.get("id", "")),
 		"remote_source": source_code
 	}
-	var started: bool = programming_runner.call("run_code", str(built["source"]), input_text, run_context)
+	var started: bool = programming_runner.call("run_code", str(built["source"]), effective_input, run_context)
 	if not started and pending_cpp_action == "run":
 		pending_cpp_action = ""
 		code_editor.call("set_busy", false)
@@ -878,21 +884,52 @@ func _on_cpp_run_completed(result: Dictionary) -> void:
 	var output := str(result.get("output", ""))
 	var details := str(result.get("details", ""))
 	if action == "run":
-		var visible_output := output.replace("@@CASE_END@@", "").strip_edges()
-		if not details.is_empty():
-			visible_output += ("\n" if not visible_output.is_empty() else "") + "[stderr]\n" + details
+		var visible_output := ""
+		var status_text := str(result.get("message", "Đã chạy xong."))
+		if success and not expected_cases.is_empty() and output.contains("@@CASE_END@@"):
+			var run_grade := ProgrammingJudge.grade_submission(output, expected_cases, float(expected_cases.size()), true)
+			var correct := int(run_grade.get("correct_testcases", 0))
+			var total := int(run_grade.get("total_testcases", expected_cases.size()))
+			var lines: Array[String] = ["Chạy thử: %d / %d testcase đạt" % [correct, total], "──────────────────────────────"]
+			var criteria: Array = run_grade.get("criteria", [])
+			for idx in range(criteria.size()):
+				var c: Dictionary = criteria[idx]
+				var passed := float(c.get("earned_points", 0.0)) > 0.0
+				lines.append("[%s] Testcase %d" % ["PASS" if passed else "FAIL", idx + 1])
+			visible_output = "\n".join(lines)
+			status_text = "Chạy thử: %d/%d testcase đạt." % [correct, total]
+		else:
+			visible_output = output.replace("@@CASE_END@@", "").strip_edges()
+		var line_offset := int(code_editor.call("_student_line_offset")) if code_editor.has_method("_student_line_offset") else 0
+		var student_lines := int(code_editor.call("get_student_line_count")) if code_editor.has_method("get_student_line_count") else 0
+		var clean_details := _format_compiler_diagnostics(details, line_offset, student_lines)
+		if not clean_details.is_empty():
+			var header := "[Lỗi biên dịch]" if str(result.get("stage", "")) == "compile" else "[stderr]"
+			visible_output += ("\n\n" if not visible_output.is_empty() else "") + header + "\n" + clean_details
 		if not success and visible_output.is_empty():
 			visible_output = str(result.get("message", "Không chạy được chương trình."))
 		code_editor.call("set_output", visible_output)
-		code_editor.call("set_status", str(result.get("message", "Đã chạy xong.")), not success)
+		code_editor.call("set_status", status_text, not success)
 		if str(result.get("stage", "")) == "compile" and code_editor.has_method("show_compile_errors"):
 			code_editor.call("show_compile_errors", details)
 		return
 
 	if action == "submit":
+		var stage := str(result.get("stage", ""))
+		if not success and stage in ["network", "http", "remote_config", "server_config", "provider"]:
+			answered = false
+			question_input.editable = true
+			if math_input.has_method("set_editable"):
+				math_input.call("set_editable", true)
+			submit_btn.disabled = false
+			submit_btn.visible = true
+			code_editor.call("set_editable", true)
+			code_editor.call("set_status", str(result.get("message", "Lỗi kết nối dịch vụ chấm bài.")) + " Hãy thử Submit lại.", true)
+			code_editor.call("set_output", str(result.get("message", "")) + ("\n" + _format_compiler_diagnostics(details) if not details.is_empty() else ""))
+			return
 		var weight := maxf(float(question.get("points", 2.0)), 0.0)
 		var grade: Dictionary = {}
-		if bool(result.get("remote", false)):
+		if bool(result.get("remote", false)) and result.has("grade"):
 			var remote_grade_value: Variant = result.get("grade", {})
 			if typeof(remote_grade_value) == TYPE_DICTIONARY:
 				var remote_grade: Dictionary = remote_grade_value
@@ -915,12 +952,101 @@ func _on_cpp_run_completed(result: Dictionary) -> void:
 		if not feedback.is_empty():
 			feedback += "\n"
 		feedback += str(result.get("message", ""))
-		if not details.is_empty():
-			feedback += "\n\nChi tiết trình biên dịch/chương trình:\n" + details
+		var line_offset := int(code_editor.call("_student_line_offset")) if code_editor.has_method("_student_line_offset") else 0
+		var student_lines := int(code_editor.call("get_student_line_count")) if code_editor.has_method("get_student_line_count") else 0
+		var clean_details := _format_compiler_diagnostics(details, line_offset, student_lines)
+		if not clean_details.is_empty():
+			feedback += "\n\nChi tiết lỗi:\n" + clean_details
 		grade["feedback"] = feedback
 		if str(result.get("stage", "")) == "compile" and is_instance_valid(code_editor) and code_editor.has_method("show_compile_errors"):
 			code_editor.call("show_compile_errors", details)
 		_process_answer(submitted_source, false, grade)
+
+func _format_compiler_diagnostics(raw: String, line_offset: int = 0, student_line_count: int = 0) -> String:
+	if raw.is_empty():
+		return ""
+	var lines := raw.split("\n")
+	var out: Array[String] = []
+	var skip_snippet_block := false
+	var saw_hidden_harness_error := false
+	var regex_linker := RegEx.new()
+	regex_linker.compile("undefined reference to [`']([^'`]+)[`']")
+	var regex_diag := RegEx.new()
+	regex_diag.compile("(?:submission\\.cpp:(\\d+):(\\d+):|Dòng (\\d+):)\\s*(.*)")
+	var regex_snippet := RegEx.new()
+	regex_snippet.compile("^(\\d+)\\s*\\|\\s?(.*)$")
+	var regex_path := RegEx.new()
+	regex_path.compile("^[A-Za-z]:[/\\\\]")
+
+	for line in lines:
+		var s := line.strip_edges()
+		if s.is_empty():
+			continue
+		if s.begins_with("collect2") or s.contains("collect2.exe"):
+			continue
+		if s.ends_with("ld.exe:") or s.ends_with("ld:"):
+			continue
+		if s.begins_with("In function 'int main()'") or s.begins_with("In function \"int main()\""):
+			skip_snippet_block = true
+			continue
+		if s.contains("undefined reference to"):
+			skip_snippet_block = false
+			var m := regex_linker.search(s)
+			if m:
+				out.append("Lỗi liên kết: Hàm '%s' chưa được định nghĩa." % m.get_string(1))
+			else:
+				out.append("Lỗi liên kết: " + s.get_slice("undefined reference to", 1).strip_edges())
+			continue
+
+		var m2 := regex_diag.search(s)
+		if m2:
+			var raw_num := m2.get_string(1) if not m2.get_string(1).is_empty() else m2.get_string(3)
+			var msg := m2.get_string(4).strip_edges()
+			var compiled_line := int(raw_num)
+			var ide_line := compiled_line - line_offset
+			if line_offset > 0 and (ide_line < 1 or (student_line_count > 0 and ide_line > student_line_count)):
+				skip_snippet_block = true
+				saw_hidden_harness_error = true
+				continue
+			skip_snippet_block = false
+			out.append("Dòng %d: %s" % [maxi(ide_line, 1), msg])
+			continue
+
+		var m_snip := regex_snippet.search(s)
+		if m_snip:
+			if skip_snippet_block:
+				continue
+			var snip_line := int(m_snip.get_string(1)) - line_offset
+			if line_offset > 0 and (snip_line < 1 or (student_line_count > 0 and snip_line > student_line_count)):
+				skip_snippet_block = true
+				continue
+			out.append("%d | %s" % [maxi(snip_line, 1), m_snip.get_string(2)])
+			continue
+
+		if s.begins_with("|"):
+			if not skip_snippet_block:
+				out.append(s)
+			continue
+
+		if regex_path.search(s):
+			var colon_pos := s.rfind(": ")
+			if colon_pos >= 0:
+				var useful := s.substr(colon_pos + 2).strip_edges()
+				if not useful.is_empty():
+					out.append(useful)
+			continue
+
+		if not skip_snippet_block:
+			out.append(s)
+
+	if out.is_empty() and saw_hidden_harness_error:
+		return "Lỗi: Chưa định nghĩa đủ hàm hoặc sai tên/kiểu tham số so với đề bài."
+
+	var final: Array[String] = []
+	for i in range(out.size()):
+		if i == 0 or out[i] != out[i - 1]:
+			final.append(out[i])
+	return "\n".join(final)
 
 func submit_answer_with_response(response: String) -> void:
 	if answered:

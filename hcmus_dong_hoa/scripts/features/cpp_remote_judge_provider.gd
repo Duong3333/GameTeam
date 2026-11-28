@@ -12,7 +12,7 @@ var _is_running := false
 func _ready() -> void:
 	_http = HTTPRequest.new()
 	_http.timeout = request_timeout_seconds
-	_http.use_threads = true
+	_http.use_threads = not OS.has_feature("web")
 	_http.request_completed.connect(_on_request_completed)
 	add_child(_http)
 
@@ -20,7 +20,7 @@ func is_running() -> bool:
 	return _is_running
 
 func is_available() -> bool:
-	return endpoint_url.begins_with("https://") and _http != null
+	return (endpoint_url.begins_with("https://") or endpoint_url.begins_with("http://")) and _http != null
 
 func run_code(source_code: String, input_text: String, context: Dictionary = {}) -> bool:
 	if _is_running:
@@ -55,7 +55,8 @@ func run_code(source_code: String, input_text: String, context: Dictionary = {})
 		"standard": "c++17",
 		"action": action,
 		"source_code": remote_source,
-		"stdin": input_text if action == "run" else ""
+		"compiled_source": source_code,
+		"stdin": input_text
 	}
 	var headers := PackedStringArray([
 		"Content-Type: application/json",
@@ -63,8 +64,11 @@ func run_code(source_code: String, input_text: String, context: Dictionary = {})
 	])
 	if not access_token.is_empty():
 		headers.append("Authorization: Bearer " + access_token)
+	var target_url := endpoint_url
+	if not OS.has_feature("web") and target_url.begins_with("http://localhost:"):
+		target_url = target_url.replace("http://localhost:", "http://127.0.0.1:")
 	var error := _http.request(
-		endpoint_url,
+		target_url,
 		headers,
 		HTTPClient.METHOD_POST,
 		JSON.stringify(payload)

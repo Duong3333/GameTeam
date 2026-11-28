@@ -83,10 +83,10 @@ func _update_page() -> void:
 	_page_index = clampi(_page_index, 0, _questions.size() - 1)
 	var question: Dictionary = _questions[_page_index]
 	var source := str(question.get("question_latex", question.get("question_text", "")))
-	var page_text := "CÂU %d\n\n%s" % [
-		int(question.get("question_number", _page_index + 1)),
-		MathQuestions.latex_to_readable_text(source)
-	]
+	var is_code_question := str(question.get("answer_type", "")) in ["short_code", "code_output"]
+	var formatted_source := source if is_code_question else MathQuestions.latex_to_readable_text(source)
+	var q_num := int(question.get("question_number", _page_index + 1))
+	var page_text := formatted_source if formatted_source.begins_with("CÂU %d" % q_num) else ("CÂU %d\n\n%s" % [q_num, formatted_source])
 	var options_value: Variant = question.get("options", [])
 	if typeof(options_value) == TYPE_ARRAY:
 		var options: Array = options_value

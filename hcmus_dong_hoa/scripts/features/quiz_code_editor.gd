@@ -16,7 +16,7 @@ var status_label: Label
 var run_button: Button
 var submit_button: Button
 var save_button: Button
-var editor_font_size := 11
+var editor_font_size := 8
 var _save_timer: Timer
 var _loading_workspace := false
 var _initial_source := ""
@@ -35,7 +35,7 @@ const LIBRARY_COLOR := Color("f9a8d4")
 const VARIABLE_COLOR := Color("e5e7eb")
 const ERROR_LINE_COLOR := Color(0.75, 0.2, 0.2, 0.32)
 const RESET_CONFIRM_SECONDS := 3.0
-const COMPILE_ERROR_PATTERN := "submission\\.cpp:(\\d+):(\\d+):\\s*(?:fatal )?error:\\s*(.*)"
+const COMPILE_ERROR_PATTERN := "(?:submission\\.cpp:(\\d+):(\\d+):|Dòng (\\d+):)\\s*(?:fatal )?error:\\s*(.*)"
 
 const CPP_KEYWORDS := ["int", "long", "short", "unsigned", "signed", "char", "bool", "float", "double", "void", "auto", "const", "static", "struct", "class", "enum", "return", "if", "else", "for", "while", "do", "switch", "case", "break", "continue", "true", "false", "nullptr", "sizeof", "using", "namespace", "template", "typename", "new", "delete"]
 const CPP_LIBRARY := ["cout", "cin", "endl", "vector", "string", "sort", "max", "min", "abs", "swap", "sqrt", "pow", "floor", "ceil", "to_string", "reverse", "setprecision", "fixed", "size", "push_back", "pop_back", "length", "substr", "find", "begin", "end"]
@@ -49,6 +49,8 @@ const CPP_SNIPPETS := {
 }
 
 var reset_button: Button
+var prototype_button: Button
+var backend_label: Label
 var position_label: Label
 var _reset_timer: Timer
 var _reset_armed := false
@@ -87,7 +89,8 @@ func set_question(value: Dictionary) -> void:
 		else:
 			source_edit.placeholder_text = "Nhập lời giải hoặc phần giải thích của bạn tại đây."
 	var default_input := TestBank.get_default_input(question_id)
-	var uses_stdin := not default_input.is_empty()
+	var is_composite_midterm := question_id.begins_with("CSLT_MID_")
+	var uses_stdin := (not default_input.is_empty()) and (not is_composite_midterm)
 	if is_instance_valid(input_panel):
 		input_panel.visible = uses_stdin
 	if is_instance_valid(input_edit):
@@ -115,6 +118,9 @@ func set_question(value: Dictionary) -> void:
 		run_button.disabled = not can_run
 	if is_instance_valid(save_button):
 		save_button.disabled = false
+	if is_instance_valid(prototype_button):
+		var funcs: Variant = question.get("required_functions", [])
+		prototype_button.visible = typeof(funcs) == TYPE_ARRAY and not (funcs as Array).is_empty()
 	set_busy(false)
 
 func get_response() -> String:
@@ -171,6 +177,12 @@ func _build_ui() -> void:
 	standard_label.add_theme_font_size_override("font_size", 9)
 	topbar.add_child(standard_label)
 
+	backend_label = Label.new()
+	backend_label.text = "· Online Judge" if OS.has_feature("web") else "· Local GCC"
+	backend_label.add_theme_color_override("font_color", Color("93c5fd") if OS.has_feature("web") else MUTED)
+	backend_label.add_theme_font_size_override("font_size", 9)
+	topbar.add_child(backend_label)
+
 	var zoom_out := _make_button("A−", Color("475569"), 28)
 	zoom_out.pressed.connect(func() -> void: _set_editor_font_size(editor_font_size - 1))
 	topbar.add_child(zoom_out)
@@ -194,7 +206,7 @@ func _build_ui() -> void:
 
 	var editor_panel := _make_panel()
 	editor_panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	editor_panel.size_flags_stretch_ratio = 1.65
+	editor_panel.size_flags_stretch_ratio = 2.15
 	body.add_child(editor_panel)
 
 	var editor_box := VBoxContainer.new()
@@ -234,7 +246,7 @@ func _build_ui() -> void:
 
 	var side := VBoxContainer.new()
 	side.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	side.size_flags_stretch_ratio = 1.0
+	side.size_flags_stretch_ratio = 0.85
 	side.add_theme_constant_override("separation", 5)
 	body.add_child(side)
 
@@ -278,6 +290,7 @@ func _build_ui() -> void:
 
 	output_edit = TextEdit.new()
 	output_edit.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	output_edit.wrap_mode = TextEdit.LINE_WRAPPING_BOUNDARY
 	output_edit.placeholder_text = "Kết quả chạy sẽ hiển thị tại đây..."
 	output_edit.editable = false
 	output_edit.add_theme_font_size_override("font_size", editor_font_size - 1)
@@ -308,6 +321,11 @@ func _build_ui() -> void:
 	actions.add_theme_constant_override("separation", 5)
 	layout.add_child(actions)
 
+	prototype_button = _make_button("Chèn Prototype", Color("0f766e"), 96)
+	prototype_button.tooltip_text = "Chèn khung hàm mẫu vào vùng code và copy vào clipboard"
+	prototype_button.pressed.connect(_insert_prototypes)
+	actions.add_child(prototype_button)
+
 	reset_button = _make_button("Reset", Color("475569"), 54)
 	reset_button.tooltip_text = "Bấm 2 lần để xóa code và input"
 	reset_button.pressed.connect(_on_reset_pressed)
@@ -330,7 +348,20 @@ func _input(event: InputEvent) -> void:
 	if not is_visible_in_tree() or not (event is InputEventKey):
 		return
 	var key := event as InputEventKey
-	if not key.pressed or key.echo or not key.ctrl_pressed:
+	if not key.pressed:
+		return
+	# Bắt phím Tab trước hệ thống focus của Viewport để thụt lề giống IDE chuẩn.
+	if key.keycode == KEY_TAB and not key.ctrl_pressed and not key.alt_pressed:
+		if is_instance_valid(source_edit) and source_edit.has_focus() and source_edit.editable:
+			if key.shift_pressed:
+				source_edit.unindent_lines()
+			elif source_edit.has_selection():
+				source_edit.indent_lines()
+			else:
+				source_edit.insert_text_at_caret("    ")
+			get_viewport().set_input_as_handled()
+			return
+	if key.echo or not key.ctrl_pressed:
 		return
 	if key.keycode == KEY_R and is_instance_valid(run_button) and not run_button.disabled:
 		_run_code()
@@ -438,14 +469,15 @@ func show_compile_errors(details: String) -> void:
 	var first_line := -1
 	var first_message := ""
 	for match in regex.search_all(details):
-		var line := int(match.get_string(1)) - offset - 1
+		var raw_line := match.get_string(1) if not match.get_string(1).is_empty() else match.get_string(3)
+		var line := int(raw_line) - offset - 1
 		if line < 0 or line >= source_edit.get_line_count():
 			continue
 		source_edit.set_line_background_color(line, ERROR_LINE_COLOR)
 		_error_lines.append(line)
 		if first_line < 0:
 			first_line = line
-			first_message = match.get_string(3).strip_edges()
+			first_message = match.get_string(4).strip_edges()
 	if first_line >= 0:
 		source_edit.set_caret_line(first_line)
 		source_edit.set_caret_column(0)
@@ -459,6 +491,9 @@ func _clear_error_marks() -> void:
 		if line < source_edit.get_line_count():
 			source_edit.set_line_background_color(line, Color(0, 0, 0, 0))
 	_error_lines.clear()
+
+func get_student_line_count() -> int:
+	return source_edit.get_line_count() if is_instance_valid(source_edit) else 0
 
 # Số dòng mà TestBank thêm vào trước mã sinh viên (header #include, using...)
 func _student_line_offset() -> int:
@@ -526,6 +561,10 @@ func _style_text_area(edit: Control) -> void:
 
 func _make_cpp_highlighter() -> CodeHighlighter:
 	var highlighter := CodeHighlighter.new()
+	highlighter.number_color = Color("fbbf24")
+	highlighter.symbol_color = Color("cbd5e1")
+	highlighter.function_color = Color("60a5fa")
+	highlighter.member_variable_color = Color("a7f3d0")
 	for keyword in ["int", "void", "double", "float", "bool", "char", "string", "auto", "long", "short", "unsigned", "struct", "class", "const", "using", "namespace", "nullptr"]:
 		highlighter.add_keyword_color(keyword, Color("7dd3fc"))
 	for keyword in ["if", "else", "for", "while", "do", "switch", "case", "break", "continue", "return", "try", "catch", "throw"]:
@@ -540,10 +579,10 @@ func _make_cpp_highlighter() -> CodeHighlighter:
 	return highlighter
 
 func _set_editor_font_size(value: int) -> void:
-	editor_font_size = clampi(value, 9, 17)
+	editor_font_size = clampi(value, 5, 16)
 	for edit in [source_edit, input_edit, output_edit]:
 		if is_instance_valid(edit):
-			edit.add_theme_font_size_override("font_size", editor_font_size if edit == source_edit else editor_font_size - 1)
+			edit.add_theme_font_size_override("font_size", editor_font_size if edit == source_edit else maxi(editor_font_size - 1, 5))
 
 func _schedule_save() -> void:
 	if _loading_workspace or not is_instance_valid(_save_timer):
@@ -588,6 +627,53 @@ func set_status(message: String, is_error: bool = false) -> void:
 func set_output(value: String) -> void:
 	if is_instance_valid(output_edit):
 		output_edit.text = value
+
+func set_backend_info(backend_name: String, is_remote: bool) -> void:
+	if not is_instance_valid(backend_label):
+		return
+	backend_label.text = "· " + backend_name
+	backend_label.add_theme_color_override("font_color", Color("93c5fd") if is_remote else MUTED)
+
+func _strip_default_args(signature: String) -> String:
+	var regex := RegEx.new()
+	regex.compile("\\s*=\\s*[^,)]+")
+	return regex.sub(signature, "", true)
+
+func _insert_prototypes() -> void:
+	if not is_instance_valid(source_edit) or not source_edit.editable:
+		return
+	var funcs: Variant = question.get("required_functions", [])
+	if typeof(funcs) != TYPE_ARRAY or (funcs as Array).is_empty():
+		set_status("Câu này không có prototype mẫu.", true)
+		return
+	var existing_text := source_edit.text
+	var stubs: Array[String] = []
+	for fn_val in funcs:
+		var sig := str(fn_val).strip_edges()
+		if sig.ends_with(";"):
+			sig = sig.substr(0, sig.length() - 1).strip_edges()
+		sig = _strip_default_args(sig)
+		if sig.is_empty():
+			continue
+		var paren_idx := sig.find("(")
+		var fn_name := sig.substr(0, paren_idx).strip_edges().get_slice(" ", sig.substr(0, paren_idx).strip_edges().get_slice_count(" ") - 1) if paren_idx > 0 else ""
+		if not fn_name.is_empty() and existing_text.contains(fn_name + "("):
+			continue
+		stubs.append(sig + " {\n    \n}")
+	if stubs.is_empty():
+		set_status("Các prototype của câu này đã có sẵn trong vùng code.")
+		return
+	var snippet := "\n\n".join(stubs)
+	DisplayServer.clipboard_set(snippet)
+	if source_edit.text.strip_edges().is_empty():
+		source_edit.text = snippet + "\n"
+		source_edit.set_caret_line(1)
+		source_edit.set_caret_column(4)
+	else:
+		source_edit.insert_text_at_caret("\n" + snippet + "\n")
+	source_edit.grab_focus()
+	_schedule_save()
+	set_status("Đã chèn prototype vào IDE và copy vào clipboard.")
 
 func set_busy(value: bool) -> void:
 	if is_instance_valid(run_button):

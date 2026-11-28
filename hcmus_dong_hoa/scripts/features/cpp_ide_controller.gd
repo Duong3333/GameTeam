@@ -6,14 +6,36 @@ signal run_completed(result: Dictionary)
 const LocalGccProvider := preload("res://scripts/features/cpp_local_gcc_provider.gd")
 const RemoteJudgeProvider := preload("res://scripts/features/cpp_remote_judge_provider.gd")
 
+const CONFIG_PATH := "res://judge_config.json"
+
 @export_enum("Local GCC", "Remote Judge") var backend_mode: int = 0
 @export var remote_endpoint: String = ""
+var remote_timeout_seconds: float = 30.0
 var remote_access_token: String = ""
 
 var _provider: Node
 
 func _ready() -> void:
+	_load_judge_config()
+	if OS.has_feature("web"):
+		backend_mode = 1
 	_rebuild_provider()
+
+func _load_judge_config() -> void:
+	if not FileAccess.file_exists(CONFIG_PATH):
+		return
+	var file := FileAccess.open(CONFIG_PATH, FileAccess.READ)
+	if file == null:
+		return
+	var parsed: Variant = JSON.parse_string(file.get_as_text())
+	if typeof(parsed) != TYPE_DICTIONARY:
+		return
+	var cfg: Dictionary = parsed
+	if remote_endpoint.is_empty():
+		remote_endpoint = str(cfg.get("remote_endpoint", "")).strip_edges()
+	remote_timeout_seconds = maxf(float(cfg.get("timeout_seconds", 30.0)), 5.0)
+	if bool(cfg.get("force_remote_on_desktop", false)):
+		backend_mode = 1
 
 func is_running() -> bool:
 	return _provider != null and bool(_provider.call("is_running"))
@@ -32,6 +54,8 @@ func run_code(source_code: String, input_text: String, context: Dictionary = {})
 
 func set_backend_mode(mode: int) -> bool:
 	if is_running():
+		return false
+	if OS.has_feature("web") and mode == 0:
 		return false
 	backend_mode = clampi(mode, 0, 1)
 	_rebuild_provider()
@@ -73,6 +97,7 @@ func _rebuild_provider() -> void:
 	if backend_mode == 1:
 		_provider = RemoteJudgeProvider.new()
 		_provider.set("endpoint_url", remote_endpoint)
+		_provider.set("request_timeout_seconds", remote_timeout_seconds)
 		_provider.set("access_token", remote_access_token)
 	else:
 		_provider = LocalGccProvider.new()

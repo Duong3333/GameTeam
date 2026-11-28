@@ -99,4 +99,3 @@ func draw_speech(n: Dictionary) -> void:
 func draw_quiz_marker(n: Dictionary) -> void:
 	ctext("Thầy Toán", n.pos.x - 25, n.pos.y - 27, 50, 8, Color("7fe0a0"))
 	ctext("?", n.pos.x - 6, n.pos.y - 34 + sin(clock * 4.0) * 2.0, 12, 11, Color("ffd23f"))
-
